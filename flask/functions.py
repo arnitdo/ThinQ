@@ -140,3 +140,10 @@ def user_input(user_question,subject_name):
     response = chain(
         {"input_documents": docs, "question": user_question}, return_only_outputs=True, )
     return response
+
+def correct_grammar(text):
+    input_text = "correction: " + text
+    input_ids = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
+    output = model.generate(input_ids, max_length=512, num_beams=4, early_stopping=True)
+    corrected_text = tokenizer.decode(output[0], skip_special_tokens=True)
+    return corrected_text

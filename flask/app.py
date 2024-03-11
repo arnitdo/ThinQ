@@ -176,6 +176,12 @@ def question_rag():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/transcript_correct_grammar', methods=['POST'])
+def transcript_correct_grammar():
+    transcript = request.form['transcript']
+    corrected_text = correct_grammar(transcript)
+    return jsonify({"transcript": corrected_text})
+
 @app.route('/', methods=['GET']) 
 def helloworld(): 
 	if(request.method == 'GET'): 
