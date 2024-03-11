@@ -28,3 +28,5 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 from PyPDF2 import PdfReader
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from xhtml2pdf import pisa
+from io import BytesIO

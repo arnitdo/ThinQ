@@ -182,6 +182,16 @@ def transcript_correct_grammar():
     corrected_text = correct_grammar(transcript)
     return jsonify({"transcript": corrected_text})
 
+@app.route('/report_generation', methods=['POST'])
+def report_generation():
+    file_name = request.form['file_name']
+    html = request.form['html']
+    pdf = convert_html_to_pdf(html)
+    if pdf:
+        return Response(pdf, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename={file_name}.pdf'})
+    else:
+        return "Error converting HTML to PDF"
+
 @app.route('/', methods=['GET']) 
 def helloworld(): 
 	if(request.method == 'GET'): 

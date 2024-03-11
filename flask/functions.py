@@ -147,3 +147,12 @@ def correct_grammar(text):
     output = model.generate(input_ids, max_length=512, num_beams=4, early_stopping=True)
     corrected_text = tokenizer.decode(output[0], skip_special_tokens=True)
     return corrected_text
+
+def convert_html_to_pdf(html_string):
+    pdf = BytesIO()
+    pisa_status = pisa.CreatePDF(html_string, dest=pdf)
+    if pisa_status.err:
+        return None
+    else:
+        pdf.seek(0)
+        return pdf
