@@ -37,7 +37,7 @@ def s3_download(filename):
     try:
         response = s3.get_object(Bucket=S3_BUCKET, Key=filename)
         file_content = response['Body'].read()
-        save_dir = 'downloaded_images'
+        save_dir = 's3_downloads'
         os.makedirs(save_dir, exist_ok=True) 
         with open(os.path.join(save_dir, filename), 'wb') as f:
             f.write(file_content)
