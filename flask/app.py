@@ -134,6 +134,26 @@ def attention_detect():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/recommend_yt_videos', methods=['POST'])
+def recommend_yt_videos():
+    topic_name = request.form['topic_name']
+    number_of_videos = request.form['number_of_videos']
+    videos = scrapetube.get_search(topic_name)
+    
+    ytvideos = []
+    for video in videos:
+        if len(ytvideos) >= number_of_videos:
+            break
+        video_details = {
+            'videoId': video['videoId'],
+            'thumbnail': video['thumbnail']['thumbnails'][0]["url"],  
+            'title': video['title']['runs'][0]['text'],          
+            'link': f"https://www.youtube.com/watch?v={video['videoId']}"
+        }
+        ytvideos.append(video_details)
+    
+    return jsonify({'videos': ytvideos})
+
 @app.route('/', methods=['GET']) 
 def helloworld(): 
 	if(request.method == 'GET'): 
