@@ -142,7 +142,7 @@ def recommend_yt_videos():
     
     ytvideos = []
     for video in videos:
-        if len(ytvideos) >= number_of_videos:
+        if len(ytvideos) >= int(number_of_videos):
             break
         video_details = {
             'videoId': video['videoId'],
@@ -153,6 +153,28 @@ def recommend_yt_videos():
         ytvideos.append(video_details)
     
     return jsonify({'videos': ytvideos})
+
+@app.route('/rag_embed', methods=['POST'])
+def rag_embed():
+    try:
+        pdf = request.files['pdf']
+        subject_name = request.form['subject_name']
+        pdf_text = get_pdf_text(pdf)
+        text_chunks = get_text_chunks(pdf_text)
+        get_vector_store(text_chunks,subject_name)
+        return jsonify({'message': 'Text embedded successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/question_rag', methods=['POST'])
+def question_rag():
+    try:
+        question = request.form['question']
+        subject_name = request.form['subject_name']
+        answer = user_input(question, subject_name)
+        return jsonify(answer)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/', methods=['GET']) 
 def helloworld(): 

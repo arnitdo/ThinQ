@@ -56,16 +56,12 @@ def process_frame(frame):
             tts("Tired")
         if asleep:
             cv2.putText(frame, "ASLEEP!", (10, 300), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
-            tts("Asleep")
         if looking_away:
             cv2.putText(frame, "LOOKING AWAY!", (10, 320), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
-            tts("Looking Away")
         if distracted:
             cv2.putText(frame, "DISTRACTED!", (10, 340), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
-            tts("Distracted")
 
     return frame
-
 
 def _get_landmarks(lms):
     surface = 0
@@ -97,3 +93,50 @@ def generate_frames():
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+def get_pdf_text(pdf_file):
+    text = ""
+    pdf_reader = PdfReader(pdf_file)
+    for page in pdf_reader.pages:
+        text += page.extract_text()
+    return text
+
+def get_text_chunks(text):
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=10000, chunk_overlap=1000)
+    chunks = splitter.split_text(text)
+    return chunks  
+
+def get_vector_store(chunks, subject_name):
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001")  
+    vector_store = FAISS.from_texts(chunks, embedding=embeddings)
+    vector_store.save_local(subject_name+"_faiss_index")
+
+def get_conversational_chain():
+    prompt_template = """
+    Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
+    provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
+    Context:\n {context}?\n
+    Question: \n{question}\n
+
+    Answer:
+    """
+    model = ChatGoogleGenerativeAI(model="gemini-pro",
+                                   client=genai,
+                                   temperature=0.3,
+                                   )
+    prompt = PromptTemplate(template=prompt_template,
+                            input_variables=["context", "question"])
+    chain = load_qa_chain(llm=model, chain_type="stuff", prompt=prompt)
+    return chain
+
+def user_input(user_question,subject_name):
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001")
+    new_db = FAISS.load_local(subject_name+"_faiss_index", embeddings,allow_dangerous_deserialization=True)
+    docs = new_db.similarity_search(user_question)
+    chain = get_conversational_chain()
+    response = chain(
+        {"input_documents": docs, "question": user_question}, return_only_outputs=True, )
+    return response
