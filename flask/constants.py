@@ -48,3 +48,7 @@ Scorer = AttScorer(t_now=t0, ear_thresh=args.ear_thresh,
                     gaze_thresh=args.gaze_thresh, 
                     pose_time_thresh=args.pose_time_thresh,
                     verbose=args.verbose)
+
+twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+s3 = boto3.client('s3')
+ses_client = boto3.client('ses')

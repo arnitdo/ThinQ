@@ -12,3 +12,9 @@ from cv.pose_estimation import HeadPoseEstimator as HeadPoseEst
 from cv.attention_scorer import AttentionScorer as AttScorer
 import time
 import numpy as np
+from ttsvoice import tts
+import boto3
+import botocore
+from botocore.exceptions import ClientError
+from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
