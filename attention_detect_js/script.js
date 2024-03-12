@@ -128,13 +128,13 @@ async function predictWebcam() {
     if (results.faceLandmarks) {
         for (const landmarks of results.faceLandmarks) {
             drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION, { color: "#C0C0C070", lineWidth: 1 });
-            drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE, { color: "#FF3030" });
-            drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW, { color: "#FF3030" });
+            drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE, { color: "#30FF30" });
+            drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW, { color: "#30FF30" });
             drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYE, { color: "#30FF30" });
             drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW, { color: "#30FF30" });
             drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_FACE_OVAL, { color: "#E0E0E0" });
             drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_LIPS, { color: "#E0E0E0" });
-            drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS, { color: "#FF3030" });
+            drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS, { color: "#30FF30" });
             drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS, { color: "#30FF30" });
         }
     }
@@ -147,15 +147,30 @@ function drawBlendShapes(el, blendShapes) {
     if (!blendShapes.length) {
         return;
     }
-    console.log(blendShapes[0]);
+    const eyeLookUpLeft = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookUpLeft").score;
+    const eyeLookUpRight = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookUpRight").score;
+    const eyeLookDownLeft = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookDownLeft").score;
+    const eyeLookDownRight = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookDownRight").score;
+    const eyeLookInLeft = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookInLeft").score;
+    const eyeLookInRight = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookInRight").score;
+    const eyeLookOutLeft = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookOutLeft").score;
+    const eyeLookOutRight = blendShapes[0].categories.find(shape => shape.categoryName === "eyeLookOutRight").score;
+    const EAR = (eyeLookUpLeft + eyeLookUpRight + eyeLookDownLeft + eyeLookDownRight) /
+                (2 * (eyeLookInLeft + eyeLookInRight + eyeLookOutLeft + eyeLookOutRight));
+    console.log(blendShapes[0])
     let htmlMaker = "";
-    blendShapes[0].categories.map((shape) => {
-        htmlMaker += `
-      <li class="blend-shapes-item">
-        <span class="blend-shapes-label">${shape.displayName || shape.categoryName}</span>
-        <span class="blend-shapes-value" style="width: calc(${+shape.score * 100}% - 120px)">${(+shape.score).toFixed(4)}</span>
-      </li>
-    `;
-    });
+    if (EAR < 0.35) {
+        htmlMaker = `
+          <li class="blend-shapes-item">
+            <span class="blend-shapes-label">Eye Aspect Ratio is below 0.25 (Distracted)</span>
+          </li>
+        `;
+    } else {
+        htmlMaker = `
+          <li class="blend-shapes-item">
+            <span class="blend-shapes-label">Eye Aspect Ratio: ${EAR}</span>
+          </li>
+        `;
+    }
     el.innerHTML = htmlMaker;
 }
