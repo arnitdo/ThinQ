@@ -5,10 +5,175 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  Student
+  Teacher
+  Administrator
+}
+
+model Organization {
+  orgId    String @default(uuid())
+  orgName  String
+  orgUsers User[]
+
+  @@id([orgId])
+}
+
+model User {
+  userID            String                @default(uuid())
+  userOrgId         String
+  userOrg           Organization          @relation(fields: [userOrgId], references: [orgId])
+  userName          String
+  userType          UserType
+  userPassword      String
+  userDisplayName   String
+  userReportTargets ReportTarget[]
+  userClassrooms    ClassroomEnrollment[]
+  attendedLectures  LectureAttendance[]
+  s3Requests        S3Request[]
+
+  @@id([userID])
+}
+
+model ReportTarget {
+  reportTargetID    String @default(uuid())
+  userID            String
+  reportUser        User   @relation(fields: [userID], references: [userID])
+  reportTargetEmail String
+
+  @@id([userID, reportTargetID])
+}
+
+model Classroom {
+  classroomID          String                @default(uuid())
+  classroomName        String
+  classroomEnrollments ClassroomEnrollment[]
+
+  @@id([classroomID])
+}
+
+model ClassroomEnrollment {
+  userID            String
+  classroomID       String
+  enrolledClassroom Classroom @relation(fields: [classroomID], references: [classroomID])
+  enrolledUser      User      @relation(fields: [userID], references: [userID])
+
+  @@id([userID, classroomID])
+}
+
+model Lecture {
+  lectureID             String              @default(uuid())
+  lectureStartTimestamp DateTime
+  lectureEndTimestamp   DateTime
+  lectureAttendance     LectureAttendance[]
+  lectureTranscripts    LectureTranscript[]
+
+  @@id([lectureID])
+}
+
+model LectureAttendance {
+  lectureID       String
+  attendedLecture Lecture @relation(fields: [lectureID], references: [lectureID])
+  userID          String
+  attendingUser   User    @relation(fields: [userID], references: [userID])
+
+  @@id([userID, lectureID])
+}
+
+model LectureTranscript {
+  transcriptID       String  @default(uuid())
+  lectureID          String
+  transcribedLecture Lecture @relation(fields: [lectureID], references: [lectureID])
+  transcriptText     String
+
+  @@id([lectureID, transcriptID])
+}
+
+model Quiz {
+  quizId        String         @default(uuid())
+  quizName      String
+  quizQuestions QuizQuestion[]
+  quizAttempts  QuizAttempt[]
+
+  @@id([quizId])
+}
+
+model QuizQuestion {
+  questionId          String         @default(uuid())
+  quizId              String
+  questionParentQuiz  Quiz           @relation(fields: [quizId], references: [quizId])
+  questionText        String
+  questionOptions     String[]
+  questionAnswerIndex Int
+  questionResponses   QuizResponse[]
+
+  @@id([questionId])
+}
+
+model QuizAttempt {
+  attemptId        String         @default(uuid())
+  quizId           String
+  attemptedQuiz    Quiz           @relation(fields: [quizId], references: [quizId])
+  attemptTimestamp DateTime
+  attemptResponses QuizResponse[]
+  attemptReport    QuizReport?
+
+  @@id([attemptId])
+}
+
+model QuizResponse {
+  responseId        String       @default(uuid())
+  attemptId         String
+  questionID        String
+  attemptedQuestion QuizQuestion @relation(fields: [questionID], references: [questionId])
+  responseAttempt   QuizAttempt  @relation(fields: [attemptId], references: [attemptId])
+  responseContent   String
+  responseAccuracy  Float
+
+  @@id([attemptId])
+}
+
+model QuizReport {
+  reportId    String      @default(uuid())
+  attemptId   String      @unique
+  quizAttempt QuizAttempt @relation(fields: [attemptId], references: [attemptId])
+
+  @@id([reportId])
+}
+
+// S3 Section
+enum S3RequestMethod {
+  GET
+  PUT
+  DELETE
+}
+
+model S3Object {
+  objectKey         String
+  objectFileName    String
+  objectSizeBytes   Int
+  objectContentType String
+  objectRequests    S3Request[]
+
+  @@id([objectKey])
+}
+
+model S3Request {
+  requestId     String          @default(uuid())
+  objectKey     String?
+  targetObject  S3Object?       @relation(fields: [objectKey], references: [objectKey])
+  requestMethod S3RequestMethod
+  requestUserId String?
+  requestUser   User?           @relation(fields: [requestUserId], references: [userID])
+
+  @@id([requestId])
 }
