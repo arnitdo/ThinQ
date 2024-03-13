@@ -20,9 +20,18 @@ enum UserType {
   Administrator
 }
 
+model Organization {
+  orgId    String @default(uuid())
+  orgName  String
+  orgUsers User[]
+
+  @@id([orgId])
+}
+
 model User {
   userID            String                @default(uuid())
   userOrgId         String
+  userOrg           Organization          @relation(fields: [userOrgId], references: [orgId])
   userName          String
   userType          UserType
   userPassword      String
