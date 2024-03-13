@@ -1,4 +1,3 @@
-from utils import *
 from constants import *
 
 def process_frame(frame):

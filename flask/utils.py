@@ -30,3 +30,5 @@ from PyPDF2 import PdfReader
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from xhtml2pdf import pisa
 from io import BytesIO
+import mimetypes
+from werkzeug.utils import secure_filename

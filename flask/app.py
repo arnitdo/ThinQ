@@ -1,5 +1,3 @@
-from utils import *
-from constants import *
 from functions import *
 
 app = Flask(__name__) 
@@ -9,22 +7,51 @@ CORS(app)
 def s3_upload():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
-    
-    file = request.files['file']
-    
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'})
-    
+    files = request.files.getlist('file')
+    organization_id = request.form['organization_id']
+    class_id = request.form['class_id']
     try:
-        s3.upload_fileobj(file, S3_BUCKET, file.filename)
-        return jsonify({'success': True, 'message': 'File uploaded successfully'})
+        for file in files:
+            if file.filename == '':
+                return jsonify({'error': 'No selected file'})
+            if file:
+                filename = secure_filename(file.filename)
+                content_type = 'application/pdf'
+                file_content_type = mimetypes.guess_type(filename)[0]
+                if file_content_type:
+                    content_type = file_content_type
+                s3_key = f'{organization_id}/{class_id}/{filename}'
+                file.seek(0)
+                s3.upload_fileobj(file, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+        return jsonify({'success': True, 'message': 'Files uploaded successfully'})
     except Exception as e:
         return jsonify({'error': str(e)})
 
-@app.route('/s3_delete/<filename>', methods=['DELETE'])
-def s3_delete(filename):
+@app.route('/s3_fetch_files', methods=['GET'])
+def s3_fetch_files():
     try:
-        s3.delete_object(Bucket=S3_BUCKET, Key=filename)
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
+        if not organization_id or not class_id:
+            return jsonify({'error': 'Organization ID and class ID are required.'}), 400
+        prefix = f'{organization_id}/{class_id}/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
+        file_info = []
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                file_name = obj['Key'].split('/')[-1]
+                object_url = s3.generate_presigned_url('get_object', Params={'Bucket': S3_BUCKET, 'Key': obj['Key']})
+                file_info.append({'file_name': file_name, 'object_url': object_url})
+
+        return jsonify(file_info)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/s3_delete/<organization_id>/<class_id>/<filename>', methods=['DELETE'])
+def s3_delete(organization_id, class_id, filename):
+    try:
+        s3_key = f'{organization_id}/{class_id}/{filename}'
+        s3.delete_object(Bucket=S3_BUCKET, Key=s3_key)
         return jsonify({'success': True, 'message': f'File {filename} deleted successfully'})
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
@@ -32,10 +59,11 @@ def s3_delete(filename):
         else:
             return jsonify({'error': str(e)})
 
-@app.route('/s3_download/<filename>', methods=['GET'])
-def s3_download(filename):
+@app.route('/s3_download/<organization_id>/<class_id>/<filename>', methods=['GET'])
+def s3_download(organization_id, class_id,filename):
     try:
-        response = s3.get_object(Bucket=S3_BUCKET, Key=filename)
+        prefix = f'{organization_id}/{class_id}/' + filename
+        response = s3.get_object(Bucket=S3_BUCKET, Key=prefix)
         file_content = response['Body'].read()
         save_dir = 's3_downloads'
         os.makedirs(save_dir, exist_ok=True) 

@@ -51,7 +51,7 @@ Scorer = AttScorer(t_now=t0, ear_thresh=args.ear_thresh,
 
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
-s3 = boto3.client('s3')
+s3 = boto3.client('s3',config=boto3.session.Config(signature_version='s3v4'))
 
 ses_client = boto3.client('ses')
 
