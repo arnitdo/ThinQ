@@ -13,7 +13,7 @@ def s3_upload():
     try:
         for file in files:
             if file.filename == '':
-                return jsonify({'error': 'No selected file'})
+                return jsonify({'error': 'No selected file'})     
             if file:
                 filename = secure_filename(file.filename)
                 content_type = 'application/pdf'
@@ -21,8 +21,16 @@ def s3_upload():
                 if file_content_type:
                     content_type = file_content_type
                 s3_key = f'{organization_id}/{class_id}/{filename}'
-                file.seek(0)
-                s3.upload_fileobj(file, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+
+                save_dir = f's3/{organization_id}/{class_id}/'
+                if not os.path.exists(save_dir):
+                    os.makedirs(save_dir)
+                
+                local_file_path = os.path.join(save_dir, filename)
+                file.save(local_file_path)
+
+                with open(local_file_path, 'rb') as f:
+                    s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
         return jsonify({'success': True, 'message': 'Files uploaded successfully'})
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -47,11 +55,20 @@ def s3_fetch_files():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@app.route('/s3_delete/<organization_id>/<class_id>/<filename>', methods=['DELETE'])
-def s3_delete(organization_id, class_id, filename):
+@app.route('/s3_delete', methods=['DELETE'])
+def s3_delete():
     try:
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
+        filename = request.form['filename']
         s3_key = f'{organization_id}/{class_id}/{filename}'
+        
         s3.delete_object(Bucket=S3_BUCKET, Key=s3_key)
+        
+        local_file_path = f's3/{organization_id}/{class_id}/{filename}'
+        if os.path.exists(local_file_path):
+            os.remove(local_file_path)
+        
         return jsonify({'success': True, 'message': f'File {filename} deleted successfully'})
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
@@ -59,13 +76,16 @@ def s3_delete(organization_id, class_id, filename):
         else:
             return jsonify({'error': str(e)})
 
-@app.route('/s3_download/<organization_id>/<class_id>/<filename>', methods=['GET'])
-def s3_download(organization_id, class_id,filename):
+@app.route('/s3_download', methods=['GET'])
+def s3_download():
     try:
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
+        filename = request.form['filename']
         prefix = f'{organization_id}/{class_id}/' + filename
         response = s3.get_object(Bucket=S3_BUCKET, Key=prefix)
         file_content = response['Body'].read()
-        save_dir = 's3_downloads'
+        save_dir = f's3/{organization_id}/{class_id}/'
         os.makedirs(save_dir, exist_ok=True) 
         with open(os.path.join(save_dir, filename), 'wb') as f:
             f.write(file_content)
@@ -185,11 +205,25 @@ def recommend_yt_videos():
 @app.route('/rag_embed', methods=['POST'])
 def rag_embed():
     try:
-        pdf = request.files['pdf']
-        subject_name = request.form['subject_name']
-        pdf_text = get_pdf_text(pdf)
-        text_chunks = get_text_chunks(pdf_text)
-        get_vector_store(text_chunks,subject_name)
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
+        pdf_files = request.files.getlist('pdf') 
+        all_pdf_text = []
+        
+        for pdf in pdf_files:
+            pdf_text = get_pdf_text(pdf)
+            all_pdf_text.append(pdf_text)
+
+        combined_text = '\n'.join(all_pdf_text) 
+        text_chunks = get_text_chunks(combined_text)
+        get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/')
+
+        local_directory = f's3/{organization_id}/{class_id}/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'{organization_id}/{class_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
         return jsonify({'message': 'Text embedded successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -197,9 +231,10 @@ def rag_embed():
 @app.route('/question_rag', methods=['POST'])
 def question_rag():
     try:
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
         question = request.form['question']
-        subject_name = request.form['subject_name']
-        answer = user_input(question, subject_name)
+        answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
         return jsonify(answer)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

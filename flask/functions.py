@@ -106,11 +106,12 @@ def get_text_chunks(text):
     chunks = splitter.split_text(text)
     return chunks  
 
-def get_vector_store(chunks, subject_name):
+def get_vector_store(chunks, filepath):
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001")  
     vector_store = FAISS.from_texts(chunks, embedding=embeddings)
-    vector_store.save_local(subject_name+"_faiss_index")
+    filepath = filepath+"faiss_index"
+    vector_store.save_local(filepath)
 
 def get_conversational_chain():
     prompt_template = """
@@ -130,10 +131,12 @@ def get_conversational_chain():
     chain = load_qa_chain(llm=model, chain_type="stuff", prompt=prompt)
     return chain
 
-def user_input(user_question,subject_name):
+def user_input(user_question,filepath):
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001")
-    new_db = FAISS.load_local(subject_name+"_faiss_index", embeddings,allow_dangerous_deserialization=True)
+    filepath = filepath+"faiss_index"
+    print(filepath)
+    new_db = FAISS.load_local(filepath, embeddings,allow_dangerous_deserialization=True)
     docs = new_db.similarity_search(user_question)
     chain = get_conversational_chain()
     response = chain(
