@@ -32,3 +32,5 @@ from xhtml2pdf import pisa
 from io import BytesIO
 import mimetypes
 from werkzeug.utils import secure_filename
+import re
+import json

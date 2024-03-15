@@ -135,7 +135,6 @@ def user_input(user_question,filepath):
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001")
     filepath = filepath+"faiss_index"
-    print(filepath)
     new_db = FAISS.load_local(filepath, embeddings,allow_dangerous_deserialization=True)
     docs = new_db.similarity_search(user_question)
     chain = get_conversational_chain()

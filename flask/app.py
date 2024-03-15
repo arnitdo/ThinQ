@@ -239,6 +239,26 @@ def question_rag():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/get_mcq', methods=['POST'])
+def get_mcq():
+    try:
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
+        topic = request.form['topic']
+        no_of_questions = request.form['no_of_questions']
+        question =f'''
+        Give me a json of {no_of_questions} questions and answers in form of mcq with 4 choices from the following details:
+        Topic: {topic}
+        json format is
+        question mcq choices and correct answer
+        '''
+        answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
+        data = json.loads(cleaned_json_string)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/transcript_correct_grammar', methods=['POST'])
 def transcript_correct_grammar():
     transcript = request.form['transcript']
