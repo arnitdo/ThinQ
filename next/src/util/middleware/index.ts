@@ -54,11 +54,19 @@ export function withMiddlewares<
 
 		const maamResponse: MaamResponse<ParamsT, BodyT, QueryT> = {
 			json: <T extends {}>(data: ResponseJSON<T, ParamsT, BodyT, QueryT>) => {
+				if (_internal.hasResponse){
+					// Already overwriting data
+					throw new Error("Response data already set, make sure you are returning after setting response data!")
+				}
 				_internal.hasResponse = true
 				_internal.responseType = "json"
 				_internal.responseDataOrURL = data
 			},
 			redirect: (url: string) => {
+				if (_internal.hasResponse){
+					// Already overwriting data
+					throw new Error("Response data already set, make sure you are returning after setting response data!")
+				}
 				_internal.hasResponse = true
 				_internal.responseType = "redirect"
 				_internal.responseDataOrURL = new URL(url, req.url)
