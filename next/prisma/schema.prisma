@@ -40,6 +40,7 @@ model User {
   userClassrooms    ClassroomEnrollment[]
   attendedLectures  LectureAttendance[]
   s3Requests        S3Request[]
+  quizAttempts      QuizAttempt[]
 
   @@id([userID])
 }
@@ -124,6 +125,8 @@ model QuizAttempt {
   quizId           String
   attemptedQuiz    Quiz           @relation(fields: [quizId], references: [quizId])
   attemptTimestamp DateTime
+  userID           String
+  attemptUser      User           @relation(fields: [userID], references: [userID])
   attemptResponses QuizResponse[]
   attemptReport    QuizReport?
 
