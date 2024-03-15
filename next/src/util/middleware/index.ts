@@ -28,8 +28,7 @@ export function withMiddlewares<
 	BodyT extends {} = {},
 	QueryT extends {} = {}
 >(
-	middlewaresToCall: (APIHandler<ParamsT, BodyT, QueryT>)[],
-	handler: APIHandler<ParamsT, BodyT, QueryT>
+	...middlewaresOrHandlers: (APIHandler<ParamsT, BodyT, QueryT>)[]
 ): _NextHandlerType {
 	return async function (req, params = {}){
 		const maamRequest: MaamRequest<ParamsT, BodyT, QueryT> = {
@@ -81,11 +80,9 @@ export function withMiddlewares<
 			}
 		}
 
-		const handlersToExecute = [...middlewaresToCall, handler]
-
 		// Begin middleware/handler logic
 
-		for (const handlerFn of handlersToExecute){
+		for (const handlerFn of middlewaresOrHandlers){
 			try {
 				await handlerFn(maamRequest, maamResponse)
 			} catch (e) {
