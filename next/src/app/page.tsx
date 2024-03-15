@@ -18,12 +18,12 @@ export default function Home() {
                   <img src="/thinQ.png" alt="" />
                 </a>
               </div>
-              <div className="sm:hidden" onClick={handleClick}>
+              <div className="md:hidden" onClick={handleClick}>
                 <img src="/grid.png" alt="" />
               </div>
             </div>
             {isNavOpen && (
-              <div className="sm:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-10/12 rounded-xl h-fit">
+              <div className="md:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-10/12 rounded-xl h-fit">
                 <div className="text-center p-6 text-md">Features</div>{" "}
                 <div className="text-center p-6 text-md">Contact</div>
                 <div className="text-center p-6 text-md">
@@ -51,7 +51,7 @@ export default function Home() {
           </div>
 
           <div className="text-white p-[24px] rounded-3xl bg-secondary relative isolate overflow-clip lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-2">
-            <nav className="flex justify-end items-center gap-6 max-sm:hidden">
+            <nav className="max-md:hidden flex justify-end items-center gap-6 max-sm:hidden">
               <a href="">Features</a>
               <a href="">Contact</a>
               <button className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em]">
