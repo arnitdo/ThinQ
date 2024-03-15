@@ -246,16 +246,51 @@ def get_mcq():
         class_id = request.form['class_id']
         topic = request.form['topic']
         no_of_questions = request.form['no_of_questions']
-        question =f'''
-        Give me a json of {no_of_questions} questions and answers in form of mcq with 4 choices from the following details:
-        Topic: {topic}
-        json format is
-        question mcq choices and correct answer
-        '''
-        answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
+        prompt = '''
+        Please provide a JSON with {} questions and answers of topic {} in the following schema:
+
+        {{
+        "questions": [
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 0,
+            }},
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 1,
+            }},
+            // Add more questions as needed
+        ]
+        }}
+
+        Ensure the provided JSON adheres to the defined schema.
+        '''.format(no_of_questions,topic)
+        answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
         return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/search_images')
+def search_images():
+    query = request.args.get('query')
+    if not query:
+        return jsonify({'error': 'Query parameter "query" is required.'}), 400
+    try:
+        url = f"https://www.google.com/search?q={query}&tbm=isch"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"}
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        images = []
+        for img in soup.find_all('img'):
+            images.append(img.get('src'))
+        images = list(filter(lambda x: x is not None and x.startswith('http'), images))
+        
+        return jsonify({'images': images})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

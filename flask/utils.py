@@ -34,3 +34,5 @@ import mimetypes
 from werkzeug.utils import secure_filename
 import re
 import json
+from bs4 import BeautifulSoup
+import requests
