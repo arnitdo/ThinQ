@@ -31,9 +31,9 @@ def s3_upload():
 
                 with open(local_file_path, 'rb') as f:
                     s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
-        return jsonify({'success': True, 'message': 'Files uploaded successfully'})
+        return jsonify({'success': True, 'message': 'Files uploaded successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}) , 500
 
 @app.route('/s3_fetch_files', methods=['GET'])
 def s3_fetch_files():
@@ -50,8 +50,7 @@ def s3_fetch_files():
                 file_name = obj['Key'].split('/')[-1]
                 object_url = s3.generate_presigned_url('get_object', Params={'Bucket': S3_BUCKET, 'Key': obj['Key']})
                 file_info.append({'file_name': file_name, 'object_url': object_url})
-
-        return jsonify(file_info)
+        return jsonify(file_info), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
@@ -69,12 +68,12 @@ def s3_delete():
         if os.path.exists(local_file_path):
             os.remove(local_file_path)
         
-        return jsonify({'success': True, 'message': f'File {filename} deleted successfully'})
+        return jsonify({'success': True, 'message': f'File {filename} deleted successfully'}), 200
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
-            return jsonify({'error': f'File {filename} not found'})
+            return jsonify({'error': f'File {filename} not found'}), 400
         else:
-            return jsonify({'error': str(e)})
+            return jsonify({'error': str(e)}), 500
 
 @app.route('/s3_download', methods=['GET'])
 def s3_download():
@@ -89,12 +88,12 @@ def s3_download():
         os.makedirs(save_dir, exist_ok=True) 
         with open(os.path.join(save_dir, filename), 'wb') as f:
             f.write(file_content)
-        return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully {response}'})
+        return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully {response}'}), 200
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
-            return jsonify({'error': f'File {filename} not found'})
+            return jsonify({'error': f'File {filename} not found'}), 400 
         else:
-            return jsonify({'error': str(e)})
+            return jsonify({'error': str(e)}), 500 
 
 @app.route('/send_email', methods=['POST'])
 def send_email():
@@ -200,7 +199,7 @@ def recommend_yt_videos():
         }
         ytvideos.append(video_details)
     
-    return jsonify({'videos': ytvideos})
+    return jsonify({'videos': ytvideos}), 200
 
 @app.route('/rag_embed', methods=['POST'])
 def rag_embed():
@@ -235,7 +234,7 @@ def question_rag():
         class_id = request.form['class_id']
         question = request.form['question']
         answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
-        return jsonify(answer)
+        return jsonify(answer), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -270,7 +269,7 @@ def get_mcq():
         answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
-        return jsonify(data)
+        return jsonify(data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -290,7 +289,7 @@ def search_images():
             images.append(img.get('src'))
         images = list(filter(lambda x: x is not None and x.startswith('http'), images))
         
-        return jsonify({'images': images})
+        return jsonify({'images': images}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -298,23 +297,24 @@ def search_images():
 def transcript_correct_grammar():
     transcript = request.form['transcript']
     corrected_text = correct_grammar(transcript)
-    return jsonify({"transcript": corrected_text})
+    return jsonify({"transcript": corrected_text}),200
 
 @app.route('/report_generation', methods=['POST'])
 def report_generation():
-    file_name = request.form['file_name']
-    html = request.form['html']
-    pdf = convert_html_to_pdf(html)
-    if pdf:
-        return Response(pdf, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename={file_name}.pdf'})
-    else:
-        return "Error converting HTML to PDF"
+    try:
+        file_name = request.form['file_name']
+        html = request.form['html']
+        pdf = convert_html_to_pdf(html)
+        if pdf:
+            return Response(pdf, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename={file_name}.pdf'}),200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/', methods=['GET']) 
 def helloworld(): 
 	if(request.method == 'GET'): 
 		data = {"data": "PICT Hackathon Backend"} 
-		return jsonify(data) 
+		return jsonify(data), 200
 
 if __name__ == '__main__': 
 	app.run(debug=True)
