@@ -1,4 +1,8 @@
 import type {Metadata} from "next";
+import { Space_Grotesk } from 'next/font/google'
+const spaceG = Space_Grotesk(
+	{subsets: ["latin"], display: "swap"},
+);
 
 export const metadata: Metadata = {
 	title: "ThinQ",
@@ -9,7 +13,7 @@ export default function RootLayout({children}: Readonly<{
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" className={spaceG.className}>
 			<body>
 				{children}
 			</body>

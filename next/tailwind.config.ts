@@ -17,9 +17,9 @@ const config = {
         "2xl": "1400px",
       },
     },
-    fontFamily: {
-      'spaceG': ['Space Grotesk', 'sans-serif'],
-    },
+    // fontFamily: {
+    //   'spaceG': ['Space Grotesk', 'sans-serif'],
+    // },
     extend: {
       fontSize: {
         XXXL: "5rem",
