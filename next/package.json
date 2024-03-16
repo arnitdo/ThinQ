@@ -12,6 +12,7 @@
     "@prisma/adapter-pg": "^5.11.0",
     "@prisma/client": "^5.11.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/pg": "^8.11.2",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
