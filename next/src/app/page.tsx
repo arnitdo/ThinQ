@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import "./globals.css";
- 
+import { motion } from "framer-motion";
+
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const handleClick = () => {
@@ -12,18 +13,23 @@ export default function Home() {
       <section className="hero p-[28px] max-sm:px-4 font-spaceG">
         <div className="grid gap-7 auto-cols-fr auto-rows-[auto]">
           <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vrNigga.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
-            <div className="justify-between flex">
+            <div className="justify-between flex items-center">
               <div>
                 <a href="#">
                   <img src="/thinQ.png" alt="" />
                 </a>
               </div>
               <div className="md:hidden" onClick={handleClick}>
-                <img src="/grid.png" alt="" />
+               {isNavOpen ? <img src="/cross.png" alt="" /> :<img src="/grid.png" alt="" /> }
               </div>
             </div>
             {isNavOpen && (
-              <div className="md:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-10/12 rounded-xl h-fit">
+              <motion.div
+                initial={{ opacity: 0, y: -10}}
+                animate={{ opacity: 1, y: 0}}
+                exit={{ opacity: 0 }}
+                className="md:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-10/12 rounded-xl max-[438px]:-ml-2 h-fit"
+              >
                 <div className="text-center p-6 text-md">Features</div>{" "}
                 <div className="text-center p-6 text-md">Contact</div>
                 <div className="text-center p-6 text-md">
@@ -31,7 +37,7 @@ export default function Home() {
                     Sign In
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
             <button className="text-MD px-[1.4em] py-[0.35em] outline outline-1 rounded-[53px] mb-5 mt-9">
               Join us Now!
