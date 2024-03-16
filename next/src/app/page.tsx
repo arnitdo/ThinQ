@@ -8,7 +8,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { Pagination, Autoplay } from "swiper/modules";
-
+import Lottie from "lottie-react";
+import animationData from "../../public/animate.json";
 const data = [
   {
     quote:
@@ -184,7 +185,10 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20"></div>
+          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20">
+            <Lottie animationData={animationData}/>
+            <p className="text-white font-bold text-center text-xl">Bridging the gap between the students and the teachers</p>
+          </div>
 
           <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
             <Swiper
