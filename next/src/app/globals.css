@@ -95,3 +95,27 @@ img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
+
+.swiper-pagination-bullet-active {
+  background: #fff;
+  border: 1px solid #fff;
+  color: #fff;
+ 
+}
+
+/* custom scroll bar */
+::-webkit-scrollbar{
+
+  width: 6px;
+  background-color:#D9D9D9;
+
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #616161; /* color of the thumb */
+  border-radius: 6px; /* roundness of the thumb */
+}
+
+
+
+

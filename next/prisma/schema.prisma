@@ -21,7 +21,7 @@ enum UserType {
 }
 
 model Organization {
-  orgId    String @default(uuid())
+  orgId    String
   orgName  String
   orgUsers User[]
 
@@ -29,7 +29,7 @@ model Organization {
 }
 
 model User {
-  userID            String                @default(uuid())
+  userId            String                @default(uuid())
   userOrgId         String
   userOrg           Organization          @relation(fields: [userOrgId], references: [orgId])
   userName          String
@@ -42,61 +42,61 @@ model User {
   s3Requests        S3Request[]
   quizAttempts      QuizAttempt[]
 
-  @@id([userID])
+  @@id([userId])
 }
 
 model ReportTarget {
-  reportTargetID    String @default(uuid())
-  userID            String
-  reportUser        User   @relation(fields: [userID], references: [userID])
+  reportTargetId    String @default(uuid())
+  userId            String
+  reportUser        User   @relation(fields: [userId], references: [userId])
   reportTargetEmail String
 
-  @@id([userID, reportTargetID])
+  @@id([userId, reportTargetId])
 }
 
 model Classroom {
-  classroomID          String                @default(uuid())
+  classroomId          String                @default(uuid())
   classroomName        String
   classroomEnrollments ClassroomEnrollment[]
 
-  @@id([classroomID])
+  @@id([classroomId])
 }
 
 model ClassroomEnrollment {
-  userID            String
-  classroomID       String
-  enrolledClassroom Classroom @relation(fields: [classroomID], references: [classroomID])
-  enrolledUser      User      @relation(fields: [userID], references: [userID])
+  userId            String
+  classroomId       String
+  enrolledClassroom Classroom @relation(fields: [classroomId], references: [classroomId])
+  enrolledUser      User      @relation(fields: [userId], references: [userId])
 
-  @@id([userID, classroomID])
+  @@id([userId, classroomId])
 }
 
 model Lecture {
-  lectureID             String              @default(uuid())
+  lectureId             String              @default(uuid())
   lectureStartTimestamp DateTime
   lectureEndTimestamp   DateTime
   lectureAttendance     LectureAttendance[]
   lectureTranscripts    LectureTranscript[]
 
-  @@id([lectureID])
+  @@id([lectureId])
 }
 
 model LectureAttendance {
-  lectureID       String
-  attendedLecture Lecture @relation(fields: [lectureID], references: [lectureID])
-  userID          String
-  attendingUser   User    @relation(fields: [userID], references: [userID])
+  lectureId       String
+  attendedLecture Lecture @relation(fields: [lectureId], references: [lectureId])
+  userId          String
+  attendingUser   User    @relation(fields: [userId], references: [userId])
 
-  @@id([userID, lectureID])
+  @@id([userId, lectureId])
 }
 
 model LectureTranscript {
-  transcriptID       String  @default(uuid())
-  lectureID          String
-  transcribedLecture Lecture @relation(fields: [lectureID], references: [lectureID])
+  transcriptId       String  @default(uuid())
+  lectureId          String
+  transcribedLecture Lecture @relation(fields: [lectureId], references: [lectureId])
   transcriptText     String
 
-  @@id([lectureID, transcriptID])
+  @@id([lectureId, transcriptId])
 }
 
 model Quiz {
@@ -125,8 +125,8 @@ model QuizAttempt {
   quizId           String
   attemptedQuiz    Quiz           @relation(fields: [quizId], references: [quizId])
   attemptTimestamp DateTime
-  userID           String
-  attemptUser      User           @relation(fields: [userID], references: [userID])
+  userId           String
+  attemptUser      User           @relation(fields: [userId], references: [userId])
   attemptResponses QuizResponse[]
   attemptReport    QuizReport?
 
@@ -136,8 +136,8 @@ model QuizAttempt {
 model QuizResponse {
   responseId        String       @default(uuid())
   attemptId         String
-  questionID        String
-  attemptedQuestion QuizQuestion @relation(fields: [questionID], references: [questionId])
+  questionId        String
+  attemptedQuestion QuizQuestion @relation(fields: [questionId], references: [questionId])
   responseAttempt   QuizAttempt  @relation(fields: [attemptId], references: [attemptId])
   responseContent   String
   responseAccuracy  Float
@@ -176,7 +176,7 @@ model S3Request {
   targetObject  S3Object?       @relation(fields: [objectKey], references: [objectKey])
   requestMethod S3RequestMethod
   requestUserId String?
-  requestUser   User?           @relation(fields: [requestUserId], references: [userID])
+  requestUser   User?           @relation(fields: [requestUserId], references: [userId])
 
   @@id([requestId])
 }

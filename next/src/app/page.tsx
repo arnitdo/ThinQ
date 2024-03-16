@@ -2,6 +2,45 @@
 import { useState } from "react";
 import "./globals.css";
 import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
+import { Pagination, Autoplay } from "swiper/modules";
+
+const data = [
+  {
+    quote:
+      "“While creating this i faced 0 errors just like how an orange cat stays calm”",
+    author: "Rishabh",
+  },
+  {
+    quote:
+      "“Im the Best Developer”",
+    author: "Arnav",
+  },
+  {
+    quote:
+      "“Im the Best Developer”",
+    author: "Varad",
+  },
+  {
+    quote:
+      "“Im the CSS King”",
+    author: "Milind",
+  },
+  {
+    quote:
+      "“I use Nivia Body lotion”",
+    author: "Prinkal",
+  },
+  {
+    quote:
+      "“Im the Best AIML Guy”",
+    author: "Mihir",
+  },
+];
 
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -20,13 +59,17 @@ export default function Home() {
                 </a>
               </div>
               <div className="md:hidden" onClick={handleClick}>
-               {isNavOpen ? <img src="/cross.png" alt="" /> :<img src="/grid.png" alt="" /> }
+                {isNavOpen ? (
+                  <img src="/cross.png" alt="" />
+                ) : (
+                  <img src="/grid.png" alt="" />
+                )}
               </div>
             </div>
             {isNavOpen && (
               <motion.div
-                initial={{ opacity: 0, y: -10}}
-                animate={{ opacity: 1, y: 0}}
+                initial={{ opacity: 0, y: -30 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 className="md:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-10/12 rounded-xl max-[438px]:-ml-2 h-fit"
               >
@@ -34,7 +77,7 @@ export default function Home() {
                 <div className="text-center p-6 text-md">Contact</div>
                 <div className="text-center p-6 text-md">
                   <div className="px-16 text-black font-semibold bg-white py-2 rounded-full border w-fit mx-auto">
-                    Sign In
+                    <a href="/login">Sign In</a>
                   </div>
                 </div>
               </motion.div>
@@ -142,8 +185,32 @@ export default function Home() {
 
           <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20"></div>
 
-          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2"></div>
-
+          <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              // pagination={true}
+              // draggable={true}
+              autoplay={{
+                delay: 2300,
+                disableOnInteraction: false,
+              }}
+              loop={true}
+              spaceBetween={500}
+              slidesPerView={1}
+              onSlideChange={() => console.log("slide change")}
+              onSwiper={(swiper) => console.log(swiper)}
+              className="h-full w-full mySwiper flex justify-center items-center"
+            >
+              {data.map((item, index) => (
+                <SwiperSlide key={index} className="mx-auto text-center items-center justify-center my-auto">
+                  <div className="text-center text-3xl">{item.quote}</div>{" "}
+                  <p className="mt-2 text-gray-400">~ {item.author}</p>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+          
+          {/* <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2"></div> */}
           <div className="ignoreThisDiv gapOverlap hidden | lg:block absolute col-start-4 row-start-2 col-span-1 row-span-1 -inset-[1.75rem] bg-white z-10"></div>
           <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-4 col-span-1 bg-[radial-gradient(circle_at_0_0,#F722B7_1.75rem,white_calc(1.75rem+1px))]"></div>
           <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-3 col-span-1 bg-[radial-gradient(circle_at_0_0,white_1.75rem,#f964cc_calc(1.75rem+1px))] -right-7 -bottom-7 z-10 rotate-180"></div>
