@@ -77,7 +77,7 @@ export default function Home() {
                 <div className="text-center p-6 text-md">Contact</div>
                 <div className="text-center p-6 text-md">
                   <div className="px-16 text-black font-semibold bg-white py-2 rounded-full border w-fit mx-auto">
-                    Sign In
+                    <a href="/login">Sign In</a>
                   </div>
                 </div>
               </motion.div>
