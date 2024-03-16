@@ -22,7 +22,7 @@ const page = () => {
       </Marquee>
       <div className="flex w-full max-md:flex-col">
         <div className=" w-6/12 max-md:w-full items-center justify-center">
-          <div className="bg-white rounded-3xl mx-auto max-sm:w-11/12 z-10 w-2/3 shadow-xl h-fit p-6 border-rose-600 border m-10">
+          <div className="bg-white rounded-3xl mx-auto max-sm:w-11/12 z-10 w-7/12 max-[1185px]:w-10/12 shadow-xl h-fit p-6 border-rose-600 border m-10">
             <div className="font-semibold text-2xl text-center">Login</div>
             <p className="text-gray-500 text-center mt-1 text-md mb-6">
               Just bear with us, its gonna be worth!

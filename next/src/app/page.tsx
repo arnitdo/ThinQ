@@ -95,7 +95,8 @@ export default function Home() {
               Not your Ordinary Classroom, but classroom with Superpowers
             </p>
             <button className="bg-white text-[#276597] px-[1.25em] py-[0.625em] rounded-[2.5em] hover:bg-transparent hover:text-white hover:border transition-all ease-in-out delay-75">
-              Get Started
+              <a href="/login"> Get Started</a>
+             
             </button>
           </div>
 
@@ -103,9 +104,9 @@ export default function Home() {
             <nav className="max-md:hidden flex justify-end items-center gap-6 max-sm:hidden">
               <a href="">Features</a>
               <a href="">Contact</a>
-              <button className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em]">
+              <a href="/login" className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em] cursor-pointer">
                 Sign in
-              </button>
+              </a>
             </nav>
             <p className="text-[2.39rem] sm:text-6xl font-bold mt-6">
               Monitor, Work, Slack Repeat
@@ -188,8 +189,9 @@ export default function Home() {
           <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
             <Swiper
               modules={[Autoplay, Pagination]}
+              
               // pagination={true}
-              // draggable={true}
+              draggable={true}
               autoplay={{
                 delay: 2300,
                 disableOnInteraction: false,
