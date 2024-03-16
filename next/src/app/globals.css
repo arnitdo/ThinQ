@@ -95,3 +95,11 @@ img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
+
+.swiper-pagination-bullet-active {
+  background: #fff;
+  border: 1px solid #fff;
+  color: #fff;
+ 
+}
+
