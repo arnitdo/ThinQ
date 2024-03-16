@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main>
       <section className="hero p-[28px] max-sm:px-4 font-spaceG">
-        <div className="grid gap-7 auto-cols-fr auto-rows-[auto]">
+        <div className="grid gap-7 auto-cols-fr auto-rows-[auto] relative isolate">
           <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vrNigga.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
             <div className="justify-between flex items-center">
               <div>
@@ -56,7 +56,7 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="text-white p-[24px] rounded-3xl bg-secondary relative isolate overflow-clip lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-2">
+          <div className="text-white p-[24px] rounded-3xl bg-secondary relative isolate overflow-clip lg:z-0 lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-2">
             <nav className="max-md:hidden flex justify-end items-center gap-6 max-sm:hidden">
               <a href="">Features</a>
               <a href="">Contact</a>
@@ -140,9 +140,14 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:relative lg:z-10"></div>
+          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20"></div>
 
           <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2"></div>
+
+          <div className="ignoreThisDiv gapOverlap hidden | lg:block absolute col-start-4 row-start-2 col-span-1 row-span-1 -inset-[1.75rem] bg-white z-10"></div>
+          <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-4 col-span-1 bg-[radial-gradient(circle_at_0_0,#F722B7_1.75rem,white_calc(1.75rem+1px))]"></div>
+          <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-3 col-span-1 bg-[radial-gradient(circle_at_0_0,white_1.75rem,#f964cc_calc(1.75rem+1px))] -right-7 -bottom-7 z-10 rotate-180"></div>
+          <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-2 row-span-1 col-start-3 col-span-1 bg-[radial-gradient(circle_at_0_0,#F722B7_1.75rem,white_calc(1.75rem+1px))]"></div>
         </div>
       </section>
     </main>
