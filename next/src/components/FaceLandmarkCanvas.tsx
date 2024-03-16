@@ -11,7 +11,8 @@ const FaceLandmarkCanvas = () => {
   }>();
   const [categories, setCategories] = useState<any[]>([]);
   const [EAR, setEAR] = useState<number>(0);
-  const [isDistracted, setIsDistracted] = useState("");
+  const [gaze, setGaze] = useState<number>(0);
+  const [isDistracted, setIsDistracted] = useState(false);
 
   const animate = () => {
     if (
@@ -62,18 +63,43 @@ const FaceLandmarkCanvas = () => {
             landmarks.faceBlendshapes[0].categories.find(
               (shape) => shape.categoryName === "eyeLookOutRight"
             )?.score ?? 0;
+          const weights = {
+            upLeft: 1,
+            upRight: 1,
+            downLeft: 1,
+            downRight: 1,
+            inLeft: 0.5,
+            inRight: 0.5,
+            outLeft: 0.5,
+            outRight: 0.5,
+          };
+          const gazeScore =
+            weights.upLeft * eyeLookUpLeft +
+            weights.upRight * eyeLookUpRight +
+            weights.downLeft * eyeLookDownLeft +
+            weights.downRight * eyeLookDownRight +
+            weights.inLeft * eyeLookInLeft +
+            weights.inRight * eyeLookInRight +
+            weights.outLeft * eyeLookOutLeft +
+            weights.outRight * eyeLookOutRight;
           const EAR =
             (eyeLookUpLeft +
               eyeLookUpRight +
               eyeLookDownLeft +
               eyeLookDownRight) /
             (2 * (eyeLookInLeft + eyeLookInRight + eyeLookOutLeft + eyeLookOutRight));
-          setCategories(landmarks.faceBlendshapes[0].categories);
-          if (EAR < 0.3) {
-            setIsDistracted("True");
+
+          const gazeThreshold = 1.4; 
+          const EARThreshold = 0.4; 
+
+          if (EAR < EARThreshold || gaze > gazeThreshold) {
+            setIsDistracted(true);
           } else {
-            setIsDistracted("False");
+            setIsDistracted(false);
           }
+
+          setCategories(landmarks.faceBlendshapes[0].categories);
+          setGaze(gazeScore);
           setEAR(EAR);
         } else {
           setCategories([]);
@@ -133,7 +159,7 @@ const FaceLandmarkCanvas = () => {
               </td>
               <td>
                 <div>
-                  <h3>Distracted : {isDistracted}</h3>
+                  <h3>Distracted : {isDistracted ? "True" : "False"}</h3> 
                   <ul>
                     {firstColumnCategories.map((category, index) => (
                       <li key={index}>
@@ -146,6 +172,7 @@ const FaceLandmarkCanvas = () => {
               <td>
                 <div>
                   <h3>EAR : {EAR}</h3>
+                  <h3>Gaze : {gaze}</h3>
                   <ul>
                     {secondColumnCategories.map((category, index) => (
                       <li key={index}>
