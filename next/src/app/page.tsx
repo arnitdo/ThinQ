@@ -8,7 +8,8 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { Pagination, Autoplay } from "swiper/modules";
-
+import Lottie from "lottie-react";
+import animationData from "../../public/animate.json";
 const data = [
   {
     quote:
@@ -95,7 +96,8 @@ export default function Home() {
               Not your Ordinary Classroom, but classroom with Superpowers
             </p>
             <button className="bg-white text-[#276597] px-[1.25em] py-[0.625em] rounded-[2.5em] hover:bg-transparent hover:text-white hover:border transition-all ease-in-out delay-75">
-              Get Started
+              <a href="/login"> Get Started</a>
+             
             </button>
           </div>
 
@@ -103,9 +105,9 @@ export default function Home() {
             <nav className="max-md:hidden flex justify-end items-center gap-6 max-sm:hidden">
               <a href="">Features</a>
               <a href="">Contact</a>
-              <button className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em]">
+              <a href="/login" className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em] cursor-pointer">
                 Sign in
-              </button>
+              </a>
             </nav>
             <p className="text-[2.39rem] sm:text-6xl font-bold mt-6">
               Monitor, Work, Slack Repeat
@@ -183,13 +185,17 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20"></div>
+          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20">
+            <Lottie animationData={animationData}/>
+            <p className="text-white font-bold text-center text-xl">Bridging the gap between the students and the teachers</p>
+          </div>
 
           <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
             <Swiper
               modules={[Autoplay, Pagination]}
+              
               // pagination={true}
-              // draggable={true}
+              draggable={true}
               autoplay={{
                 delay: 2300,
                 disableOnInteraction: false,

@@ -11,9 +11,9 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
   return (
     <div className="px-10 max-sm:px-4">
       <div className="w-full bg-white border border-[#8C8C8C] rounded-3xl p-4 mt-6 flex justify-between items-center shadow-xl mb-4">
-        <div>
+        <a href="/">
           <img src="/thinQ_black.png" alt="" />
-        </div>
+        </a>
         <div className="flex space-x-6 items-center max-md:hidden">
           <a href="" className="text-[#3D4242]">
             Features
