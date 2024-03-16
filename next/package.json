@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.12",
     "@prisma/adapter-pg": "^5.11.0",
     "@prisma/client": "^5.11.0",
     "@types/bcrypt": "^5.0.2",
