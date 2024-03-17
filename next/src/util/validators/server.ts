@@ -3,7 +3,13 @@ import {
 	AuthLoginUserParams,
 	AuthSignupUserBody,
 	AuthSignupUserParams,
+	ClassroomParams,
+	CreateClassroomBody,
+	CreateLectureBody,
 	CreateOrganizationBody,
+	EditClassroomBody,
+	EditLectureBody,
+	LectureParams,
 	OrgIdBaseParams
 } from "@/util/api/api_requests";
 import {ServerValidator} from "@/util/validators/index";
@@ -19,6 +25,26 @@ export async function orgExists(orgId: string){
 	})
 
 	return orgExists !== null
+}
+
+export async function classroomExists(classId: string){
+	const classExists = await db.classroom.findFirst({
+		where: {
+			classroomId: classId
+		}
+	})
+
+	return classExists !== null
+}
+
+export async function lectureExists(lectureId: string){
+	const lectureExists = await db.lecture.findFirst({
+		where: {
+			lectureId: lectureId
+		}
+	})
+	
+	return lectureExists !== null
 }
 
 export const CreateOrgBodyServerValidator: ServerValidator<CreateOrganizationBody> = {
@@ -76,4 +102,41 @@ export const AuthSignupUserBodyServerValidator: ServerValidator<AuthSignupUserBo
 	userType: IN_ARR([UserType.Student, UserType.Teacher, UserType.Administrator]),
 	userDisplayName: STRLEN_NZ,
 	userPassword: STRLEN_NZ
+}
+
+export const CreateClassroomBodyServerValidator: ServerValidator<CreateClassroomBody> = {
+	classroomName: async (className: string) => {
+		return className.length > 0
+	}
+}
+
+export const EditClassroomBodyServerValidator: ServerValidator<EditClassroomBody> = {
+	classroomName: async (className: string) => {
+		return className.length > 0
+	}
+}
+
+export const ClassroomParamServerValidator: ServerValidator<ClassroomParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateLectureBodyServerValidator: ServerValidator<CreateLectureBody> = {
+	title: async(title: string) => {
+		return title.length > 0
+	},
+	lectureEndTimestamp: async (lectureEndTimestamp: string | number | Date) => {
+		return typeof (new Date(lectureEndTimestamp)) === "object"
+	},
+	lectureStartTimestamp: async (lectureStartTimestamp: string | number | Date) => {
+		return typeof (new Date(lectureStartTimestamp)) === "object"
+	}
+}
+
+export const EditLectureBodyServerValidator: ServerValidator<EditLectureBody> = CreateLectureBodyServerValidator
+
+export const LectureParamServerValidator: ServerValidator<LectureParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	lectureId: lectureExists
 }

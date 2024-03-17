@@ -1,7 +1,7 @@
 // Write your API Request Types Here
 
 // Use this in place of {}
-import type {UserType} from "@prisma/client";
+import type { UserType } from "@prisma/client";
 
 export type NoParams = {}
 
@@ -26,4 +26,30 @@ export type AuthSignupUserBody = {
 	userPassword: string,
 	userDisplayName: string,
 	userType: UserType
+}
+
+export type CreateClassroomBody = {
+	classroomName : string
+}
+
+export type ClassroomParams = {
+	orgId: string,
+	classroomId: string
+}
+
+export type EditClassroomBody = CreateClassroomBody
+
+export type CreateLectureBody = {
+	lectureStartTimestamp : string | number | Date,
+	lectureEndTimestamp : string | number | Date,
+	title : string,
+}
+
+export type EditLectureBody = CreateLectureBody
+
+
+export type LectureParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string
 }
