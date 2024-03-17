@@ -38,7 +38,7 @@ export function withMiddlewares<
 				method: req.method as RequestMethod,
 				params: params as ParamsT,
 				cookies: req.cookies,
-				body: (req.method !== "GET") ?
+				body: (!["GET","DELETE"].includes(req.method)) ?
 					((await req.json()) as BodyT) :
 					({} as BodyT),
 				query: Object.fromEntries(req.nextUrl.searchParams.entries()) as QueryT,

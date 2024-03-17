@@ -43,7 +43,7 @@ export async function lectureExists(lectureId: string){
 			lectureId: lectureId
 		}
 	})
-
+	
 	return lectureExists !== null
 }
 

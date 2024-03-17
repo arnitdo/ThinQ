@@ -1,9 +1,9 @@
 import {withMiddlewares} from "@/util/middleware";
-import {ClassroomParams, EditClassroomBody, EditLectureBody, LectureParams} from "@/util/api/api_requests";
+import { EditLectureBody, LectureParams} from "@/util/api/api_requests";
 import {authParser, requireAuthenticatedUser, requireAuthorizedUser, requireBodyParams, requireURLParams, validateBodyParams, validateURLParams} from "@/util/middleware/helpers";
-import { ClassroomParamServerValidator, EditClassroomBodyServerValidator, EditLectureBodyServerValidator, LectureParamServerValidator} from "@/util/validators/server";
+import { ClassroomParamServerValidator, EditLectureBodyServerValidator, LectureParamServerValidator} from "@/util/validators/server";
 import db from "@/util/db";
-import {DeletedClassroomResponse, DeletedLectureResponse, GetClassroomResponse, GetLectureResponse} from "@/util/api/api_responses";
+import { DeletedLectureResponse, GetLectureResponse} from "@/util/api/api_responses";
 
 export const PUT = withMiddlewares<LectureParams, EditLectureBody>(
 	authParser(),
