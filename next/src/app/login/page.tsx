@@ -12,20 +12,20 @@ const page = () => {
         direction="right"
         className="opacity-10 text-8xl -z-10 overflow-hidden absolute max-sm:text-6xl select-none font-semibold"
       >
-        <img src="/diamond.png" alt="" />
+        <div className="border-[0.9rem] border-black rotate-45"></div>
         <div className="mx-4 overflow-hidden">MONITOR</div>
-        <img src="/diamond.png" alt="" />
+        <div className="border-[0.9rem] border-black rotate-45"></div>
         <div className="mx-4 overflow-hidden">WORK</div>
-        <img src="/diamond.png" alt="" />
+        <div className="border-[0.9rem] border-black rotate-45"></div>
         <div className="mx-4 overflow-hidden">SLACK</div>
-        <img src="/diamond.png" alt="" />
+        <div className="border-[0.9rem] border-black rotate-45"></div>
         <div className="mx-4 overflow-hidden">REPEAT</div>
       </Marquee>
       <div className="bluegrad max-sm:-ml-96"></div>
       <div className="pinkgrad "></div>
       <div className="flex w-full max-md:flex-col ">
         <div className=" w-6/12 max-md:w-full items-center justify-center">
-          <div className="bg-white rounded-3xl mx-auto max-sm:w-11/12 z-10 w-7/12 max-[1185px]:w-10/12 shadow-xl h-fit p-6 border-rose-600 border m-10">
+          <div className="bg-white rounded-3xl mx-auto max-sm:w-11/12 w-7/12 max-[1185px]:w-10/12 shadow-xl h-fit p-6 m-10 relative | before:absolute before:-inset-[2px] before:bg-gradient-to-br before:from-[#0073D2] before:from-35% before:to-[#E11AA5] before:to-[52%] before:-z-20 before:rounded-[calc(1.5rem+2px)]">
             <div className="font-semibold text-2xl text-center">Login</div>
             <p className="text-gray-500 text-center mt-1 text-md mb-6">
               Just bear with us, its gonna be worth!
