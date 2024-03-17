@@ -10,6 +10,7 @@ import "swiper/css/scrollbar";
 import { Pagination, Autoplay } from "swiper/modules";
 import Lottie from "lottie-react";
 import animationData from "../../public/animate.json";
+import Link from "next/link";
 const data = [
   {
     quote:
@@ -23,7 +24,7 @@ const data = [
   },
   {
     quote:
-      "“Im the Best Developer”",
+      "“Pehle kaam phir maam”",
     author: "Varad",
   },
   {
@@ -55,9 +56,9 @@ export default function Home() {
           <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vrNigga.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
             <div className="justify-between flex items-center">
               <div>
-                <a href="#">
+                <Link href="/">
                   <img src="/thinQ.png" alt="" />
-                </a>
+                </Link>
               </div>
               <div className="md:hidden" onClick={handleClick}>
                 {isNavOpen ? (
@@ -103,11 +104,11 @@ export default function Home() {
 
           <div className="text-white p-[24px] rounded-3xl bg-secondary relative isolate overflow-clip lg:z-0 lg:col-start-3 lg:col-span-2 lg:row-start-1 lg:row-span-2">
             <nav className="max-md:hidden flex justify-end items-center gap-6 max-sm:hidden">
-              <a href="">Features</a>
-              <a href="">Contact</a>
-              <a href="/login" className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em] cursor-pointer">
+              <Link href="">Features</Link>
+              <Link href="">Contact</Link>
+              <Link href="/login" className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em] cursor-pointer">
                 Sign in
-              </a>
+              </Link>
             </nav>
             <p className="text-[2.39rem] sm:text-6xl font-bold mt-6">
               Monitor, Work, Slack Repeat
