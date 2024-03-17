@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import { Space_Grotesk } from 'next/font/google'
+import Footer from "./components/Footer";
 const spaceG = Space_Grotesk(
 	{subsets: ["latin"], display: "swap"},
 );
@@ -16,6 +17,7 @@ export default function RootLayout({children}: Readonly<{
 		<html lang="en" className={spaceG.className}>
 			<body>
 				{children}
+				<Footer />
 			</body>
 		</html>
 	);

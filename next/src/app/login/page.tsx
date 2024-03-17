@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Image from "next/image";
 const page = () => {
   return (
-    <section className="h-screen">
+    <section className="h-[122vh]">
       <Navbar item1="Features" item2="Contact" item3="" specialitem="Log in" />
       <Marquee
         autoFill
