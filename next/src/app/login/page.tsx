@@ -67,7 +67,7 @@ const page = () => {
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
                   placeholder="Choose a Strong Password"
                 />
-                <button className="bg-gradient-to-b from-blue-400 hover:scale-105 transition-all to-blue-500 hover:shadow-2xl ease-in-out text-white rounded-md px-2 py-4 mt-4">
+                <button className="bg-gradient-to-b from-blue-400 hover:scale-105 transition-all font-bold text-lg to-blue-500 hover:shadow-2xl ease-in-out text-white rounded-md px-2 py-4 mt-4">
                   Log in
                 </button>
               </div>

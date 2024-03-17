@@ -157,4 +157,8 @@ img, picture, video, canvas, svg {
   background-image: linear-gradient(135deg,#0073D2 35%, #E11AA5 52%);
 } */
 
+.footer{
+  background: rgba(255, 255, 255, 0.534);
+backdrop-filter: blur(10px);  
+}
 

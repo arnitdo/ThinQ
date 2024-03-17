@@ -41,7 +41,7 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
                 initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 180 }}
                 exit={{ opacity: 0 }}
-                className="md:hidden bg-black backdrop-blur-md z-10 bg-opacity-70 absolute w-10/12 rounded-xl max-[438px]:-ml-2 h-fit"
+                className="md:hidden bg-black backdrop-blur-md z-10 bg-opacity-70 absolute w-[91.333333%] rounded-xl max-[438px]:-ml-2 h-fit"
               >
                 <div className="text-center text-white p-6 text-md">{item1}</div>{" "}
                 <div className="text-center p-6 text-white text-md">{item2}</div>

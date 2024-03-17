@@ -72,7 +72,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: -30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="md:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-10/12 rounded-xl max-[438px]:-ml-2 h-fit"
+                className="md:hidden bg-black backdrop-blur-md bg-opacity-60 absolute w-[91%] rounded-xl max-[438px]:-ml-2 h-fit"
               >
                 <div className="text-center p-6 text-md">Features</div>{" "}
                 <div className="text-center p-6 text-md">Contact</div>
