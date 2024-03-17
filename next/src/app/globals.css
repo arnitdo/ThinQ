@@ -116,6 +116,34 @@ img, picture, video, canvas, svg {
   border-radius: 6px; /* roundness of the thumb */
 }
 
+.bluegrad{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  z-index: -1;
+  filter: blur(100px);
 
+  background: #dc18a1c0;
+  top: 40rem;
+  left: 32rem;
+}
+.pinkgrad{
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  z-index: -1;
+filter: blur(100px);
+background: #3382C2;
+
+ 
+}
+.shadowph{
+ filter: drop-shadow(24px 20px 34px rgba(0, 0, 0, 0.562));
+ transition: all 0.2s ease-in-out;
+ 
+}
+.shadowph:hover{
+  filter: drop-shadow(4px 20px 24px rgba(0, 0, 0, 0.329));
+ }
 
 

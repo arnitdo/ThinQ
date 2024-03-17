@@ -1,6 +1,7 @@
 import React from "react";
 import Marquee from "react-fast-marquee";
 import Navbar from "../components/Navbar";
+import Image from "next/image";
 const page = () => {
   return (
     <section className="h-screen">
@@ -12,15 +13,17 @@ const page = () => {
         className="opacity-10 text-8xl -z-10 overflow-hidden absolute max-sm:text-6xl select-none font-semibold"
       >
         <img src="/diamond.png" alt="" />
-        <div className="mx-4">MONITOR</div>
+        <div className="mx-4 overflow-hidden">MONITOR</div>
         <img src="/diamond.png" alt="" />
-        <div className="mx-4">WORK</div>
+        <div className="mx-4 overflow-hidden">WORK</div>
         <img src="/diamond.png" alt="" />
-        <div className="mx-4">SLACK</div>
+        <div className="mx-4 overflow-hidden">SLACK</div>
         <img src="/diamond.png" alt="" />
-        <div className="mx-4">REPEAT</div>
+        <div className="mx-4 overflow-hidden">REPEAT</div>
       </Marquee>
-      <div className="flex w-full max-md:flex-col">
+      <div className="bluegrad max-sm:-ml-96"></div>
+      <div className="pinkgrad "></div>
+      <div className="flex w-full max-md:flex-col ">
         <div className=" w-6/12 max-md:w-full items-center justify-center">
           <div className="bg-white rounded-3xl mx-auto max-sm:w-11/12 z-10 w-7/12 max-[1185px]:w-10/12 shadow-xl h-fit p-6 border-rose-600 border m-10">
             <div className="font-semibold text-2xl text-center">Login</div>
@@ -71,7 +74,9 @@ const page = () => {
             </form>
           </div>
         </div>
-        <div>Hello</div>
+        <div>
+          <Image src="/Iphone.png" alt="iphone" width={269.4} height={583} className="absolute -mt-4 max-md:hidden ml-32 max-sm:ml-6 overflow-x-hidden shadowph" />
+          <Image src="/Landing 1.png" alt="nothing" height={720} width={1000} className="mt-32 -z-10 absolute overflow-x-hidden max-md:hidden right-0"/></div>
       </div>
     </section>
   );
