@@ -157,8 +157,29 @@ img, picture, video, canvas, svg {
   background-image: linear-gradient(135deg,#0073D2 35%, #E11AA5 52%);
 } */
 
-.footer{
+.footer {
   background: rgba(255, 255, 255, 0.534);
-backdrop-filter: blur(10px);  
+  backdrop-filter: blur(10px);
 }
+
+/* .meetTheTeam {
+  display: hidden;
+  opacity: 0;
+  transform: translateY(-2rem);
+}
+@container (min-width: 404px) {
+  .meetTheTeam {
+    animation: meetTheTeam 1s ease-in forwards;
+  }
+
+}
+@keyframes meetTheTeam {
+  0% {
+    display: block;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} */
 

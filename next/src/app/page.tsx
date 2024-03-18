@@ -123,7 +123,39 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="text-white p-[12px] rounded-3xl bg-gradient-to-b from-[#AEAEAE] to-[#CACACA] shadow-[0_0_14px_hsl(0,0%,0%,25%)_inset] grid grid-cols-[repeat(auto-fit,minmax(92px,1fr))] place-items-center gap-[12px]">
+
+          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20">
+            <Lottie animationData={animationData}/>
+            <p className="text-white font-bold text-center text-xl">Bridging the gap between the students and the teachers</p>
+          </div>
+
+          <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              
+              // pagination={true}
+              draggable={true}
+              autoplay={{
+                delay: 2300,
+                disableOnInteraction: false,
+              }}
+              loop={true}
+              spaceBetween={500}
+              slidesPerView={1}
+              onSlideChange={() => console.log("slide change")}
+              onSwiper={(swiper) => console.log(swiper)}
+              className="h-full w-full mySwiper flex justify-center items-center cursor-grab active:cursor-grabbing"
+            >
+              {data.map((item, index) => (
+                <SwiperSlide key={index} className="mx-auto text-center items-center justify-center my-auto">
+                  <div className="text-center text-3xl">{item.quote}</div>{" "}
+                  <p className="mt-2 text-gray-400">~ {item.author}</p>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+          
+          <div className="text-white p-[12px] rounded-3xl bg-gradient-to-b from-[#AEAEAE] to-[#CACACA] shadow-[0_0_14px_hsl(0,0%,0%,25%)_inset] grid grid-cols-[repeat(auto-fit,minmax(92px,1fr))] grid-rows-[auto] place-items-center gap-[12px] lg:row-start-3 lg:col-start-3 @container"> {/*428*/}
             <a href="" className="grid rounded-xl overflow-clip">
               <img
                 src="/varad.png"
@@ -184,39 +216,8 @@ export default function Home() {
                 Milind
               </p>
             </a>
+            <p className="hidden | @[404px]:block @[508px]:row-start-1 @[508px]:col-span-full text-3xl font-[500] col-start-2 row-start-1 col-span-2 text-center">Meet the Team</p>
           </div>
-
-          <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#EDDE09] to-[#B6AA0B] lg:col-start-4 lg:row-start-2 lg:row-span-2 lg:z-20">
-            <Lottie animationData={animationData}/>
-            <p className="text-white font-bold text-center text-xl">Bridging the gap between the students and the teachers</p>
-          </div>
-
-          <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
-            <Swiper
-              modules={[Autoplay, Pagination]}
-              
-              // pagination={true}
-              draggable={true}
-              autoplay={{
-                delay: 2300,
-                disableOnInteraction: false,
-              }}
-              loop={true}
-              spaceBetween={500}
-              slidesPerView={1}
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
-              className="h-full w-full mySwiper flex justify-center items-center"
-            >
-              {data.map((item, index) => (
-                <SwiperSlide key={index} className="mx-auto text-center items-center justify-center my-auto">
-                  <div className="text-center text-3xl">{item.quote}</div>{" "}
-                  <p className="mt-2 text-gray-400">~ {item.author}</p>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-          
           {/* <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2"></div> */}
           <div className="ignoreThisDiv gapOverlap hidden | lg:block absolute col-start-4 row-start-2 col-span-1 row-span-1 -inset-[1.75rem] bg-white z-10"></div>
           <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-4 col-span-1 bg-[radial-gradient(circle_at_0_0,#F722B7_1.75rem,white_calc(1.75rem+1px))]"></div>

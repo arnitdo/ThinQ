@@ -12,6 +12,7 @@
     "@mediapipe/tasks-vision": "^0.10.12",
     "@prisma/adapter-pg": "^5.11.0",
     "@prisma/client": "^5.11.0",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/pg": "^8.11.2",
