@@ -1,15 +1,15 @@
-import {withMiddlewares} from "@/util/middleware";
-import {CreateOrganizationBody, NoParams} from "@/util/api/api_requests";
-import {requireBodyParams, validateBodyParams} from "@/util/middleware/helpers";
-import {CreateOrgBodyServerValidator} from "@/util/validators/server";
+import { withMiddlewares } from "@/util/middleware";
+import { CreateOrganizationBody, NoParams } from "@/util/api/api_requests";
+import { requireBodyParams, validateBodyParams } from "@/util/middleware/helpers";
+import { CreateOrgBodyServerValidator } from "@/util/validators/server";
 import db from "@/util/db";
-import {GetOrgsResponse} from "@/util/api/api_responses";
+import { GetOrgsResponse } from "@/util/api/api_responses";
 
 export const POST = withMiddlewares<NoParams, CreateOrganizationBody, NoParams>(
 	requireBodyParams(["orgId", "orgName"]),
 	validateBodyParams(CreateOrgBodyServerValidator),
 	async (req, res) => {
-		const {orgName, orgId} = req.body
+		const { orgName, orgId } = req.body
 
 		const createdOrg = await db.organization.create({
 			data: {

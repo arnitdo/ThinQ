@@ -1,4 +1,5 @@
 import {
+	AttendanceQueryParams,
 	AuthLoginUserBody,
 	AuthLoginUserParams,
 	AuthSignupUserBody,
@@ -6,11 +7,26 @@ import {
 	ClassroomParams,
 	CreateClassroomBody,
 	CreateLectureBody,
+	CreateNotesBody,
 	CreateOrganizationBody,
+	CreateQuizAttemptBody,
+	CreateQuizBody,
+	CreateQuizQuestionBody,
+	CreateQuizResponseBody,
+	CreateReportTargetBody,
+	CreateTranscriptBody,
+	DeleteEnrollmentQueryParams,
 	EditClassroomBody,
 	EditLectureBody,
 	LectureParams,
-	OrgIdBaseParams
+	NotesParams,
+	OrgIdBaseParams,
+	QuizAttemptParams,
+	QuizParams,
+	QuizQuestionParams,
+	QuizResponseQueryParams,
+	ReportTargetParams,
+	TranscriptParams
 } from "@/util/api/api_requests";
 import {ServerValidator} from "@/util/validators/index";
 import db from "@/util/db";
@@ -45,6 +61,76 @@ export async function lectureExists(lectureId: string){
 	})
 	
 	return lectureExists !== null
+}
+
+export async function transcriptExists(transcriptId: string){
+	const transcriptExists = await db.lectureTranscript.findFirst({
+		where: {
+			transcriptId: transcriptId
+		}
+	})
+
+	return transcriptExists !== null
+}
+
+export async function quizExists(quizId: string){
+	const quizExists = await db.quiz.findFirst({
+		where: {
+			quizId: quizId
+		}
+	})
+
+	return quizExists !== null
+}
+
+export async function userExists(userId: string){
+	const userExists = await db.user.findFirst({
+		where: {
+			userId: userId
+		}
+	})
+
+	return userExists !== null
+}
+
+export async function quizQuestionExists(questionId: string) {
+	const questionExists = await db.quizQuestion.findFirst({
+		where: {
+			questionId: questionId
+		}
+	})
+
+	return questionExists !== null
+}
+
+export async function quizAttemptExists(id: string) {
+	const attemptExists = await db.quizAttempt.findFirst({
+		where: {
+			attemptId: id
+		}
+	})
+
+	return attemptExists !== null
+}
+
+export async function notesExists(notesId: string) {
+	const notesExists = await db.notes.findFirst({
+		where: {
+			notesId: notesId
+		}
+	})
+
+	return notesExists !== null
+}
+
+export async function reportTargetExists(id: string) {
+	const reportTargetExists = await db.reportTarget.findFirst({
+		where: {
+			reportTargetId: id
+		}
+	})
+
+	return reportTargetExists !== null
 }
 
 export const CreateOrgBodyServerValidator: ServerValidator<CreateOrganizationBody> = {
@@ -139,4 +225,109 @@ export const LectureParamServerValidator: ServerValidator<LectureParams> = {
 	orgId: orgExists,
 	classroomId: classroomExists,
 	lectureId: lectureExists
+}
+
+export const CreateTranscriptBodyServerValidator: ServerValidator<CreateTranscriptBody> = {
+	transcriptText: async(text: string) => {
+		return text.length > 0
+	}
+}
+
+export const TranscriptParamServerValidator: ServerValidator<TranscriptParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	lectureId: lectureExists,
+	transcriptId: transcriptExists
+}
+
+export const AttendanceQueryParamServerValidator: ServerValidator<AttendanceQueryParams> = {
+	userId: userExists
+}
+
+export const EnrollmentQueryParamServerValidator: ServerValidator<AttendanceQueryParams> = {
+	userId: userExists
+}
+
+export const DeleteEnrollmentQueryParamServerValidator: ServerValidator<DeleteEnrollmentQueryParams> = {
+	classroomId: classroomExists
+}
+
+export const CreateQuizBodyServerValidator: ServerValidator<CreateQuizBody> = {
+	quizName: async(text: string) => {
+		return text.length > 0
+	}
+}
+
+export const QuizParamServerValidator: ServerValidator<QuizParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	lectureId: lectureExists,
+	quizId: quizExists
+}
+
+export const CreateQuizQuestionBodyServerValidator: ServerValidator<CreateQuizQuestionBody> = {
+	questionText: async(text: string) => {
+		return text.length > 0
+	},
+	questionOptions: async(options: string[]) => {
+		return options.length === 4
+	},
+	questionAnswerIndex: async(index: number) => {
+		return index >= 0 && index < 4
+	}
+}
+
+export const QuizQuestionParamServerValidator: ServerValidator<QuizQuestionParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	lectureId: lectureExists,
+	quizId: quizExists,
+	questionId: quizQuestionExists
+}
+
+export const CreateQuizAttemptBodyServerValidator: ServerValidator<CreateQuizAttemptBody> = {
+	attemptTimestamp: async (date: string | number | Date) => {
+		return typeof (new Date(date)) === "object"
+	},
+}
+
+export const QuizAttemptParamServerValidator: ServerValidator<QuizAttemptParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	lectureId: lectureExists,
+	quizId: quizExists,
+	attemptId: quizAttemptExists
+}
+
+export const CreateQuizResponseBodyServerValidator: ServerValidator<CreateQuizResponseBody> = {
+	responseAccuracy: async(accuracy: number) => {
+		return accuracy >= 0 && accuracy <= 1
+	}
+}
+
+export const QuizResponseQueryServerValidator: ServerValidator<QuizResponseQueryParams> = {
+	questionId: quizQuestionExists
+}
+
+export const CreateNotesBodyServerValidator: ServerValidator<CreateNotesBody> = {
+	notesContent: async(text: string) => {
+		return text.length > 0
+	}
+}
+
+export const NotesParamServerValidator: ServerValidator<NotesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	lectureId: lectureExists,
+	notesId: notesExists
+}
+
+export const CreateReportTargetBodyServerValidator: ServerValidator<CreateReportTargetBody> = {
+	reportTargetEmail: async (text: string) => {
+		return text.length > 0
+	},
+}
+
+export const ReportTargetParamsServerValidator: ServerValidator<ReportTargetParams> = {
+	reportTargetId: reportTargetExists
 }

@@ -53,3 +53,104 @@ export type LectureParams = {
 	classroomId: string,
 	lectureId: string
 }
+
+export type CreateTranscriptBody = {
+	transcriptText : string
+}
+
+export type TranscriptParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	transcriptId: string
+}
+
+export type EditTranscriptBody = CreateTranscriptBody
+
+export type TranscriptParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	transcriptId: string
+}
+
+
+export type AttendanceQueryParams = {
+	userId: string
+}
+
+export type EnrollmentQueryParams = {
+	userId: string
+}
+
+export type DeleteEnrollmentQueryParams = {
+	classroomId: string
+}
+
+export type CreateQuizBody = {
+	quizName : string
+}
+
+export type QuizParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	quizId: string
+}
+
+export type CreateQuizQuestionBody = {
+	questionText: string
+	questionOptions: string[]
+	questionAnswerIndex: number
+}
+
+export type QuizQuestionParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	quizId: string,
+	questionId: string
+}
+
+export type CreateQuizAttemptBody = {
+	attemptTimestamp: string | number | Date
+}
+
+export type QuizAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	quizId: string,
+	attemptId: string
+}
+
+export type CreateQuizResponseBody = {
+	responseContent: string | null
+	responseAccuracy: number
+}
+
+export type QuizResponseQueryParams = {
+	questionId: string
+}
+
+export type CreateNotesBody = {
+	notesContent: string
+	notesTitle?: string
+}
+
+export type NotesParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	notesId: string
+}
+
+export type EditNotesBody = CreateNotesBody
+
+export type CreateReportTargetBody = {
+	reportTargetEmail: string
+}
+
+export type ReportTargetParams = {
+	reportTargetId: string,
+}

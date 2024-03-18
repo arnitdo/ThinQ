@@ -87,6 +87,8 @@ model Lecture {
   lectureClassroom      Classroom           @relation(fields: [lectureClassroomId], references: [classroomId])
   lectureAttendance     LectureAttendance[]
   lectureTranscripts    LectureTranscript[]
+  lectureQuiz           Quiz[]
+  notes              Notes[]
 
   @@id([lectureId])
 }
@@ -112,6 +114,8 @@ model LectureTranscript {
 model Quiz {
   quizId        String         @default(uuid())
   quizName      String
+  lectureId     String
+  quizLecture   Lecture        @relation(fields: [lectureId], references: [lectureId])
   quizQuestions QuizQuestion[]
   quizAttempts  QuizAttempt[]
 
@@ -152,7 +156,7 @@ model QuizResponse {
   responseContent   String
   responseAccuracy  Float
 
-  @@id([attemptId])
+  @@id([responseId])
 }
 
 model QuizReport {
@@ -163,6 +167,15 @@ model QuizReport {
   @@id([reportId])
 }
 
+model Notes{
+  notesId    String @default(uuid())
+  notesContent  String
+  notesTitle String
+  lectureId String
+  notesLecture Lecture @relation(fields: [lectureId], references: [lectureId])
+
+  @@id([notesId])
+}
 // S3 Section
 enum S3RequestMethod {
   GET
