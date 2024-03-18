@@ -1,27 +1,26 @@
 import type {MaamRequest} from "@/util/api/api_meta";
 
 export type ClientValidatorFunction<DataT> = (
-	(() => (Promise<boolean> | boolean)) |
-	((value: DataT) => (Promise<boolean> | boolean))
+	(() => boolean) |
+	((value: DataT) => boolean)
 )
 
 export type ClientValidator<DataT extends {} = {}> = {
 	[dataKey in keyof DataT]?: ClientValidatorFunction<DataT[dataKey]>
 }
 
-export async function applyClientValidation<ObjectT extends {} = {}>(targetObj: ObjectT, objValidators: ClientValidator<ObjectT>): Promise<(keyof ObjectT)[]>{
+export function applyClientValidation<ObjectT extends {} = {}>(targetObj: ObjectT, objValidators: ClientValidator<ObjectT>): (keyof ObjectT)[] {
 	const validatorKeys = Object.keys(objValidators) as (keyof ObjectT)[]
-	const validationResults = await Promise.all(
-		validatorKeys.map(async (validatorKey) => {
-			const objectValue = targetObj[validatorKey]
-			const validatorFunction = objValidators[validatorKey]!
-			const validationResult = await validatorFunction(objectValue)
-			if (validationResult){
-				return undefined
-			}
-			return validatorKey
-		})
-	)
+	const validationResults = validatorKeys.map((validatorKey) => {
+		const objectValue = targetObj[validatorKey]
+		const validatorFunction = objValidators[validatorKey]!
+		const validationResult = validatorFunction(objectValue)
+		if (validationResult){
+			return undefined
+		}
+		return validatorKey
+	})
+
 
 	const filteredValidationResults = validationResults.filter((valResult) => {
 		return valResult !== undefined

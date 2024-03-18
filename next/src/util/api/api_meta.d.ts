@@ -1,7 +1,7 @@
 import type {NextRequest} from "next/server";
 import type {AuthUser} from "@/util/middleware/auth";
 
-type StatusCode = 200 | 400 | 401 | 403 | 404 | 500
+export type StatusCode = 200 | 400 | 401 | 403 | 404 | 500
 export type ResponseStatus = ResponseJSON["responseStatus"]
 
 // https://nextjs.org/docs/app/building-your-application/routing/route-handlers#supported-http-methods

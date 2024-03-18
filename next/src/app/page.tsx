@@ -1,8 +1,7 @@
 "use client";
-import { useState } from "react";
-import "./globals.css";
-import { motion } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
+import {useState} from "react";
+import {motion} from "framer-motion";
+import {Swiper, SwiperSlide} from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -98,7 +97,7 @@ export default function Home() {
             </p>
             <button className="bg-white text-[#276597] px-[1.25em] py-[0.625em] rounded-[2.5em] hover:bg-transparent hover:text-white hover:border transition-all ease-in-out delay-75">
               <a href="/login"> Get Started</a>
-             
+
             </button>
           </div>
 
@@ -132,7 +131,7 @@ export default function Home() {
           <div className="text-white p-[24px] max-sm:p-[14] h-fit rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2">
             <Swiper
               modules={[Autoplay, Pagination]}
-              
+
               // pagination={true}
               draggable={true}
               autoplay={{
@@ -154,7 +153,7 @@ export default function Home() {
               ))}
             </Swiper>
           </div>
-          
+
           <div className="text-white p-[12px] rounded-3xl bg-gradient-to-b from-[#AEAEAE] to-[#CACACA] shadow-[0_0_14px_hsl(0,0%,0%,25%)_inset] grid grid-cols-[repeat(auto-fit,minmax(92px,1fr))] grid-rows-[auto] place-items-center gap-[12px] lg:row-start-3 lg:col-start-3 @container"> {/*428*/}
             <a href="" className="grid rounded-xl overflow-clip">
               <img
