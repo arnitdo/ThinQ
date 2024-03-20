@@ -1,15 +1,21 @@
-import { withMiddlewares } from "@/util/middleware";
-import { ClassroomParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireURLParams, validateURLParams } from "@/util/middleware/helpers";
-import { ClassroomParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {ClassroomParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireURLParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {ClassroomParamServerValidator} from "@/util/validators/server";
 import db from "@/util/db";
-import { GetClassroomAttendanceResponse } from "@/util/api/api_responses";
-import { LectureAttendance } from "@prisma/client";
+import {GetClassroomAttendanceResponse} from "@/util/api/api_responses";
+import {LectureAttendance} from "@prisma/client";
 
 export const GET = withMiddlewares<ClassroomParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Student", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Student", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId"]),
 	validateURLParams(ClassroomParamServerValidator),
 	async (req, res) => {

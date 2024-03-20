@@ -1,14 +1,26 @@
-import { withMiddlewares } from "@/util/middleware";
-import { AttendanceQueryParams, LectureParams, NoParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireQueryParams, requireURLParams, validateQueryParams, validateURLParams } from "@/util/middleware/helpers";
-import { AttendanceQueryParamServerValidator, LectureParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {AttendanceQueryParams, LectureParams, NoParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireQueryParams,
+	requireURLParams,
+	validateQueryParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {
+	AttendanceQueryParamServerValidator,
+	LectureParamServerValidator,
+	matchUserOrgWithParamsOrg
+} from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedAttendanceResponse, GetLectureAttendanceResponse } from "@/util/api/api_responses";
+import {DeletedAttendanceResponse, GetLectureAttendanceResponse} from "@/util/api/api_responses";
 
 export const HEAD = withMiddlewares<LectureParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Student"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId"]),
 	validateURLParams(LectureParamServerValidator),
 	async (req, res) => {
@@ -39,7 +51,7 @@ export const HEAD = withMiddlewares<LectureParams>(
 export const GET = withMiddlewares<LectureParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Student", "Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Student", "Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId"]),
 	validateURLParams(LectureParamServerValidator),
 	async (req, res) => {
@@ -63,7 +75,7 @@ export const GET = withMiddlewares<LectureParams>(
 export const DELETE = withMiddlewares<LectureParams, NoParams, AttendanceQueryParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId"]),
 	requireQueryParams(["userId"]),
 	validateURLParams(LectureParamServerValidator),

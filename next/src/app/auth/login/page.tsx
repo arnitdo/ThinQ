@@ -1,7 +1,8 @@
 import React from "react";
 import Marquee from "react-fast-marquee";
-import Navbar from "../components/Navbar";
+import Navbar from "../../../components/Navbar";
 import Image from "next/image";
+
 const page = () => {
   return (
     <section className="h-[122vh]">

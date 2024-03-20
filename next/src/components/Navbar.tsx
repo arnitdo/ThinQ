@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
-import "../globals.css";
-import { useState } from "react";
+import React, {useState} from "react";
+import "../app/globals.css";
 import {motion} from "framer-motion";
+
 const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, item3: any, specialitem: any}) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const handleClick = () => {
@@ -11,7 +11,7 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
   return (
     <div className="px-10 max-sm:px-4">
       <div className="w-full bg-white border border-[#8C8C8C] rounded-3xl p-4 mt-6 flex justify-between items-center shadow-xl mb-4">
-        <a href="/">
+        <a href="/next/public">
           <img src="/thinQ_black.png" alt="" />
         </a>
         <div className="flex space-x-6 items-center max-md:hidden">
@@ -31,9 +31,9 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
         
       <div className="md:hidden" onClick={handleClick}>
             {isNavOpen ? (
-                  <img src="/cross.png" alt=""  className="invert opacity-60" />
+                  <img src="/cross.png" alt="" className="invert opacity-60" />
                 ) : (
-                  <img src="/grid.png" alt=""  className="invert opacity-60" />
+                  <img src="/grid.png" alt="" className="invert opacity-60" />
                 )}
         </div>
         {isNavOpen && (

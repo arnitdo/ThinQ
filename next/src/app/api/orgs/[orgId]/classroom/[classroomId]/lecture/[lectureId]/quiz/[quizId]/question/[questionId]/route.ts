@@ -1,14 +1,26 @@
-import { withMiddlewares } from "@/util/middleware";
-import { CreateQuizQuestionBody, QuizQuestionParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireBodyParams, requireURLParams, validateBodyParams, validateURLParams } from "@/util/middleware/helpers";
-import { CreateQuizQuestionBodyServerValidator, QuizQuestionParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {CreateQuizQuestionBody, QuizQuestionParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireBodyParams,
+	requireURLParams,
+	validateBodyParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {
+	CreateQuizQuestionBodyServerValidator,
+	matchUserOrgWithParamsOrg,
+	QuizQuestionParamServerValidator
+} from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedQuizQuestionResponse, GetQuizQuestionResponse } from "@/util/api/api_responses";
+import {DeletedQuizQuestionResponse, GetQuizQuestionResponse} from "@/util/api/api_responses";
 
 export const PUT = withMiddlewares<QuizQuestionParams, CreateQuizQuestionBody>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "quizId", "questionId"]),
 	validateURLParams(QuizQuestionParamServerValidator),
 	requireBodyParams(["questionAnswerIndex", "questionOptions", "questionText"]),
@@ -56,7 +68,7 @@ export const GET = withMiddlewares<QuizQuestionParams>(
 export const DELETE = withMiddlewares<QuizQuestionParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "quizId", "questionId"]),
 	validateURLParams(QuizQuestionParamServerValidator),
 	async (req, res) => {

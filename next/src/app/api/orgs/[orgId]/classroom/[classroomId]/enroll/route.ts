@@ -1,14 +1,26 @@
-import { withMiddlewares } from "@/util/middleware";
-import { ClassroomParams, EnrollmentQueryParams, NoParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireQueryParams, requireURLParams, validateQueryParams, validateURLParams } from "@/util/middleware/helpers";
-import { ClassroomParamServerValidator, EnrollmentQueryParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {ClassroomParams, EnrollmentQueryParams, NoParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireQueryParams,
+	requireURLParams,
+	validateQueryParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {
+	ClassroomParamServerValidator,
+	EnrollmentQueryParamServerValidator,
+	matchUserOrgWithParamsOrg
+} from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedEnrollmentResponse, GetEnrollmentsResponse } from "@/util/api/api_responses";
+import {DeletedEnrollmentResponse, GetEnrollmentsResponse} from "@/util/api/api_responses";
 
 export const HEAD = withMiddlewares<ClassroomParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Student"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId"]),
 	validateURLParams(ClassroomParamServerValidator),
 	async (req, res) => {
@@ -50,7 +62,7 @@ export const GET = withMiddlewares<ClassroomParams>(
 export const DELETE = withMiddlewares<ClassroomParams, NoParams, EnrollmentQueryParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId"]),
 	requireQueryParams(["userId"]),
 	validateURLParams(ClassroomParamServerValidator),

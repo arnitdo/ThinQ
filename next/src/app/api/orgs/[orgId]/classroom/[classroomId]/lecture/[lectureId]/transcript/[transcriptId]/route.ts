@@ -1,14 +1,26 @@
-import { withMiddlewares } from "@/util/middleware";
-import { EditTranscriptBody, TranscriptParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireBodyParams, requireURLParams, validateBodyParams, validateURLParams } from "@/util/middleware/helpers";
-import { CreateTranscriptBodyServerValidator, TranscriptParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {EditTranscriptBody, TranscriptParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireBodyParams,
+	requireURLParams,
+	validateBodyParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {
+	CreateTranscriptBodyServerValidator,
+	matchUserOrgWithParamsOrg,
+	TranscriptParamServerValidator
+} from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedTranscriptResponse, GetTrancriptResponse } from "@/util/api/api_responses";
+import {DeletedTranscriptResponse, GetTrancriptResponse} from "@/util/api/api_responses";
 
 export const PUT = withMiddlewares<TranscriptParams, EditTranscriptBody>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "transcriptId"]),
 	validateURLParams(TranscriptParamServerValidator),
 	requireBodyParams(["transcriptText"]),
@@ -57,7 +69,7 @@ export const GET = withMiddlewares<TranscriptParams>(
 export const DELETE = withMiddlewares<TranscriptParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "transcriptId"]),
 	validateURLParams(TranscriptParamServerValidator),
 	async (req, res) => {

@@ -1,3 +1,3 @@
 import type {User} from "@prisma/client"
 
-export type AuthUser = Pick<User, "userId" | "userOrgId" | "userType">
+export type AuthUser = Omit<User, "userPassword">

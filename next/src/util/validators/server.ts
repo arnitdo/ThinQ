@@ -2,8 +2,6 @@ import {
 	AttendanceQueryParams,
 	AuthLoginUserBody,
 	AuthLoginUserParams,
-	AuthSignupUserBody,
-	AuthSignupUserParams,
 	ClassroomParams,
 	CreateClassroomBody,
 	CreateLectureBody,
@@ -15,6 +13,8 @@ import {
 	CreateQuizResponseBody,
 	CreateReportTargetBody,
 	CreateTranscriptBody,
+	CreateUserBody,
+	CreateUserParams,
 	DeleteEnrollmentQueryParams,
 	EditClassroomBody,
 	EditLectureBody,
@@ -32,6 +32,12 @@ import {ServerValidator} from "@/util/validators/index";
 import db from "@/util/db";
 import {IN_ARR, STRLEN_NZ} from "@/util/validators/utils";
 import {UserType} from "@prisma/client";
+import {AuthUser} from "@/util/middleware/auth";
+import {MaamRequest} from "@/util/api/api_meta";
+
+export function matchUserOrgWithParamsOrg(user: AuthUser, req: MaamRequest<OrgIdBaseParams>){
+	return user.userOrgId === req.params.orgId
+}
 
 export async function orgExists(orgId: string){
 	const orgExists = await db.organization.findFirst({
@@ -171,8 +177,8 @@ export const AuthLoginUserBodyServerValidator: ServerValidator<AuthLoginUserBody
 	userPassword: STRLEN_NZ
 }
 
-export const AuthSignupUserParamsServerValidator: ServerValidator<AuthSignupUserParams> = BaseOrgIdParamServerValidator
-export const AuthSignupUserBodyServerValidator: ServerValidator<AuthSignupUserBody, AuthSignupUserParams> = {
+export const AuthSignupUserParamsServerValidator: ServerValidator<CreateUserParams> = BaseOrgIdParamServerValidator
+export const AuthSignupUserBodyServerValidator: ServerValidator<CreateUserBody, CreateUserParams> = {
 	userName: async (userName: string, req) => {
 		const {orgId} = req.params
 

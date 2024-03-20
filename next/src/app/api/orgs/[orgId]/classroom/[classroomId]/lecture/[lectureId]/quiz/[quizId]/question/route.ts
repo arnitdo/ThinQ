@@ -1,14 +1,26 @@
-import { withMiddlewares } from "@/util/middleware";
-import { CreateQuizQuestionBody, QuizParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireBodyParams, requireURLParams, validateBodyParams, validateURLParams } from "@/util/middleware/helpers";
-import { CreateQuizQuestionBodyServerValidator, QuizParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {CreateQuizQuestionBody, QuizParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireBodyParams,
+	requireURLParams,
+	validateBodyParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {
+	CreateQuizQuestionBodyServerValidator,
+	matchUserOrgWithParamsOrg,
+	QuizParamServerValidator
+} from "@/util/validators/server";
 import db from "@/util/db";
-import { GetQuizQuestionsResponse } from "@/util/api/api_responses";
+import {GetQuizQuestionsResponse} from "@/util/api/api_responses";
 
 export const POST = withMiddlewares<QuizParams, CreateQuizQuestionBody>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "quizId"]),
 	validateURLParams(QuizParamServerValidator),
 	requireBodyParams(["questionAnswerIndex", "questionOptions", "questionText"]),

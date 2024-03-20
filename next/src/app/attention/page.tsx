@@ -1,14 +1,7 @@
 "use client";
 
-import Head from "next/head";
-import dynamic from "next/dynamic";
+import FaceLandmarkCanvas from "@/components/FaceLandmarkCanvas";
 
-const FaceLandmarkCanvas = dynamic(
-  () => {
-    return import("../../components/FaceLandmarkCanvas");
-  },
-  { ssr: false }
-);
 
 const page = () => {
   return (

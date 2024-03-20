@@ -1,14 +1,26 @@
-import { withMiddlewares } from "@/util/middleware";
-import { CreateQuizBody, QuizParams } from "@/util/api/api_requests";
-import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireBodyParams, requireURLParams, validateBodyParams, validateURLParams } from "@/util/middleware/helpers";
-import { CreateQuizBodyServerValidator, QuizParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {CreateQuizBody, QuizParams} from "@/util/api/api_requests";
+import {
+	authParser,
+	requireAuthenticatedUser,
+	requireAuthorizedUser,
+	requireBodyParams,
+	requireURLParams,
+	validateBodyParams,
+	validateURLParams
+} from "@/util/middleware/helpers";
+import {
+	CreateQuizBodyServerValidator,
+	matchUserOrgWithParamsOrg,
+	QuizParamServerValidator
+} from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedQuizResponse, GetQuizResponse } from "@/util/api/api_responses";
+import {DeletedQuizResponse, GetQuizResponse} from "@/util/api/api_responses";
 
 export const PUT = withMiddlewares<QuizParams, CreateQuizBody>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "quizId"]),
 	validateURLParams(QuizParamServerValidator),
 	requireBodyParams(["quizName"]),
@@ -54,7 +66,7 @@ export const GET = withMiddlewares<QuizParams>(
 export const DELETE = withMiddlewares<QuizParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: (user, req) => user.userOrgId === req.params.orgId }),
+	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId", "classroomId", "lectureId", "quizId"]),
 	validateURLParams(QuizParamServerValidator),
 	async (req, res) => {

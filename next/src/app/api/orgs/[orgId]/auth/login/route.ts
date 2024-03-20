@@ -6,7 +6,7 @@ import db from "@/util/db";
 import bcrypt from "bcrypt";
 import {AuthUser} from "@/util/middleware/auth";
 import {sign} from "jsonwebtoken";
-import {FALLBACK_JWT_SECRET} from "@/util/constants";
+import {AUTH_COOKIE_NAME, COOKIE_OPTS, FALLBACK_JWT_SECRET} from "@/util/constants";
 
 export const POST = withMiddlewares<AuthLoginUserParams, AuthLoginUserBody>(
 	requireURLParams(["orgId"]),
@@ -37,12 +37,14 @@ export const POST = withMiddlewares<AuthLoginUserParams, AuthLoginUserBody>(
 			const authUser: AuthUser = {
 				userId: fetchedUser.userId,
 				userOrgId: fetchedUser.userOrgId,
-				userType: fetchedUser.userType
+				userType: fetchedUser.userType,
+				userName: fetchedUser.userName,
+				userDisplayName: fetchedUser.userDisplayName
 			}
 
 			const authJWT = sign(authUser, process.env.JWT_SECRET || FALLBACK_JWT_SECRET)
 
-			res.setHeader("Set-Cookie", `auth-token=${authJWT};path=/`)
+			res.setHeader("Set-Cookie", `${AUTH_COOKIE_NAME}=${authJWT}; ${COOKIE_OPTS}`)
 
 			res.status(200).json({
 				responseStatus: "SUCCESS"

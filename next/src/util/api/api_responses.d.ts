@@ -1,5 +1,18 @@
 // Write your API Responses here
-import type {Classroom, ClassroomEnrollment, Lecture, LectureAttendance, LectureTranscript, Notes, Organization, Quiz, QuizAttempt, QuizQuestion, QuizResponse, ReportTarget} from "@prisma/client";
+import type {
+	Classroom,
+	ClassroomEnrollment,
+	Lecture,
+	LectureAttendance,
+	LectureTranscript,
+	Notes,
+	Organization,
+	Quiz,
+	QuizAttempt,
+	QuizQuestion,
+	QuizResponse,
+	ReportTarget
+} from "@prisma/client";
 import {AuthUser} from "@/util/middleware/auth";
 
 export type GetOrgsResponse = {
@@ -13,8 +26,6 @@ export type GetUserResponse = {
 	isAuthenticated: false,
 	authenticatedUser: null
 }
-
-export type AuthSignupUserResponse = {} & AuthUser
 
 export type GetClassroomsResponse = {
 	classrooms: Classroom[]
