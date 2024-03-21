@@ -5,8 +5,8 @@ CORS(app)
 
 import json
 
-@app.route('/s3_upload', methods=['POST'])
-def s3_upload():
+@app.route('/s3_upload_pdf', methods=['POST'])
+def s3_upload_pdf():
     try:
         if not request.is_json:
             return jsonify({'error': 'Request data must be in JSON format'}), 400
@@ -47,6 +47,42 @@ def s3_upload():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/s3_upload_transcript', methods=['POST'])
+def s3_upload_transcript():
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request_data.get('lecture_id')
+        transcript_text = request_data.get('transcript_text')
+        
+        if not organization_id or not class_id or not lecture_id or not transcript_text:
+            return jsonify({'error': 'Missing required data fields'}), 400
+
+        save_dir = f's3/{organization_id}/{class_id}/{lecture_id}/'
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        
+        filename = f'{lecture_id}_transcript.txt'
+        local_file_path = os.path.join(save_dir, filename)
+        with open(local_file_path, 'w') as f:
+            f.write(transcript_text)
+
+        s3_key = f'{organization_id}/{class_id}/{lecture_id}/{filename}'
+        content_type = 'text/plain' 
+        file_content_type = mimetypes.guess_type(filename)[0]
+        if file_content_type:
+            content_type = file_content_type
+        
+        with open(local_file_path, 'rb') as f:
+            s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+        
+        return jsonify({'success': True, 'message': 'Transcript uploaded successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 @app.route('/s3_fetch_files', methods=['POST'])
 def s3_fetch_files():
     try:
@@ -208,8 +244,8 @@ def recommend_yt_videos():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/rag_embed', methods=['POST'])
-def rag_embed():
+@app.route('/rag_embed_pdf', methods=['POST'])
+def rag_embed_pdf():
     try:
         organization_id = request.json['organization_id']
         class_id = request.json['class_id']
@@ -240,8 +276,36 @@ def rag_embed():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/question_rag', methods=['POST'])
-def question_rag():
+@app.route('/rag_embed_transcript', methods=['POST'])
+def rag_embed_transcript():
+    try:
+        organization_id = request.json['organization_id']
+        class_id = request.json['class_id']
+        lecture_id = request.json['lecture_id']
+        
+        local_directory = f's3/{organization_id}/{class_id}/{lecture_id}/'
+        combined_text = ""
+        for filename in os.listdir(local_directory):
+            if filename.endswith('.txt'):
+                with open(os.path.join(local_directory, filename), 'r') as file:
+                    combined_text+=file.read()
+
+        text_chunks = get_text_chunks(combined_text)
+
+        get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
+
+        local_directory = f's3/{organization_id}/{class_id}/{lecture_id}/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'{organization_id}/{class_id}/{lecture_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        return jsonify({'message': 'Text embedded successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/question_rag_pdf', methods=['POST'])
+def question_rag_pdf():
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
@@ -252,8 +316,21 @@ def question_rag():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/get_mcq', methods=['POST'])
-def get_mcq():
+@app.route('/question_rag_transcript', methods=['POST'])
+def question_rag_transcript():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request.json['lecture_id']
+        question = request_data.get('question')
+        answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
+        return jsonify(answer), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/get_mcq_pdf', methods=['POST'])
+def get_mcq_pdf():
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
@@ -282,6 +359,42 @@ def get_mcq():
         Ensure the provided JSON adheres to the defined schema.
         '''.format(no_of_questions,topic)
         answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
+        data = json.loads(cleaned_json_string)
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/get_mcq_transcript', methods=['POST'])
+def get_mcq_transcript():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request_data.get('lecture_id')
+        no_of_questions = request_data.get('no_of_questions')
+        prompt = '''
+        Please provide a JSON with {} generated questions and answers in the following schema:
+
+        {{
+        "questions": [
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 0,
+            }},
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 1,
+            }},
+            // Add more questions as needed
+        ]
+        }}
+
+        Ensure the provided JSON adheres to the defined schema.
+        '''.format(no_of_questions)
+        answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
         return jsonify(data), 200
