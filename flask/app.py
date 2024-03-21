@@ -161,26 +161,6 @@ def send_whatsapp_image():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/attention_detect')
-def attention_detect():
-    def generate_frames():
-        while True:
-            success, frame = camera.read()
-
-            if not success:
-                break
-            else:
-                frame = process_frame(frame)
-                ret, buffer = cv2.imencode('.jpg', frame)
-                frame = buffer.tobytes()
-                yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 @app.route('/recommend_yt_videos', methods=['POST'])
 def recommend_yt_videos():
     topic_name = request.form['topic_name']
