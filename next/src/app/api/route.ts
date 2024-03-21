@@ -4,7 +4,7 @@ export const GET = withMiddlewares(
 	async (req, res) => {
 		res.status(200).json({
 			responseStatus: "SUCCESS",
-			responseTimestamp: new Date().toUTCString()
+			responseTimestamp: new Date().toISOString()
 		})
 	}
 )
