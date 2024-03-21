@@ -3,43 +3,56 @@ from functions import *
 app = Flask(__name__) 
 CORS(app)
 
+import json
+
 @app.route('/s3_upload', methods=['POST'])
 def s3_upload():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
-    files = request.files.getlist('file')
-    organization_id = request.form['organization_id']
-    class_id = request.form['class_id']
     try:
-        for file in files:
-            if file.filename == '':
-                return jsonify({'error': 'No selected file'})     
-            if file:
-                filename = secure_filename(file.filename)
-                content_type = 'application/pdf'
-                file_content_type = mimetypes.guess_type(filename)[0]
-                if file_content_type:
-                    content_type = file_content_type
-                s3_key = f'{organization_id}/{class_id}/{filename}'
+        if not request.is_json:
+            return jsonify({'error': 'Request data must be in JSON format'}), 400
+        request_data = request.get_json()
+        if 'files' not in request_data:
+            return jsonify({'error': 'No files provided'}), 400
+        files = request_data['files']
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        
+        if not organization_id or not class_id:
+            return jsonify({'error': 'Organization ID and Class ID must be provided'}), 400
+        for file_data in files:
+            filename = file_data.get('filename')
+            file_content = file_data.get('content')
+            if not filename or not file_content:
+                return jsonify({'error': 'Invalid file data provided'}), 400
 
-                save_dir = f's3/{organization_id}/{class_id}/'
-                if not os.path.exists(save_dir):
-                    os.makedirs(save_dir)
+            save_dir = f's3/{organization_id}/{class_id}/'
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
                 
-                local_file_path = os.path.join(save_dir, filename)
-                file.save(local_file_path)
+            local_file_path = os.path.join(save_dir, filename)
+            file_content_bytes = base64.b64decode(file_content)
+            with open(local_file_path, 'wb') as f:  
+                f.write(file_content_bytes)  
 
-                with open(local_file_path, 'rb') as f:
-                    s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+            s3_key = f'{organization_id}/{class_id}/{filename}'
+            content_type = 'application/pdf'
+            file_content_type = mimetypes.guess_type(filename)[0]
+            if file_content_type:
+                content_type = file_content_type
+            
+            with open(local_file_path, 'rb') as f:
+                s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+        
         return jsonify({'success': True, 'message': 'Files uploaded successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}) , 500
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/s3_fetch_files', methods=['GET'])
+@app.route('/s3_fetch_files', methods=['POST'])
 def s3_fetch_files():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
+        data = request.get_json()
+        organization_id = data.get('organization_id')
+        class_id = data.get('class_id')
         if not organization_id or not class_id:
             return jsonify({'error': 'Organization ID and class ID are required.'}), 400
         prefix = f'{organization_id}/{class_id}/'
@@ -57,11 +70,13 @@ def s3_fetch_files():
 @app.route('/s3_delete', methods=['DELETE'])
 def s3_delete():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
-        filename = request.form['filename']
+        data = request.get_json()
+        organization_id = data.get('organization_id')
+        class_id = data.get('class_id')
+        filename = data.get('filename')
+        if not organization_id or not class_id or not filename:
+            return jsonify({'error': 'Organization ID, class ID, and filename are required.'}), 400
         s3_key = f'{organization_id}/{class_id}/{filename}'
-        
         s3.delete_object(Bucket=S3_BUCKET, Key=s3_key)
         
         local_file_path = f's3/{organization_id}/{class_id}/{filename}'
@@ -78,9 +93,13 @@ def s3_delete():
 @app.route('/s3_download', methods=['GET'])
 def s3_download():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
-        filename = request.form['filename']
+        data = request.get_json()
+        organization_id = data.get('organization_id')
+        class_id = data.get('class_id')
+        filename = data.get('filename')
+        if not organization_id or not class_id or not filename:
+            return jsonify({'error': 'Organization ID, class ID, and filename are required.'}), 400
+        
         prefix = f'{organization_id}/{class_id}/' + filename
         response = s3.get_object(Bucket=S3_BUCKET, Key=prefix)
         file_content = response['Body'].read()
@@ -88,7 +107,7 @@ def s3_download():
         os.makedirs(save_dir, exist_ok=True) 
         with open(os.path.join(save_dir, filename), 'wb') as f:
             f.write(file_content)
-        return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully {response}'}), 200
+        return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully'}), 200
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
             return jsonify({'error': f'File {filename} not found'}), 400 
@@ -130,16 +149,16 @@ def send_email():
 @app.route('/send_whatsapp_text', methods=['POST'])
 def send_whatsapp_text():
     try:
-        recipient_number = request.form['recipient_number']
-        number = "whatsapp:"+recipient_number
-        message_body = request.form['message_body']
+        data = request.get_json()
+        recipient_number = data.get('recipient_number')
+        number = "whatsapp:" + recipient_number
+        message_body = data.get('message_body')
 
         message = twilio_client.messages.create(
-        from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
-        body=message_body,
-        to=number
+            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
+            body=message_body,
+            to=number
         )
-        
         return jsonify({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -147,10 +166,11 @@ def send_whatsapp_text():
 @app.route('/send_whatsapp_image', methods=['POST'])
 def send_whatsapp_image():
     try:
-        recipient_number = request.form['recipient_number']
-        number = "whatsapp:"+recipient_number
-        image_url = request.form['image_url']
-        caption = request.form['caption']
+        data = request.get_json()
+        recipient_number = data.get('recipient_number')
+        number = "whatsapp:" + recipient_number
+        image_url = data.get('image_url')
+        caption = data.get('caption')
         message = twilio_client.messages.create(
             from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
             body=caption,
@@ -163,38 +183,51 @@ def send_whatsapp_image():
 
 @app.route('/recommend_yt_videos', methods=['POST'])
 def recommend_yt_videos():
-    topic_name = request.form['topic_name']
-    number_of_videos = request.form['number_of_videos']
-    videos = scrapetube.get_search(topic_name)
-    
-    ytvideos = []
-    for video in videos:
-        if len(ytvideos) >= int(number_of_videos):
-            break
-        video_details = {
-            'videoId': video['videoId'],
-            'thumbnail': video['thumbnail']['thumbnails'][0]["url"],  
-            'title': video['title']['runs'][0]['text'],          
-            'link': f"https://www.youtube.com/watch?v={video['videoId']}"
-        }
-        ytvideos.append(video_details)
-    
-    return jsonify({'videos': ytvideos}), 200
+    try:
+        data = request.get_json()
+        topic_name = data.get('topic_name')
+        number_of_videos = data.get('number_of_videos')
+        if not topic_name or not number_of_videos:
+            return jsonify({'error': 'Topic name and number of videos are required.'}), 400
+
+        videos = scrapetube.get_search(topic_name)
+        
+        ytvideos = []
+        for video in videos:
+            if len(ytvideos) >= int(number_of_videos):
+                break
+            video_details = {
+                'videoId': video['videoId'],
+                'thumbnail': video['thumbnail']['thumbnails'][0]["url"],  
+                'title': video['title']['runs'][0]['text'],          
+                'link': f"https://www.youtube.com/watch?v={video['videoId']}"
+            }
+            ytvideos.append(video_details)
+        
+        return jsonify({'videos': ytvideos}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/rag_embed', methods=['POST'])
 def rag_embed():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
-        pdf_files = request.files.getlist('pdf') 
-        all_pdf_text = []
+        organization_id = request.json['organization_id']
+        class_id = request.json['class_id']
+
+        pdf_files_base64 = request.json.get('pdf')
+        if not pdf_files_base64:
+            return jsonify({'error': 'No PDF files provided'}), 400
         
-        for pdf in pdf_files:
-            pdf_text = get_pdf_text(pdf)
+        all_pdf_text = []
+        for pdf_base64 in pdf_files_base64:
+            pdf_bytes = base64.b64decode(pdf_base64)
+            
+            pdf_text = get_pdf_text_from_bytes(pdf_bytes)
             all_pdf_text.append(pdf_text)
 
         combined_text = '\n'.join(all_pdf_text) 
         text_chunks = get_text_chunks(combined_text)
+
         get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/')
 
         local_directory = f's3/{organization_id}/{class_id}/faiss_index/'
@@ -210,9 +243,10 @@ def rag_embed():
 @app.route('/question_rag', methods=['POST'])
 def question_rag():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
-        question = request.form['question']
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        question = request_data.get('question')
         answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
         return jsonify(answer), 200
     except Exception as e:
@@ -221,10 +255,11 @@ def question_rag():
 @app.route('/get_mcq', methods=['POST'])
 def get_mcq():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
-        topic = request.form['topic']
-        no_of_questions = request.form['no_of_questions']
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        topic = request_data.get('topic')
+        no_of_questions = request_data.get('no_of_questions')
         prompt = '''
         Please provide a JSON with {} questions and answers of topic {} in the following schema:
 
@@ -275,15 +310,17 @@ def search_images():
 
 @app.route('/transcript_correct_grammar', methods=['POST'])
 def transcript_correct_grammar():
-    transcript = request.form['transcript']
+    request_data = request.get_json()
+    transcript = request_data.get('transcript')
     corrected_text = correct_grammar(transcript)
     return jsonify({"transcript": corrected_text}),200
 
 @app.route('/report_generation', methods=['POST'])
 def report_generation():
     try:
-        file_name = request.form['file_name']
-        html = request.form['html']
+        request_data = request.get_json()
+        file_name = request_data.get('file_name')
+        html = request_data.get('html')
         pdf = convert_html_to_pdf(html)
         if pdf:
             return Response(pdf, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename={file_name}.pdf'}),200

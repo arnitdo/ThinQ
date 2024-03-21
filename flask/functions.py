@@ -7,6 +7,16 @@ def get_pdf_text(pdf_file):
         text += page.extract_text()
     return text
 
+def get_pdf_text_from_bytes(pdf_bytes):
+    text = ""
+    pdf_file = io.BytesIO(pdf_bytes)
+    reader = PdfReader(pdf_file)
+    num_pages = len(reader.pages)
+    for page_num in range(num_pages):
+        page = reader.pages[page_num]
+        text += page.extract_text()
+    return text
+
 def get_text_chunks(text):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=10000, chunk_overlap=1000)
