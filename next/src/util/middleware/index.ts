@@ -33,15 +33,31 @@ export function withMiddlewares<
 	return async function (req, opts = {}){
 		const params = opts.params || {}
 		try {
+			let requestBody: BodyT;
+
+			if (["GET","DELETE","HEAD"].includes(req.method)){
+				if (req.body !== null){
+					try {
+						requestBody = await req.json() as BodyT
+					} catch (e) {
+						requestBody = {} as BodyT
+					}
+				} else {
+					requestBody = {} as BodyT
+				}
+			} else {
+				requestBody = {} as BodyT
+			}
+
+			const requestQuery = Object.fromEntries(req.nextUrl.searchParams.entries()) as QueryT
+
 			const maamRequest: MaamRequest<ParamsT, BodyT, QueryT> = {
 				url: req.url,
 				method: req.method as RequestMethod,
 				params: params as ParamsT,
 				cookies: req.cookies,
-				body: (!["GET","DELETE","HEAD"].includes(req.method)) ?
-					((await req.json()) as BodyT) :
-					({} as BodyT),
-				query: Object.fromEntries(req.nextUrl.searchParams.entries()) as QueryT,
+				body: requestBody,
+				query: requestQuery,
 				user: undefined
 			}
 
