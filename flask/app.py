@@ -3,8 +3,38 @@ from functions import *
 app = Flask(__name__) 
 CORS(app)
 
-import json
+@app.route('/s3_upload_formdata', methods=['POST'])
+def s3_upload_formdata():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+    files = request.files.getlist('file')
+    organization_id = request.form['organization_id']
+    class_id = request.form['class_id']
+    try:
+        for file in files:
+            if file.filename == '':
+                return jsonify({'error': 'No selected file'})     
+            if file:
+                filename = secure_filename(file.filename)
+                content_type = 'application/pdf'
+                file_content_type = mimetypes.guess_type(filename)[0]
+                if file_content_type:
+                    content_type = file_content_type
+                s3_key = f'{organization_id}/{class_id}/{filename}'
 
+                save_dir = f's3/{organization_id}/{class_id}/'
+                if not os.path.exists(save_dir):
+                    os.makedirs(save_dir)
+                
+                local_file_path = os.path.join(save_dir, filename)
+                file.save(local_file_path)
+
+                with open(local_file_path, 'rb') as f:
+                    s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+        return jsonify({'success': True, 'message': 'Files uploaded successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}) , 500
+    
 @app.route('/s3_upload_pdf', methods=['POST'])
 def s3_upload_pdf():
     try:
@@ -244,6 +274,32 @@ def recommend_yt_videos():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/rag_embed_formdata', methods=['POST'])
+def rag_embed_formdata():
+    try:
+        organization_id = request.form['organization_id']
+        class_id = request.form['class_id']
+        pdf_files = request.files.getlist('pdf') 
+        all_pdf_text = []
+        
+        for pdf in pdf_files:
+            pdf_text = get_pdf_text(pdf)
+            all_pdf_text.append(pdf_text)
+
+        combined_text = '\n'.join(all_pdf_text) 
+        text_chunks = get_text_chunks(combined_text)
+        get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/')
+
+        local_directory = f's3/{organization_id}/{class_id}/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'{organization_id}/{class_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        return jsonify({'message': 'Text embedded successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 @app.route('/rag_embed_pdf', methods=['POST'])
 def rag_embed_pdf():
     try:
