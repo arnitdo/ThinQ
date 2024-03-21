@@ -7,7 +7,7 @@ import {
 	requireURLParams,
 	validateURLParams
 } from "@/util/middleware/helpers";
-import {ClassroomParamServerValidator} from "@/util/validators/server";
+import {ClassroomParamServerValidator, matchUserOrgWithParamsOrg} from "@/util/validators/server";
 import db from "@/util/db";
 import {GetClassroomAttendanceResponse} from "@/util/api/api_responses";
 import {LectureAttendance} from "@prisma/client";
