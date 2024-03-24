@@ -98,8 +98,8 @@ const page = () => {
           <main className='py-4' >
             <div className='grid grid-cols-3 gap-3 max-sm:grid-cols-1 max-[1000px]:grid-cols-2'>
             {data.map((item) => (
-                    <div key={item.id} className=' border rounded-[0.5rem] min-h-64'>
-                      <div className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem] from-blue-800 to-blue-950 flex justify-between items-center'>
+                    <div key={item.id} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
+                      <div className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
                       <div className=' px-4 py-3 bg-blue-50 rounded-md'>
                         <h1 className='text-blue-600 font-bold text-xl'>{item.year}</h1>
                       </div>
