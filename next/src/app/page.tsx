@@ -105,6 +105,8 @@ export default function Home() {
             <nav className="max-md:hidden flex justify-end items-center gap-6 max-sm:hidden">
               <Link href="">Features</Link>
               <Link href="">Contact</Link>
+              <Link href="">About</Link>
+
               <Link href="/login" className="bg-white text-black px-[1.25em] py-[0.625em] rounded-[1.625em] cursor-pointer">
                 Sign in
               </Link>

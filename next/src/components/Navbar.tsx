@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import "../app/globals.css";
 import {motion} from "framer-motion";
-
+import Link from "next/link";
 const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, item3: any, specialitem: any}) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const handleClick = () => {
@@ -11,22 +11,25 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
   return (
     <div className="px-10 max-sm:px-4">
       <div className="w-full bg-white border border-[#8C8C8C] rounded-3xl p-4 mt-6 flex justify-between items-center shadow-xl mb-4">
-        <a href="/next/public">
+        <Link href="/">
           <img src="/thinQ_black.png" alt="" />
-        </a>
+        </Link>
         <div className="flex space-x-6 items-center max-md:hidden">
-          <a href="" className="text-[#3D4242]">
-            Features
-          </a>
-          <a href="" className="text-[#3D4242]">
-            Contact
-          </a>
-          <a
-            href="/login"
+          <Link href="" className="text-[#3D4242]">
+            {item1}
+          </Link>
+          <Link href="" className="text-[#3D4242]">
+            {item2}
+          </Link>
+          {item3 && <Link href="" className="text-[#3D4242]">
+            {item3}
+          </Link>}
+          <Link
+            href="/auth/login"
             className="text-white bg-[#3D4242] rounded-full px-4 py-2"
           >
-            Sign in
-          </a>
+            {specialitem}
+          </Link>
         </div>
         
       <div className="md:hidden" onClick={handleClick}>
