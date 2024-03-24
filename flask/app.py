@@ -31,8 +31,10 @@ def s3_upload_formdata():
 
                 with open(local_file_path, 'rb') as f:
                     s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
+        console.log({'message': 'Files uploaded successfully'}, log_locals=True)
         return jsonify({'success': True, 'message': 'Files uploaded successfully'}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}) , 500
     
 @app.route('/s3_upload_pdf', methods=['POST'])
@@ -72,9 +74,10 @@ def s3_upload_pdf():
             
             with open(local_file_path, 'rb') as f:
                 s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
-        
+        console.log({'message': 'Files uploaded successfully'}, log_locals=True)
         return jsonify({'success': True, 'message': 'Files uploaded successfully'}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/s3_upload_transcript', methods=['POST'])
@@ -108,9 +111,10 @@ def s3_upload_transcript():
         
         with open(local_file_path, 'rb') as f:
             s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
-        
+        console.log({'message': 'Transcript uploaded successfully'}, log_locals=True)
         return jsonify({'success': True, 'message': 'Transcript uploaded successfully'}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
     
 @app.route('/s3_fetch_files', methods=['POST'])
@@ -129,8 +133,10 @@ def s3_fetch_files():
                 file_name = obj['Key'].split('/')[-1]
                 object_url = s3.generate_presigned_url('get_object', Params={'Bucket': S3_BUCKET, 'Key': obj['Key']})
                 file_info.append({'file_name': file_name, 'object_url': object_url})
+        console.log({'files': file_info}, log_locals=True)
         return jsonify(file_info), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
     
 @app.route('/s3_delete', methods=['DELETE'])
@@ -148,12 +154,14 @@ def s3_delete():
         local_file_path = f's3/{organization_id}/{class_id}/{filename}'
         if os.path.exists(local_file_path):
             os.remove(local_file_path)
-        
+        console.log({'message': f'File {filename} deleted successfully'}, log_locals=True)
         return jsonify({'success': True, 'message': f'File {filename} deleted successfully'}), 200
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
+            console.log({'error': f'File {filename} not found'}, log_locals=True)
             return jsonify({'error': f'File {filename} not found'}), 400
         else:
+            console.log({'error': str(e)}, log_locals=True)
             return jsonify({'error': str(e)}), 500
 
 @app.route('/s3_download', methods=['GET'])
@@ -173,11 +181,14 @@ def s3_download():
         os.makedirs(save_dir, exist_ok=True) 
         with open(os.path.join(save_dir, filename), 'wb') as f:
             f.write(file_content)
+        console.log({'message': f'File {filename} downloaded and saved successfully'}, log_locals=True)
         return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully'}), 200
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "NoSuchKey":
+            console.log({'error': f'File {filename} not found'}, log_locals=True)
             return jsonify({'error': f'File {filename} not found'}), 400 
         else:
+            console.log({'error': str(e)}, log_locals=True)
             return jsonify({'error': str(e)}), 500 
 
 @app.route('/send_email', methods=['POST'])
@@ -208,8 +219,10 @@ def send_email():
             },
             Source=sender_email,
         )
+        console.log({'message': 'Email sent successfully'}, log_locals=True)
         return jsonify({'message': 'Email sent successfully'}), 200
     except ClientError as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/send_whatsapp_text', methods=['POST'])
@@ -225,8 +238,10 @@ def send_whatsapp_text():
             body=message_body,
             to=number
         )
+        console.log({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}, log_locals=True)
         return jsonify({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/send_whatsapp_image', methods=['POST'])
@@ -243,8 +258,10 @@ def send_whatsapp_image():
             media_url=[image_url],
             to=number
         )
+        console.log({'message': 'WhatsApp message with image sent successfully', 'message_sid': message.sid}, log_locals=True)
         return jsonify({'message': 'WhatsApp message with image sent successfully', 'message_sid': message.sid}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/recommend_yt_videos', methods=['POST'])
@@ -269,9 +286,10 @@ def recommend_yt_videos():
                 'link': f"https://www.youtube.com/watch?v={video['videoId']}"
             }
             ytvideos.append(video_details)
-        
+        console.log({'videos': ytvideos}, log_locals=True)
         return jsonify({'videos': ytvideos}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/rag_embed_formdata', methods=['POST'])
@@ -296,8 +314,10 @@ def rag_embed_formdata():
                 s3_key = f'{organization_id}/{class_id}/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        console.log({'message': 'Text embedded successfully'}, log_locals=True) 
         return jsonify({'message': 'Text embedded successfully'}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
     
 @app.route('/rag_embed_pdf', methods=['POST'])
@@ -328,8 +348,10 @@ def rag_embed_pdf():
                 s3_key = f'{organization_id}/{class_id}/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        console.log({'message': 'Text embedded successfully'}, log_locals=True) 
         return jsonify({'message': 'Text embedded successfully'}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/rag_embed_transcript', methods=['POST'])
@@ -356,8 +378,10 @@ def rag_embed_transcript():
                 s3_key = f'{organization_id}/{class_id}/{lecture_id}/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        console.log({'message': 'Text embedded successfully'}, log_locals=True) 
         return jsonify({'message': 'Text embedded successfully'}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/question_rag_pdf', methods=['POST'])
@@ -368,8 +392,10 @@ def question_rag_pdf():
         class_id = request_data.get('class_id')
         question = request_data.get('question')
         answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
+        console.log(answer, log_locals=True) 
         return jsonify(answer), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/question_rag_transcript', methods=['POST'])
@@ -381,8 +407,10 @@ def question_rag_transcript():
         lecture_id = request.json['lecture_id']
         question = request_data.get('question')
         answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
+        console.log(answer, log_locals=True) 
         return jsonify(answer), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/get_mcq_pdf', methods=['POST'])
@@ -417,8 +445,10 @@ def get_mcq_pdf():
         answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
+        console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/get_mcq_transcript', methods=['POST'])
@@ -453,8 +483,10 @@ def get_mcq_transcript():
         answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
+        console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/search_images')
@@ -472,9 +504,10 @@ def search_images():
         for img in soup.find_all('img'):
             images.append(img.get('src'))
         images = list(filter(lambda x: x is not None and x.startswith('http'), images))
-        
+        console.log({'images': images}, log_locals=True) 
         return jsonify({'images': images}), 200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/transcript_correct_grammar', methods=['POST'])
@@ -482,6 +515,7 @@ def transcript_correct_grammar():
     request_data = request.get_json()
     transcript = request_data.get('transcript')
     corrected_text = correct_grammar(transcript)
+    console.log({"transcript": corrected_text}, log_locals=True) 
     return jsonify({"transcript": corrected_text}),200
 
 @app.route('/report_generation', methods=['POST'])
@@ -494,13 +528,15 @@ def report_generation():
         if pdf:
             return Response(pdf, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename={file_name}.pdf'}),200
     except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
 @app.route('/', methods=['GET']) 
 def helloworld(): 
-	if(request.method == 'GET'): 
-		data = {"data": "PICT Hackathon Backend"} 
-		return jsonify(data), 200
+    if request.method == 'GET': 
+        data = {"data": "PICT Hackathon Backend"}
+        console.log(data, log_locals=True) 
+        return jsonify(data), 200
 
 if __name__ == '__main__': 
 	app.run(debug=True)

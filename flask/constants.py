@@ -29,3 +29,5 @@ ses_client = boto3.client(
 tokenizer = AutoTokenizer.from_pretrained("vennify/t5-base-grammar-correction")
 
 model = AutoModelForSeq2SeqLM.from_pretrained("vennify/t5-base-grammar-correction")
+
+console = Console()
