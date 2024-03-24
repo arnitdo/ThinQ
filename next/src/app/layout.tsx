@@ -19,7 +19,6 @@ export default function RootLayout({children}: Readonly<{
 		<html lang="en" className={spaceG.className}>
 			<body>
 				{children}
-				<Footer />
 			</body>
 		</html>
 	);
