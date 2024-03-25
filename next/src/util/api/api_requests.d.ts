@@ -30,7 +30,8 @@ export type CreateUserBody = {
 }
 
 export type CreateClassroomBody = {
-	classroomName : string
+	classroomName : string,
+	facultyId: string
 }
 
 export type ClassroomParams = {

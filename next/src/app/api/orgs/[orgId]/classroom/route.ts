@@ -17,16 +17,17 @@ export const POST = withMiddlewares<OrgIdBaseParams, CreateClassroomBody>(
 	requireAuthenticatedUser(),
 	requireURLParams(["orgId"]),
 	validateURLParams(BaseOrgIdParamServerValidator),
-	requireBodyParams(["classroomName"]),
+	requireBodyParams(["classroomName", "facultyId"]),
 	validateBodyParams(CreateClassroomBodyServerValidator),
 	async (req, res) => {
-		const { classroomName } = req.body
+		const { classroomName, facultyId } = req.body
 		const { orgId } = req.params
 
 		const createdClass = await db.classroom.create({
 			data: {
 				classroomName: classroomName,
-				classroomOrgId: orgId
+				classroomOrgId: orgId,
+				facultyUserId: facultyId
 			}
 		})
 

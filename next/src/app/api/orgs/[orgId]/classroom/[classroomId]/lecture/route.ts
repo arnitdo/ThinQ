@@ -18,7 +18,6 @@ export const POST = withMiddlewares<ClassroomParams, CreateLectureBody>(
 
 		const createdLecture = await db.lecture.create({
 			data: {
-				facultyUserId: req.user!.userId,
 				lectureEndTimestamp: new Date(lectureEndTimestamp),
 				lectureStartTimestamp: new Date(lectureStartTimestamp),
 				lectureClassroomId: classroomId,
