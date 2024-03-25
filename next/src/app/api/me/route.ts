@@ -1,6 +1,7 @@
 import { withMiddlewares } from "@/util/middleware";
 import { authParser } from "@/util/middleware/helpers";
 import { GetUserResponse } from "@/util/api/api_responses";
+import {AUTH_COOKIE_NAME, COOKIE_OPTS, EPOCH_DATE_FMT} from "@/util/constants";
 
 export const GET = withMiddlewares(
 	authParser(),
@@ -18,5 +19,14 @@ export const GET = withMiddlewares(
 				authenticatedUser: null
 			})
 		}
+	}
+)
+
+export const DELETE = withMiddlewares(
+	async (req, res) => {
+		res.setHeader("Set-Cookie", `${AUTH_COOKIE_NAME}=; expires=${EPOCH_DATE_FMT}; ${COOKIE_OPTS}`)
+		res.status(200).json({
+			responseStatus: "SUCCESS"
+		})
 	}
 )

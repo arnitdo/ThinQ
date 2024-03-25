@@ -3,8 +3,8 @@ import type { RequestMethod, ResponseJSON, StatusCode } from "@/util/api/api_met
 import { toast } from "sonner";
 import { AuthUser } from "../middleware/auth";
 import useAuthStore from "@/lib/zustand";
-import { AuthLoginUserParams, NoParams } from "../api/api_requests";
-import { GetClassroomsResponse } from "../api/api_responses";
+import { AuthLoginUserParams, ClassroomParams, GetUserParams, NoParams, OrgIdBaseParams } from "../api/api_requests";
+import { GetClassroomsResponse, GetEnrollmentsResponse, GetUserByIdResponse, GetUsersResponse } from "../api/api_responses";
 
 type MakeAPIRequestArgs<ParamsT extends {} = {}, BodyT extends {} = {}, QueryT extends {} = {}> = {
 	requestUrl: string,
@@ -99,26 +99,21 @@ export async function makeAPIRequest<ResponseT extends {} = {}, ParamsT extends 
 	}
 }
 
-export async function Signout() {
-	const {user,signout} = useAuthStore()
-	if(!user)return;
-	const response = await makeAPIRequest<ResponseJSON, AuthLoginUserParams, {}, {}>({
-		requestUrl: "/api/orgs/:orgId/auth/logout",
-		urlParams: {
-			orgId: user.userOrgId
-		},
+export async function logout() {
+	const response = await makeAPIRequest<ResponseJSON, {}, {}, {}>({
+		requestUrl: "/api/me",
+		urlParams: {},
 		bodyParams: {},
 		queryParams: {},
-		requestMethod: "POST"
+		requestMethod: "DELETE"
 	})
 	if(response.hasError){
 		toast.error("Error signing out!")
-		return;
+		return false;
 	}
 	if(response.responseData.responseStatus==="SUCCESS"){
 		toast.success("Signed out successfully!")
-		signout()
-		return;
+		return true;
 	}
 }
 
@@ -134,7 +129,7 @@ export async function getClassrooms(orgId:string) {
 	})
 	if(response.hasError){
 		toast.error("Error fetching data!")
-		return;
+		return null;
 	}
 	if(response.responseData.responseStatus==="SUCCESS"){
 		// toast.success("Signed out successfully!")
@@ -143,22 +138,84 @@ export async function getClassrooms(orgId:string) {
 }
 
 
-// export async function getFaculty(orgId:string, class) {
-// 	const response = await makeAPIRequest<GetClassroomsResponse, AuthLoginUserParams, NoParams, NoParams>({
-// 		requestUrl: "/api/orgs/:orgId/classroom/",
-// 		urlParams: {
-// 			orgId: orgId
-// 		},
-// 		bodyParams: {},
-// 		queryParams: {},
-// 		requestMethod: "GET"
-// 	})
-// 	if(response.hasError){
-// 		toast.error("Error fetching data!")
-// 		return;
-// 	}
-// 	if(response.responseData.responseStatus==="SUCCESS"){
-// 		// toast.success("Signed out successfully!")
-// 		return response.responseData.classrooms;
-// 	}
-// }
+export async function getFaculty(orgId:string, userId:string) {
+	const response = await makeAPIRequest<GetUserByIdResponse, GetUserParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/users/:userId",
+		urlParams: {
+			orgId: orgId,
+			userId: userId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.user;
+	}
+}
+
+export async function getEnrollments(orgId:string, classroomId:string) {
+	const response = await makeAPIRequest<GetEnrollmentsResponse, ClassroomParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/enroll",
+		urlParams: {
+			orgId: orgId,
+			classroomId: classroomId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.enrollments;
+	}
+}
+
+export async function getTeachers(orgId:string) {
+	const response = await makeAPIRequest<GetUsersResponse, OrgIdBaseParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/teachers",
+		urlParams: {
+			orgId: orgId,
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.users;
+	}
+}
+
+export async function getStudents(orgId:string) {
+	const response = await makeAPIRequest<GetUsersResponse, OrgIdBaseParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/students",
+		urlParams: {
+			orgId: orgId,
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.users;
+	}
+}

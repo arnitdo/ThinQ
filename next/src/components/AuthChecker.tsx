@@ -4,13 +4,14 @@ import { NoParams } from "@/util/api/api_requests"
 import { GetUserResponse } from "@/util/api/api_responses"
 import { makeAPIRequest } from "@/util/client/helpers"
 import { UserType } from "@prisma/client"
-import { redirect, usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "sonner"
 
 export default function AuthChecker() {
-    const { user, authenticate } = useAuthStore()
+    const { auth, setAuth, user, authenticate } = useAuthStore()
     const path = usePathname()
+    const router = useRouter()
 
     const roleRoute = (role: UserType) => {
         if(role==="Administrator")return "/admin";
@@ -19,23 +20,27 @@ export default function AuthChecker() {
     }
 
     const getUser = async () => {
-        const {responseData, hasResponse} = await makeAPIRequest<GetUserResponse, NoParams, NoParams>({
+        const response = await makeAPIRequest<GetUserResponse, NoParams, NoParams>({
             requestUrl: "/api/me",
             urlParams: {},
             bodyParams: {},
             queryParams: {},
             requestMethod: "GET"
           })
+          const {hasResponse, responseData} = response
+          console.log("getUser response: ",response)
         if(hasResponse&&responseData.responseStatus==="SUCCESS"){
             if(responseData.isAuthenticated){
                 authenticate(responseData.authenticatedUser)
+                console.log("Authenticated user: ",responseData.authenticatedUser)
                 toast.success("Welcome back, "+responseData.authenticatedUser.userName+"!")
+                setAuth(true)
                 return;
             }
         }
         if(path!="/login"&&path!="/"){
             toast.warning("Please login to continue!")
-            redirect("/login")
+            router.push("/login")
         }
     }
 
@@ -44,11 +49,12 @@ export default function AuthChecker() {
             getUser()
         }else{
             if(path==="/login"){
-                console.log("redirecting to "+roleRoute(user.userType)+"/")
-                redirect(`${roleRoute(user.userType)}/`)
+                console.log("router.pushing to "+roleRoute(user.userType)+"/")
+                router.push(`${roleRoute(user.userType)}/`)
             }
+            if(!auth)setAuth(true)
         }
-    }, [path, user])
+    }, [path, user, auth])
 
     return (
         <></>

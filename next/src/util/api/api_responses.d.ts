@@ -40,6 +40,10 @@ export type GetUserByIdResponse = {
 	user: AuthUser
 }
 
+export type GetUsersResponse = {
+	users: AuthUser[]
+}
+
 export type DeletedClassroomResponse = {
 	deletedClassroom: Classroom
 }

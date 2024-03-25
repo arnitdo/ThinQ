@@ -2,49 +2,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useEffect } from "react";
-interface TeacherData {
-  id: number;
-  name: string;
-  date_updated: string;
-  classInc: string;
-}
+import useAuthStore from "@/lib/zustand";
+import { getStudents } from "@/util/client/helpers";
+import { AuthUser } from "@/util/middleware/auth";
 
 const Page = () => {
-  const [data, setData] = useState<TeacherData[]>([
-    {
-      id: 1,
-      name: "Rajesh Patil",
-      date_updated: "2 days ago",
-      classInc: "Comps-1",
-    },
-    {
-      id: 2,
-      name: "Rishabh Pandey",
-      date_updated: "2 days ago",
-      classInc: "Comps-1",
-    },
-    {
-      id: 3,
-      name: "Varad Dubey",
-      date_updated: "2 days ago",
-      classInc: "Comps-3",
-    },
-    {
-      id: 4,
-      name: "Milind Singh",
-      date_updated: "2 mins ago",
-      classInc: "IT-1",
-    },
-    {
-      id: 5,
-      name: "Arnav Shukla",
-      date_updated: "1 days ago",
-      classInc: "Comps-2",
-    },
-  ]);
-
+  const [data, setData] = useState<AuthUser[]>([]);
   const [create, setCreate] = useState(false);
   const [showToast, setShowToast] = useState(false);
+
+  const {user} = useAuthStore()
+
+  useEffect(() => {
+    const getData = async () => {
+      if (!user) return;
+      const students = await getStudents(user.userOrgId)
+      if (students) setData(students)
+    }
+    getData()
+  }, [user])
 
   useEffect(() => {
     if (showToast) {
@@ -55,9 +31,9 @@ const Page = () => {
     }
   }, [showToast]);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this item?")) {
-      const updatedData = data.filter((item) => item.id !== id);
+      const updatedData = data.filter((item) => item.userId !== id);
       setData(updatedData);
       setShowToast(true);
     }
@@ -67,7 +43,7 @@ const Page = () => {
   };
 
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     alert(id);
   };
 
@@ -157,20 +133,20 @@ const Page = () => {
         <table className="w-full">
           <thead>
             <tr>
-              <th className="text-start w-1/2 p-3 border-b">Teacher Name</th>
-              <th className="text-start p-3 border-b items-center flex">Date Updated <img src="/sidebarCalendar.png" alt="" className="inline-block ml-2 w-4" /></th>
+              <th className="text-start w-1/2 p-3 border-b">Student Name</th>
+              <th className="text-start p-3 border-b items-center flex">Username <img src="/sidebarCalendar.png" alt="" className="inline-block ml-2 w-4" /></th>
               <th className="border-b"></th>
             </tr>
           </thead>
           <tbody>
             {data.map((item) => (
-              <tr key={item.id}>
-                <td className="p-3 border-b">{item.name}</td>
-                <td className="p-3 border-b">{item.date_updated}</td>
+              <tr key={item.userId}>
+                <td className="p-3 border-b">{item.userDisplayName}</td>
+                <td className="p-3 border-b">{item.userName}</td>
                 <td className="p-3 border-b">
                   <div className="flex gap-3">
-                    <img src="/deleteIcon.svg" alt="" className="cursor-pointer rounded-sm hover:bg-red-200 w-5" onClick={() => handleDelete(item.id)} />
-                    <img src="/renameIcon.svg" alt="" className="cursor-pointer rounded-sm hover:bg-gray-200 w-5" onClick={() => handleEdit(item.id)} />
+                    <img src="/deleteIcon.svg" alt="" className="cursor-pointer rounded-sm hover:bg-red-200 w-5" onClick={() => handleDelete(item.userId)} />
+                    <img src="/renameIcon.svg" alt="" className="cursor-pointer rounded-sm hover:bg-gray-200 w-5" onClick={() => handleEdit(item.userId)} />
                   </div>
                 </td>
               </tr>

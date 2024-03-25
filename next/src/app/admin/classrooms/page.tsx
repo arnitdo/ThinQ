@@ -1,62 +1,32 @@
 "use client"
+import Loader from '@/components/Loader'
+import SmallLoader from '@/components/SmallLoader'
 import useAuthStore from '@/lib/zustand'
-import { getClassrooms } from '@/util/client/helpers'
-import { useAPIRequest } from '@/util/client/hooks/useApi'
-import { Classroom } from '@prisma/client'
+import { getClassrooms, getEnrollments, getFaculty } from '@/util/client/helpers'
+import { AuthUser } from '@/util/middleware/auth'
+import { Classroom, ClassroomEnrollment } from '@prisma/client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
-const data = [
-  {
-    id: 1,
-    year: 'SE',
-    branch: 'Comps-1',
-    classInc: 'Rajesh Patil',
-    Attendee: '30',
-  },
-  {
-    id: 2,
-    year: 'FE',
-    branch: 'IT-1',
-    classInc: 'Rajesh Patil',
-    Attendee: '30',
-  },
-  {
-    id: 3,
-    year: 'FE',
-    branch: 'IT-1',
-    classInc: 'Rajesh Patil',
-    Attendee: '30',
-  },
-  {
-    id: 4,
-    year: 'FE',
-    branch: 'IT-1',
-    classInc: 'Rajesh Patil',
-    Attendee: '30',
-  },
-
-
-
-
-]
 const Page = () => {
   const { user } = useAuthStore()
   const [create, setCreate] = useState(false);
   const [data, setData] = useState<Classroom[]>([]);
+  const [clickedCardId, setClickedCardId] = useState(null)
+
   useEffect(() => {
     const getData = async () => {
       if (!user) return;
       const classrooms = await getClassrooms(user.userOrgId)
-      if(classrooms)setData(classrooms)
+      if (classrooms) setData(classrooms)
     }
     getData()
   }, [user])
+
   const handlCreate = () => {
     setCreate(!create);
   };
-  const [clickedCardId, setClickedCardId] = useState(null)
+
   const handleClick = (id: any) => {
     if (clickedCardId === id) {
       setClickedCardId(null); // Toggle off if already clicked
@@ -64,6 +34,44 @@ const Page = () => {
       setClickedCardId(id);
     }
   };
+
+  const ClassCard = ({ item }: { item: Classroom }) => {
+    const [faculty, setFaculty] = useState<AuthUser | null>(null)
+    const [enrollments, setEnrollments] = useState<ClassroomEnrollment[] | null>(null)
+
+    useEffect(() => {
+      const getClassData = async () => {
+        const faculty = await getFaculty(item.classroomOrgId, item.facultyUserId)
+        if (faculty) setFaculty(faculty)
+        const enrollments = await getEnrollments(item.classroomOrgId,item.classroomId)
+        if(enrollments) setEnrollments(enrollments)
+      }
+      getClassData()
+    }, [item.facultyUserId])
+
+    return (
+      <div key={item.classroomId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
+        <div className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
+          <div className=' px-4 py-3 bg-blue-50 rounded-md'>
+            <h1 className='text-blue-600 font-bold text-xl'>{item.classroomOrgId}</h1>
+          </div>
+          <h1 className='text-white text-2xl'>{item.classroomName}</h1>
+          <img src="/dots.svg" alt="" className='cursor-pointer' onClick={() => handleClick(item.classroomId)} />
+        </div>
+        <div className='p-4'>
+          {clickedCardId === item.classroomId && (
+            <div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
+              <div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
+              <div className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
+            </div>
+          )}
+          <h1 className='text-[#6C6C6C] flex flex-row justify-start items-center'>Class Incharge: {faculty?faculty.userDisplayName:<span><SmallLoader/></span>}</h1>
+          <h1 className='text-[#6C6C6C] mt-20 flex justify-start'>Attendee: <img src="/attendee.svg" alt="" className='ml-2' /> +{enrollments?(Number(enrollments.length+12) - 3):<span><SmallLoader/></span>}</h1>
+        </div>
+
+      </div>
+    )
+  }
   return (
     <>
       <div className="flex justify-between items-end border-b pb-2">
@@ -134,28 +142,7 @@ const Page = () => {
 
       <main className='py-4' >
         <div className='grid grid-cols-3 gap-3 max-sm:grid-cols-1 max-[1000px]:grid-cols-2'>
-          {data.map((item) => (
-            <div key={item.classroomId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
-              <div className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
-                <div className=' px-4 py-3 bg-blue-50 rounded-md'>
-                  <h1 className='text-blue-600 font-bold text-xl'>{item.classroomOrgId}</h1>
-                </div>
-                <h1 className='text-white text-2xl'>{item.classroomName}</h1>
-                <img src="/dots.svg" alt="" className='cursor-pointer' onClick={() => handleClick(item.classroomId)} />
-              </div>
-              <div className='p-4'>
-                {clickedCardId === item.classroomId && (
-                  <div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
-                    <div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
-                    <div className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
-                  </div>
-                )}
-                <h1 className='text-[#6C6C6C]'>Class Incharge: {item.facultyUserId}</h1>
-                <h1 className='text-[#6C6C6C] mt-20 flex'>Attendee: <img src="/attendee.svg" alt="" className='ml-2' /> +{Number(item.classroomOrgId) - 3}</h1>
-              </div>
-
-            </div>
-          ))}
+          {data.length===0?<div className='max-sm:col-span-1 max-[1000px]:col-span-2 col-span-3 '><Loader/></div>:data.map((item) => <ClassCard key={item.classroomId} item={item} />)}
         </div>
       </main>
     </>

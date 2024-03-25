@@ -11,8 +11,11 @@ import {STRLEN_NZ} from "@/util/validators/utils";
 import {makeAPIRequest} from "@/util/client/helpers";
 import {ResponseJSON} from "@/util/api/api_meta";
 import { toast } from "sonner"
+import { redirect } from "next/dist/server/api-utils";
+import useAuthStore from "@/lib/zustand";
 
 const Page = () => {
+  const { setAuth } = useAuthStore()
   const loginForm = useForm<AuthLoginUserBody & AuthLoginUserParams>({
     formInputs: {
       userPassword: {
@@ -62,6 +65,7 @@ const Page = () => {
     if (hasResponse){
       if(responseData.responseStatus === "SUCCESS"){
         toast.success("Logged in successfully!")
+        setAuth(true)
       }
     }
   
