@@ -142,3 +142,8 @@ export type GetReportTargetResponse = {
 export type DeletedReportTargetResponse = {
 	deletedReportTarget: ReportTarget
 }
+
+export type MediaEndpointResponse = {
+	objectUrl: string,
+	requestId: string
+}

@@ -1,9 +1,77 @@
+"use client";
+
 import React from "react";
 import Marquee from "react-fast-marquee";
 import Navbar from "../../../components/Navbar";
 import Image from "next/image";
+import {useForm} from "@/util/client/hooks/useForm";
+import {AuthLoginUserBody, AuthLoginUserParams} from "@/util/api/api_requests";
+import {AuthLoginUserBodyClientValidator} from "@/util/validators/client";
+import {STRLEN_NZ} from "@/util/validators/utils";
+import {makeAPIRequest} from "@/util/client/helpers";
+import {ResponseJSON} from "@/util/api/api_meta";
+import {useAPIRequest} from "@/util/client/hooks/useApi";
+import {GetUserResponse} from "@/util/api/api_responses";
 
-const page = () => {
+const Page = () => {
+  const loginForm = useForm<AuthLoginUserBody & AuthLoginUserParams>({
+    formInputs: {
+      userPassword: {
+        inputType: "password",
+        initialValue: ""
+      },
+      userName: {
+        inputType: "text",
+        initialValue: ""
+      },
+      orgId: {
+        inputType: "text",
+        initialValue: ""
+      }
+    },
+    nameBinding: {
+      orgId: "Organization ID",
+      userName: "User ID",
+      userPassword: "Password"
+    },
+    formValidator: {
+      ...AuthLoginUserBodyClientValidator,
+      orgId: STRLEN_NZ
+    },
+    valueChangeListener: (attribute, newValue) => {
+      console.log({attribute, newValue})
+    }
+  })
+
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault()
+    const response = await makeAPIRequest<ResponseJSON, AuthLoginUserParams, AuthLoginUserBody>({
+      requestUrl: "/api/orgs/:orgId/auth/login",
+      urlParams: {
+        orgId: loginForm.formValues.orgId
+      },
+      bodyParams: {
+        userName: loginForm.formValues.userName,
+        userPassword: loginForm.formValues.userPassword
+      },
+      queryParams: {},
+      requestMethod: "POST"
+    })
+
+    const {hasResponse, responseData, hasError, errorData, statusCode} = response
+    console.log(response)
+  }
+
+  const {isLoading, responseData} = useAPIRequest<GetUserResponse>({
+    requestUrl: "/api/me",
+    bodyParams: {},
+    urlParams: {},
+    queryParams: {},
+    requestMethod: "GET"
+  })
+
+  console.log(isLoading, responseData)
+
   return (
     <section className="h-[122vh]">
       <Navbar item1="Features" item2="Contact" item3="About" specialitem="Log in" />
@@ -31,7 +99,7 @@ const page = () => {
             <p className="text-gray-500 text-center mt-1 text-md mb-6">
               Just bear with us, its gonna be worth!
             </p>
-            <form action="">
+            <form action="" onSubmit={onSubmit}>
               <div className="flex flex-col">
                 <label
                   htmlFor="collegeID"
@@ -40,10 +108,10 @@ const page = () => {
                   School/College/Organization ID:
                 </label>
                 <input
-                  type="text"
-                  name="collegeID"
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
                   placeholder="Pune Institute of Computer Technology ID"
+                  name={"collegeID"}
+                  {...loginForm.formControls.orgId}
                 />
                 <label
                   htmlFor="collegeID"
@@ -53,9 +121,9 @@ const page = () => {
                 </label>
 
                 <input
-                  type="text"
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
                   placeholder="Choose a username you won't regret later!"
+                  {...loginForm.formControls.userName}
                 />
                 <label
                   htmlFor="collegeID"
@@ -64,11 +132,11 @@ const page = () => {
                   Password:
                 </label>
                 <input
-                  type="password"
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
                   placeholder="Choose a Strong Password"
+                  {...loginForm.formControls.userPassword}
                 />
-                <button className="bg-gradient-to-b from-blue-400 hover:scale-105 transition-all font-bold text-lg to-blue-500 hover:shadow-2xl ease-in-out text-white rounded-md px-2 py-4 mt-4">
+                <button type={"submit"} className="bg-gradient-to-b from-blue-400 hover:scale-105 transition-all font-bold text-lg to-blue-500 hover:shadow-2xl ease-in-out text-white rounded-md px-2 py-4 mt-4">
                   Log in
                 </button>
               </div>
@@ -83,4 +151,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

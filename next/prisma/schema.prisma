@@ -21,9 +21,9 @@ enum UserType {
 }
 
 model Organization {
-  orgId    String
-  orgName  String
-  orgUsers User[]
+  orgId         String
+  orgName       String
+  orgUsers      User[]
   orgClassrooms Classroom[]
 
   @@id([orgId])
@@ -60,7 +60,7 @@ model Classroom {
   classroomId          String                @default(uuid())
   classroomName        String
   classroomOrgId       String
-  classroomOrg       Organization          @relation(fields: [classroomOrgId], references: [orgId])
+  classroomOrg         Organization          @relation(fields: [classroomOrgId], references: [orgId])
   classroomLectures    Lecture[]
   classroomEnrollments ClassroomEnrollment[]
 
@@ -88,7 +88,7 @@ model Lecture {
   lectureAttendance     LectureAttendance[]
   lectureTranscripts    LectureTranscript[]
   lectureQuiz           Quiz[]
-  notes              Notes[]
+  notes                 Notes[]
 
   @@id([lectureId])
 }
@@ -167,15 +167,16 @@ model QuizReport {
   @@id([reportId])
 }
 
-model Notes{
-  notesId    String @default(uuid())
-  notesContent  String
-  notesTitle String
-  lectureId String
+model Notes {
+  notesId      String  @default(uuid())
+  notesContent String
+  notesTitle   String
+  lectureId    String
   notesLecture Lecture @relation(fields: [lectureId], references: [lectureId])
 
   @@id([notesId])
 }
+
 // S3 Section
 enum S3RequestMethod {
   GET
@@ -188,15 +189,13 @@ model S3Object {
   objectFileName    String
   objectSizeBytes   Int
   objectContentType String
-  objectRequests    S3Request[]
 
   @@id([objectKey])
 }
 
 model S3Request {
   requestId     String          @default(uuid())
-  objectKey     String?
-  targetObject  S3Object?       @relation(fields: [objectKey], references: [objectKey])
+  objectKey     String
   requestMethod S3RequestMethod
   requestUserId String?
   requestUser   User?           @relation(fields: [requestUserId], references: [userId])
