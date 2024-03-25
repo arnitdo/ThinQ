@@ -1,7 +1,7 @@
 // Write your API Request Types Here
 
 // Use this in place of {}
-import type {S3Object, UserType} from "@prisma/client";
+import type {S3Object, User, UserType} from "@prisma/client";
 import {S3ObjectMethod} from "@/util/s3/types";
 
 export type NoParams = {}
@@ -160,3 +160,15 @@ export type ReportTargetParams = {
 export type MediaEndpointRequestBody = S3Object & {
 	requestMethod: S3ObjectMethod,
 }
+
+export type CreateSingleUserParams = OrgIdBaseParams
+
+export type CreateSingleUserBody = Pick<User, "userType" | "userName" | "userDisplayName" | "userPassword">
+
+export type CreateBulkUserParams = OrgIdBaseParams
+
+export type CreateBulkUserBody = {
+	csvData: string
+}
+
+export type GetOrgUsersParams = OrgIdBaseParams

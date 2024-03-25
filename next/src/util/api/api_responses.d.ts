@@ -11,7 +11,8 @@ import type {
 	QuizAttempt,
 	QuizQuestion,
 	QuizResponse,
-	ReportTarget
+	ReportTarget,
+	User
 } from "@prisma/client";
 import {AuthUser} from "@/util/middleware/auth";
 
@@ -144,6 +145,13 @@ export type DeletedReportTargetResponse = {
 }
 
 export type MediaEndpointResponse = {
-	objectUrl: string,
-	requestId: string
+	objectUrl: string
+}
+
+export type CreateSingleUserResponse = {
+	userId: string
+}
+
+export type GetOrgUsersResponse = {
+	orgUsers: User[]
 }

@@ -3,6 +3,7 @@ import {
 	AuthLoginUserBody,
 	AuthLoginUserParams,
 	ClassroomParams,
+	CreateBulkUserBody,
 	CreateClassroomBody,
 	CreateLectureBody,
 	CreateNotesBody,
@@ -12,6 +13,8 @@ import {
 	CreateQuizQuestionBody,
 	CreateQuizResponseBody,
 	CreateReportTargetBody,
+	CreateSingleUserBody,
+	CreateSingleUserParams,
 	CreateTranscriptBody,
 	CreateUserBody,
 	CreateUserParams,
@@ -35,6 +38,7 @@ import {IN_ARR, NON_ZERO_NON_NEGATIVE, STRLEN_NZ} from "@/util/validators/utils"
 import {UserType} from "@prisma/client";
 import {AuthUser} from "@/util/middleware/auth";
 import {MaamRequest} from "@/util/api/api_meta";
+import {parse} from "csv-parse/sync";
 
 export function matchUserOrgWithParamsOrg(user: AuthUser, req: MaamRequest<OrgIdBaseParams>){
 	return user.userOrgId === req.params.orgId
@@ -355,4 +359,48 @@ export const MediaEndpointBodyServerValidator: ServerValidator<MediaEndpointRequ
 	objectContentType: STRLEN_NZ,
 	objectFileName: STRLEN_NZ,
 	objectSizeBytes: NON_ZERO_NON_NEGATIVE
+}
+
+export const CreateSingleUserServerValidator: ServerValidator<CreateSingleUserBody, CreateSingleUserParams, CreateSingleUserBody> = {
+	userPassword: STRLEN_NZ,
+	userDisplayName: STRLEN_NZ,
+	userType: IN_ARR([UserType.Administrator, UserType.Teacher, UserType.Student]),
+	userName: async (userName, req) => {
+		const userExists = await db.user.findFirst({
+			where: {
+				userName: userName,
+				userOrgId: req.params.orgId
+			}
+		})
+
+		return userExists === null
+	},
+}
+
+export const CreateBulkUsersServerValidator: ServerValidator<CreateBulkUserBody> = {
+	csvData: (data: string) => {
+		try {
+			const parsedData = parse(data, {
+				trim: true,
+				columns: ["userName", "userType", "userDisplayName", "userPassword"]
+			}) as any[]
+
+			for (const parsedRow of parsedData){
+				const parsedValues = Object.values(parsedRow)
+				const hasBadValue = parsedValues.some((parsedValue) => {
+					return (
+						parsedValue === "" || parsedValue === null ||
+						parsedValue === undefined || typeof parsedValue !== "string"
+					)
+				})
+				if (hasBadValue){
+					return false
+				}
+			}
+
+			return true
+		} catch (e){
+			return false
+		}
+	}
 }
