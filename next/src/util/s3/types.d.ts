@@ -1,0 +1,1 @@
+export type S3ObjectMethod = "GET" | "PUT" | "DELETE"
