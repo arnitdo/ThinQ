@@ -3,18 +3,28 @@ import {CreateClassroomBody, OrgIdBaseParams} from "@/util/api/api_requests";
 import {
 	authParser,
 	requireAuthenticatedUser,
+	requireAuthorizedUser,
 	requireBodyParams,
 	requireURLParams,
 	validateBodyParams,
 	validateURLParams
 } from "@/util/middleware/helpers";
-import {BaseOrgIdParamServerValidator, CreateClassroomBodyServerValidator} from "@/util/validators/server";
+import {
+	BaseOrgIdParamServerValidator,
+	CreateClassroomBodyServerValidator,
+	matchUserOrgWithParamsOrg
+} from "@/util/validators/server";
 import db from "@/util/db";
 import {GetClassroomsResponse} from "@/util/api/api_responses";
+import {UserType} from "@prisma/client";
 
 export const POST = withMiddlewares<OrgIdBaseParams, CreateClassroomBody>(
 	authParser(),
 	requireAuthenticatedUser(),
+	requireAuthorizedUser({
+		matchUserTypes: [UserType.Teacher, UserType.Administrator],
+		matchUserOrganization: matchUserOrgWithParamsOrg
+	}),
 	requireURLParams(["orgId"]),
 	validateURLParams(BaseOrgIdParamServerValidator),
 	requireBodyParams(["classroomName", "facultyId"]),
