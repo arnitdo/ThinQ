@@ -42,7 +42,7 @@ model User {
   attendedLectures  LectureAttendance[]
   s3Requests        S3Request[]
   quizAttempts      QuizAttempt[]
-  lectures          Lecture[]
+  classRooms        Classroom[]
 
   @@id([userId])
 }
@@ -63,6 +63,8 @@ model Classroom {
   classroomOrg         Organization          @relation(fields: [classroomOrgId], references: [orgId])
   classroomLectures    Lecture[]
   classroomEnrollments ClassroomEnrollment[]
+  facultyUserId        String
+  facultyUser          User                  @relation(fields: [facultyUserId], references: [userId])
 
   @@id([classroomId])
 }
@@ -79,8 +81,6 @@ model ClassroomEnrollment {
 model Lecture {
   lectureId             String              @default(uuid())
   title                 String
-  facultyUserId         String
-  facultyUser           User                @relation(fields: [facultyUserId], references: [userId])
   lectureStartTimestamp DateTime
   lectureEndTimestamp   DateTime
   lectureClassroomId    String
