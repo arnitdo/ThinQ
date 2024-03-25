@@ -59,6 +59,18 @@ const Page = () => {
     })
 
     const {hasResponse, responseData, hasError, errorData, statusCode} = response
+    if (hasError){
+      // Network error occurred
+      console.error(errorData)
+    } else {
+      const {responseStatus} = responseData
+      if (responseStatus === "SUCCESS"){
+        // Request is correct
+        const {} = responseData
+      } else {
+        // Some err
+      }
+    }
     console.log(response)
   }
 

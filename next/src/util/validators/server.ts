@@ -200,6 +200,16 @@ export const AuthSignupUserBodyServerValidator: ServerValidator<CreateUserBody, 
 export const CreateClassroomBodyServerValidator: ServerValidator<CreateClassroomBody> = {
 	classroomName: async (className: string) => {
 		return className.length > 0
+	},
+	facultyId: async (facultyId: string) => {
+		const isValidFaculty = await db.user.findFirst({
+			where: {
+				userId: facultyId,
+				userType: UserType.Teacher
+			}
+		})
+
+		return isValidFaculty !== null
 	}
 }
 
