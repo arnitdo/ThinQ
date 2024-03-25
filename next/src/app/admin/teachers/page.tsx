@@ -42,29 +42,29 @@ const Page = () => {
   };
   return (
     <div className="py-4 px-5 h-dvh">
-      <div className="gridWrapper | text-[#6C6C6C] grid grid-cols-[auto_1fr] gap-3 h-full | md:grid-cols-[248px_1fr]">
+      <div className="gridWrapper | text-[#6C6C6C] grid grid-cols-[auto_1fr] gap-3 h-full |">
         <Sidebar />
         <div className="rightWrapper | ">
           <header className="font-medium p-[1.125rem] max-sm:p-2 border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 sticky top-3 bg-white">
             <h1 className="text-xl max-sm:text-lg">Hello 👋, Admin</h1>
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-6">
               <button className="hidden | md:block py-[0.625rem] px-5 text-[#847700] bg-[hsl(68,100%,64%,32%)] border border-[#9D8E00] rounded-full">
                 Upgrade
               </button>
               <div className="ignoreThisDiv line | border"></div>
-              <div className="grid place-items-center text-black bg-[#D9D9D9] w-[2.0625rem] h-[2.0625rem] aspect-square rounded-[50%]">
+              <div className="grid place-items-center text-black bg-[#D9D9D9] w-[2.0625rem] h-[2.0625rem] aspect-square rounded-[50%] self-center">
                 R
               </div>
             </div>
           </header>
 
-          <div className="flex justify-between items-center">
-            <nav className="font-medium p-2 flex gap-[1.875rem] border-b max-sm:gap-3 max-sm:text-sm">
-              <Link href="/admin/classrooms">Classrooms</Link>
-              <Link href="/admin/teachers" className="underline">
+          <div className="flex justify-between items-end border-b pb-2">
+            <nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
+              <Link href="/admin/classrooms" className="">Classrooms</Link>
+              <Link href="/admin/teachers" className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">
                 Teachers
               </Link>
-              <Link href="/admin/students">Students</Link>
+              <Link href="/admin/students" className="">Students</Link>
             </nav>
             <button
               className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]"

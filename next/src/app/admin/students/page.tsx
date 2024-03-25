@@ -16,13 +16,20 @@ const Page = () => {
             </div>
           </header>
 
-          <div className='flex justify-between items-center'>
-            <nav className='font-medium p-2 flex gap-[1.875rem] border-b'>
-              <Link href="/admin/classrooms" >Classrooms</Link>
-              <Link href="/admin/teachers">Teachers</Link>
-              <Link href="/admin/students" className='underline'>Students</Link>
+          <div className="flex justify-between items-end border-b pb-2">
+            <nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
+              <Link href="/admin/classrooms" className="">Classrooms</Link>
+              <Link href="/admin/teachers" className="">
+                Teachers
+              </Link>
+              <Link href="/admin/students" className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Students</Link>
             </nav>
-            <button className='hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]'>+ Create</button>
+            <button
+              className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]"
+              >
+              {/* onClick function left to add on this button, present in /teachers */}
+              + Create
+            </button>
           </div>
 
           <main className='py-4' >
