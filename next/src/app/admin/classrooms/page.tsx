@@ -37,7 +37,7 @@ const data =[
   
 
 ]
-const page = () => {
+const Page = () => {
   const [clickedCardId, setClickedCardId] = useState(null)
   const handleClick = (id: any) => {
     if (clickedCardId === id) {
@@ -129,4 +129,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
