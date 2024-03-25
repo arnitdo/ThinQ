@@ -14,7 +14,7 @@ const Footer = () => {
 					<Link href="/" className=" space-x-2">
 						Home
 					</Link>
-					<Link href={"/auth/login"}> Login </Link>
+					<Link href={"/login"}> Login </Link>
 				</div>
 			</div>
 		</div>
