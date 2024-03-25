@@ -74,13 +74,13 @@ const Page = () => {
             </button>
           </div>
           {create && (
-            <div className="absolute bg-black w-full h-full top-0 left-0 bg-opacity-40">
-              <div className="modal-form bg-white w-4/12 max-md:w-fit p-6 mx-auto my-36 rounded-md shadow-lg">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-black font-semibold text-xl mb-3">
+            <div className="absolute isolate bg-black w-full h-full top-0 left-0 bg-opacity-40">
+              <div className="modal-form bg-white w-4/12 max-md:w-fit p-6 mx-auto my-36 rounded-2xl shadow-lg">
+                <div className="flex justify-between items-center mb-3 text-black">
+                  <h2 className="font-semibold text-xl">
                     Create New Teacher
                   </h2>
-                  <button onClick={handleClick}>X</button>
+                  <button onClick={handleClick} className="">X</button>
                 </div>
                 <form className="max-w-md mx-auto">
                   <div className="mb-4">
@@ -113,32 +113,39 @@ const Page = () => {
                       className="w-full border rounded-md py-2 px-3"
                     />
                   </div>
+
                   <button
                     type="submit"
                     className="bg-gradient-to-b from-blue-700 to-blue-900 text-white py-2 px-4 rounded-md hover:bg-blue-600"
                   >
                     Create
                   </button>
+                    
                 </form>
               </div>
             </div>
           )}
 
-          <main className="py-4 max-sm:text-sm">
-            <table>
+          <main className="py-4 max-sm:text-sm overflow-auto text-[#525354]">
+            <table className="w-full">
               <thead>
                 <tr>
-                  <th>Teacher Name</th>
-                  <th>Date Updated</th>
-                  <th>Class Inc</th>
+                  <th className="text-start w-1/2 p-3 border-b">Teacher Name</th>
+                  <th className="text-start p-3 border-b">Date Updated <img src="/sidebarCalendar.png" alt="" className="inline-block"/></th>
+                  <th className="border-b"></th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td>{item.date_updated}</td>
-                    <td>{item.classInc}</td>
+                    <td className="p-3 border-b">{item.name}</td>
+                    <td className="p-3 border-b">{item.date_updated}</td>
+                    <td className="p-3 border-b">
+                      <div className="flex gap-3">
+                        <img src="/deleteIcon.png" alt="" className=""/>
+                        <img src="/renameIcon.png" alt="" className=""/>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

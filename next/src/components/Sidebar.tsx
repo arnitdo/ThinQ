@@ -26,14 +26,14 @@ const Sidebar = () => {
                 </label>
               </div>
 
-              <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center'>
+              <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer'>
                 <img src="/sidebarHome.png" alt="" />
                 {sidebarActive && (
                   <p className='hidden | md:block'>Home</p>
                 )}
               </div>
 
-              <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] flex gap-3 items-center'>
+              <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] flex gap-3 items-center cursor-pointer'>
                 <img src="/sidebarCalendar.png" alt="" />
                 {sidebarActive && (
                   <p className='hidden | md:block'>Calendar</p>
@@ -41,7 +41,7 @@ const Sidebar = () => {
               </div>
             </div>
 
-            <div className='p-[0.625rem] items-center rounded-[0.3125rem] border border-[#646464] hover:bg-[#ECECEc] shadow-[0_4px_33.3px_hsl(0,0%,0%,16%)] flex gap-3'>
+            <div className='p-[0.625rem] items-center rounded-[0.3125rem] border border-[#646464] hover:bg-[#ECECEc] shadow-[0_4px_33.3px_hsl(0,0%,0%,16%)] flex gap-3 cursor-pointer'>
               <img src="/sidebarPremium.png" alt="" />
               {sidebarActive && (
                 <p className='hidden | md:block'>Premium</p>
