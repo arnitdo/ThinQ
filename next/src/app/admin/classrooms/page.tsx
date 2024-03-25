@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useState } from 'react'
+import Sidebar from '@/components/Sidebar'
 // import Navbar from '../../components/Navbar'
 const data =[
   {
@@ -38,6 +39,10 @@ const data =[
 
 ]
 const Page = () => {
+  const [create, setCreate] = useState(false);
+  const handlCreate = () => {
+    setCreate(!create);
+  };
   const [clickedCardId, setClickedCardId] = useState(null)
   const handleClick = (id: any) => {
     if (clickedCardId === id) {
@@ -49,32 +54,7 @@ const Page = () => {
   return (
     <div className='py-4 px-5 h-dvh'>
       <div className='gridWrapper | text-[#6C6C6C] grid grid-cols-[auto_1fr] gap-3 h-full | md:grid-cols-[248px_1fr]'>
-        <div className='leftWrapper | h-full'>
-          <nav className="sideBar |  p-[1.125rem] border border-[#8C8C8C] rounded-[0.5rem] h-screen flex flex-col justify-between sticky top-3">
-            <div>
-              <div className='mb-5 flex justify-between items-center'>
-                <img src="/sidebarMobileLogo.png" alt="" className='w-full md:hidden'/>
-                <img src="/bigblack.png" alt="" className='hidden | md:block max-w-20'/>
-                <img src="sidebarOpenCloseButton.png" alt="" className='hidden | md:block'/>
-              </div>
-
-              <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center'>
-                <img src="/sidebarHome.png" alt="" />
-                <p className='hidden | md:block'>Home</p>
-              </div>
-
-              <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] flex gap-3 items-center'>
-                <img src="/sidebarCalendar.png" alt="" />
-                <p className='hidden | md:block'>Calendar</p>
-              </div>
-            </div>
-
-            <div className='p-[0.625rem] rounded-[0.3125rem] border border-[#646464] hover:bg-[#ECECEc] shadow-[0_4px_33.3px_hsl(0,0%,0%,16%)] flex gap-3'>
-              <img src="/sidebarPremium.png" alt="" />
-              <p className='hidden | md:block'>Premium</p>
-            </div>
-          </nav>
-        </div>
+        <Sidebar />
 
         <div className='rightWrapper | '>
           <header className='font-medium p-[1.125rem] border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 sticky top-3 bg-white'>
@@ -86,14 +66,64 @@ const Page = () => {
             </div>
           </header>
 
-          <div className='flex justify-between items-center'>
+          <div className='flex justify-between items-center sticky top-[5.18rem] bg-white'>
             <nav className='font-medium p-2 flex gap-[1.875rem] border-b'>
               <Link href="/admin/classrooms" className='underline'>Classrooms</Link>
               <Link href="/admin/teachers">Teachers</Link>
               <Link href="/admin/students">Students</Link>
             </nav>
-            <button className='hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]'>+ Create</button>
+            <button className='hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]' onClick={handlCreate}>+ Create</button>
           </div>
+          {create && (
+            <div className="absolute bg-black w-full h-full top-0 left-0 bg-opacity-40">
+              <div className="modal-form bg-white w-4/12 max-md:w-fit p-6 mx-auto my-36 rounded-md shadow-lg">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-black font-semibold text-xl mb-3">
+                    Create New Teacher
+                  </h2>
+                  <button onClick={handlCreate}>X</button>
+                </div>
+                <form className="max-w-md mx-auto">
+                  <div className="mb-4">
+                    <label htmlFor="name" className="block mb-1">
+                      Name:
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      className="w-full border rounded-md py-2 px-3"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="class" className="block mb-1">
+                      Class:
+                    </label>
+                    <input
+                      type="text"
+                      id="class"
+                      className="w-full border rounded-md py-2 px-3"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label htmlFor="date" className="block mb-1">
+                      Date:
+                    </label>
+                    <input
+                      type="date"
+                      id="date"
+                      className="w-full border rounded-md py-2 px-3"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-gradient-to-b from-blue-700 to-blue-900 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                  >
+                    Create
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
 
           <main className='py-4' >
             <div className='grid grid-cols-3 gap-3 max-sm:grid-cols-1 max-[1000px]:grid-cols-2'>
@@ -123,7 +153,7 @@ const Page = () => {
           </main>
         </div>
 
-        <div className="createIconMobile | md:hidden text-4xl w-[70px] aspect-square bg-white rounded-[50%] shadow-[0_0.25rem_1.75rem_hsl(0,0%,30%,25%)] grid place-items-center fixed bottom-4 right-4">+</div>
+        <div className="createIconMobile cursor-pointer | md:hidden text-4xl w-[70px] aspect-square bg-white rounded-[50%] shadow-[0_0.25rem_1.75rem_hsl(0,0%,30%,25%)] grid place-items-center fixed bottom-4 right-4" onClick={handlCreate}>+</div>
       </div>
     </div>
   )
