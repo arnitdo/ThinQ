@@ -19,6 +19,7 @@ import {
 	EditClassroomBody,
 	EditLectureBody,
 	LectureParams,
+	MediaEndpointRequestBody,
 	NotesParams,
 	OrgIdBaseParams,
 	QuizAttemptParams,
@@ -30,7 +31,7 @@ import {
 } from "@/util/api/api_requests";
 import {ServerValidator} from "@/util/validators/index";
 import db from "@/util/db";
-import {IN_ARR, STRLEN_NZ} from "@/util/validators/utils";
+import {IN_ARR, NON_ZERO_NON_NEGATIVE, STRLEN_NZ} from "@/util/validators/utils";
 import {UserType} from "@prisma/client";
 import {AuthUser} from "@/util/middleware/auth";
 import {MaamRequest} from "@/util/api/api_meta";
@@ -199,6 +200,16 @@ export const AuthSignupUserBodyServerValidator: ServerValidator<CreateUserBody, 
 export const CreateClassroomBodyServerValidator: ServerValidator<CreateClassroomBody> = {
 	classroomName: async (className: string) => {
 		return className.length > 0
+	},
+	facultyId: async (facultyId: string) => {
+		const isValidFaculty = await db.user.findFirst({
+			where: {
+				userId: facultyId,
+				userType: UserType.Teacher
+			}
+		})
+
+		return isValidFaculty !== null
 	}
 }
 
@@ -336,4 +347,12 @@ export const CreateReportTargetBodyServerValidator: ServerValidator<CreateReport
 
 export const ReportTargetParamsServerValidator: ServerValidator<ReportTargetParams> = {
 	reportTargetId: reportTargetExists
+}
+
+export const MediaEndpointBodyServerValidator: ServerValidator<MediaEndpointRequestBody> = {
+	objectKey: STRLEN_NZ,
+	requestMethod: IN_ARR(["DELETE", "PUT", "GET"]),
+	objectContentType: STRLEN_NZ,
+	objectFileName: STRLEN_NZ,
+	objectSizeBytes: NON_ZERO_NON_NEGATIVE
 }

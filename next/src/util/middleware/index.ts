@@ -35,7 +35,7 @@ export function withMiddlewares<
 		try {
 			let requestBody: BodyT;
 
-			if (["GET","DELETE","HEAD"].includes(req.method)){
+			if (!(["GET","DELETE","HEAD"].includes(req.method))){
 				if (req.body !== null){
 					try {
 						requestBody = await req.json() as BodyT
