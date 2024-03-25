@@ -96,7 +96,7 @@ export default function Home() {
               Not your Ordinary Classroom, but classroom with Superpowers
             </p>
             <button className="bg-white text-[#276597] px-[1.25em] py-[0.625em] rounded-[2.5em] hover:bg-transparent hover:text-white hover:border transition-all ease-in-out delay-75">
-              <a href="/login"> Get Started</a>
+              <Link href="/login"> Get Started</Link>
 
             </button>
           </div>
