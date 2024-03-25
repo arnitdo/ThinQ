@@ -20,9 +20,9 @@ def s3_upload_formdata():
                 file_content_type = mimetypes.guess_type(filename)[0]
                 if file_content_type:
                     content_type = file_content_type
-                s3_key = f'{organization_id}/{class_id}/{filename}'
+                s3_key = f'orgs/{organization_id}/classrooms/{class_id}/resources/{filename}'
 
-                save_dir = f's3/{organization_id}/{class_id}/'
+                save_dir = f's3/orgs/{organization_id}/classrooms/{class_id}/resources/'
                 if not os.path.exists(save_dir):
                     os.makedirs(save_dir)
                 
@@ -37,49 +37,6 @@ def s3_upload_formdata():
         console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}) , 500
     
-@app.route('/s3_upload_pdf', methods=['POST'])
-def s3_upload_pdf():
-    try:
-        if not request.is_json:
-            return jsonify({'error': 'Request data must be in JSON format'}), 400
-        request_data = request.get_json()
-        if 'files' not in request_data:
-            return jsonify({'error': 'No files provided'}), 400
-        files = request_data['files']
-        organization_id = request_data.get('organization_id')
-        class_id = request_data.get('class_id')
-        
-        if not organization_id or not class_id:
-            return jsonify({'error': 'Organization ID and Class ID must be provided'}), 400
-        for file_data in files:
-            filename = file_data.get('filename')
-            file_content = file_data.get('content')
-            if not filename or not file_content:
-                return jsonify({'error': 'Invalid file data provided'}), 400
-
-            save_dir = f's3/{organization_id}/{class_id}/'
-            if not os.path.exists(save_dir):
-                os.makedirs(save_dir)
-                
-            local_file_path = os.path.join(save_dir, filename)
-            file_content_bytes = base64.b64decode(file_content)
-            with open(local_file_path, 'wb') as f:  
-                f.write(file_content_bytes)  
-
-            s3_key = f'{organization_id}/{class_id}/{filename}'
-            content_type = 'application/pdf'
-            file_content_type = mimetypes.guess_type(filename)[0]
-            if file_content_type:
-                content_type = file_content_type
-            
-            with open(local_file_path, 'rb') as f:
-                s3.upload_fileobj(f, S3_BUCKET, s3_key, ExtraArgs={'ContentType': content_type})
-        console.log({'message': 'Files uploaded successfully'}, log_locals=True)
-        return jsonify({'success': True, 'message': 'Files uploaded successfully'}), 200
-    except Exception as e:
-        console.log({'error': str(e)}, log_locals=True)
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/s3_upload_transcript', methods=['POST'])
 def s3_upload_transcript():
     try:
@@ -94,16 +51,16 @@ def s3_upload_transcript():
         if not organization_id or not class_id or not lecture_id or not transcript_text:
             return jsonify({'error': 'Missing required data fields'}), 400
 
-        save_dir = f's3/{organization_id}/{class_id}/{lecture_id}/'
+        save_dir = f's3/orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         
-        filename = f'{lecture_id}_transcript.txt'
+        filename = f'transcript.txt'
         local_file_path = os.path.join(save_dir, filename)
         with open(local_file_path, 'w') as f:
             f.write(transcript_text)
 
-        s3_key = f'{organization_id}/{class_id}/{lecture_id}/{filename}'
+        s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/{filename}'
         content_type = 'text/plain' 
         file_content_type = mimetypes.guess_type(filename)[0]
         if file_content_type:
@@ -117,114 +74,57 @@ def s3_upload_transcript():
         console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
     
-@app.route('/s3_fetch_files', methods=['POST'])
-def s3_fetch_files():
+@app.route('/s3_download_resources', methods=['GET'])
+def s3_download_resources():
+    request_data = request.get_json()
+    organization_id = request_data.get('organization_id')
+    class_id = request_data.get('class_id')
+    save_dir = 'compute/'
     try:
-        data = request.get_json()
-        organization_id = data.get('organization_id')
-        class_id = data.get('class_id')
-        if not organization_id or not class_id:
-            return jsonify({'error': 'Organization ID and class ID are required.'}), 400
-        prefix = f'{organization_id}/{class_id}/'
-        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
-        file_info = []
-        if 'Contents' in response:
-            for obj in response['Contents']:
-                file_name = obj['Key'].split('/')[-1]
-                object_url = s3.generate_presigned_url('get_object', Params={'Bucket': S3_BUCKET, 'Key': obj['Key']})
-                file_info.append({'file_name': file_name, 'object_url': object_url})
-        console.log({'files': file_info}, log_locals=True)
-        return jsonify(file_info), 200
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No PDF files found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/'):]:
+                if key.lower().endswith('.pdf'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(save_dir, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
+
+        return jsonify({'success': True, 'message': 'PDF files downloaded successfully'}), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/s3_download_lectures', methods=['GET'])
+def s3_download_lectures():
+    request_data = request.get_json()
+    organization_id = request_data.get('organization_id')
+    class_id = request_data.get('class_id')
+    lecture_id = request_data.get('lecture_id')
+    save_dir = 'compute/'
+    try:
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No Transcript files found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'):]:
+                if key.lower().endswith('.txt'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(save_dir, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
+
+        return jsonify({'success': True, 'message': 'Transcript files downloaded successfully'}), 200
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@app.route('/s3_delete', methods=['DELETE'])
-def s3_delete():
-    try:
-        data = request.get_json()
-        organization_id = data.get('organization_id')
-        class_id = data.get('class_id')
-        filename = data.get('filename')
-        if not organization_id or not class_id or not filename:
-            return jsonify({'error': 'Organization ID, class ID, and filename are required.'}), 400
-        s3_key = f'{organization_id}/{class_id}/{filename}'
-        s3.delete_object(Bucket=S3_BUCKET, Key=s3_key)
-        
-        local_file_path = f's3/{organization_id}/{class_id}/{filename}'
-        if os.path.exists(local_file_path):
-            os.remove(local_file_path)
-        console.log({'message': f'File {filename} deleted successfully'}, log_locals=True)
-        return jsonify({'success': True, 'message': f'File {filename} deleted successfully'}), 200
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "NoSuchKey":
-            console.log({'error': f'File {filename} not found'}, log_locals=True)
-            return jsonify({'error': f'File {filename} not found'}), 400
-        else:
-            console.log({'error': str(e)}, log_locals=True)
-            return jsonify({'error': str(e)}), 500
-
-@app.route('/s3_download', methods=['GET'])
-def s3_download():
-    try:
-        data = request.get_json()
-        organization_id = data.get('organization_id')
-        class_id = data.get('class_id')
-        filename = data.get('filename')
-        if not organization_id or not class_id or not filename:
-            return jsonify({'error': 'Organization ID, class ID, and filename are required.'}), 400
-        
-        prefix = f'{organization_id}/{class_id}/' + filename
-        response = s3.get_object(Bucket=S3_BUCKET, Key=prefix)
-        file_content = response['Body'].read()
-        save_dir = f's3/{organization_id}/{class_id}/'
-        os.makedirs(save_dir, exist_ok=True) 
-        with open(os.path.join(save_dir, filename), 'wb') as f:
-            f.write(file_content)
-        console.log({'message': f'File {filename} downloaded and saved successfully'}, log_locals=True)
-        return jsonify({'success': True, 'message': f'File {filename} downloaded and saved successfully'}), 200
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "NoSuchKey":
-            console.log({'error': f'File {filename} not found'}, log_locals=True)
-            return jsonify({'error': f'File {filename} not found'}), 400 
-        else:
-            console.log({'error': str(e)}, log_locals=True)
-            return jsonify({'error': str(e)}), 500 
-
-@app.route('/send_email', methods=['POST'])
-def send_email():
-    try:
-        recipient_email = request.form['recipient_email']
-        sender_email = 'mihirpanchal5400@gmail.com'
-        subject = request.form['subject']
-        html_body = request.form['html_body']
-
-        ses_client.send_email(
-            Destination={
-                'ToAddresses': [
-                    recipient_email,
-                ],
-            },
-            Message={
-                'Body': {
-                    'Html': {
-                        'Charset': 'UTF-8',
-                        'Data': html_body,
-                    },
-                },
-                'Subject': {
-                    'Charset': 'UTF-8',
-                    'Data': subject,
-                },
-            },
-            Source=sender_email,
-        )
-        console.log({'message': 'Email sent successfully'}, log_locals=True)
-        return jsonify({'message': 'Email sent successfully'}), 200
-    except ClientError as e:
-        console.log({'error': str(e)}, log_locals=True)
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/send_whatsapp_text', methods=['POST'])
 def send_whatsapp_text():
     try:
@@ -292,47 +192,40 @@ def recommend_yt_videos():
         console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
-@app.route('/rag_embed_formdata', methods=['POST'])
-def rag_embed_formdata():
+@app.route('/rag_embed_resources', methods=['POST'])
+def rag_embed_resources():
     try:
-        organization_id = request.form['organization_id']
-        class_id = request.form['class_id']
-        pdf_files = request.files.getlist('pdf') 
-        all_pdf_text = []
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
         
-        for pdf in pdf_files:
-            pdf_text = get_pdf_text(pdf)
-            all_pdf_text.append(pdf_text)
+        pdf_directory = 'compute/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No PDF files found for the given organization_id and class_id'})
+        if not os.path.exists(pdf_directory):
+            os.makedirs(pdf_directory)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/'):]:
+                if key.lower().endswith('.pdf'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(pdf_directory, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
 
-        combined_text = '\n'.join(all_pdf_text) 
-        text_chunks = get_text_chunks(combined_text)
-        get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/')
+        if not os.path.isdir(pdf_directory):
+            return jsonify({'error': 'PDF directory not found'}), 400
 
-        local_directory = f's3/{organization_id}/{class_id}/faiss_index/'
-        for filename in os.listdir(local_directory):
-            if os.path.isfile(os.path.join(local_directory, filename)):
-                s3_key = f'{organization_id}/{class_id}/faiss_index/{filename}'
-                with open(os.path.join(local_directory, filename), 'rb') as file:
-                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
-        console.log({'message': 'Text embedded successfully'}, log_locals=True) 
-        return jsonify({'message': 'Text embedded successfully'}), 200
-    except Exception as e:
-        console.log({'error': str(e)}, log_locals=True)
-        return jsonify({'error': str(e)}), 500
-    
-@app.route('/rag_embed_pdf', methods=['POST'])
-def rag_embed_pdf():
-    try:
-        organization_id = request.json['organization_id']
-        class_id = request.json['class_id']
-
-        pdf_files_base64 = request.json.get('pdf')
-        if not pdf_files_base64:
-            return jsonify({'error': 'No PDF files provided'}), 400
+        pdf_files = os.listdir(pdf_directory)
+        if not pdf_files:
+            return jsonify({'error': 'No PDF files found in the directory'}), 400
         
         all_pdf_text = []
-        for pdf_base64 in pdf_files_base64:
-            pdf_bytes = base64.b64decode(pdf_base64)
+        for pdf_file in pdf_files:
+            pdf_path = os.path.join(pdf_directory, pdf_file)
+            with open(pdf_path, 'rb') as pdf_file:
+                pdf_bytes = pdf_file.read()
             
             pdf_text = get_pdf_text_from_bytes(pdf_bytes)
             all_pdf_text.append(pdf_text)
@@ -340,87 +233,150 @@ def rag_embed_pdf():
         combined_text = '\n'.join(all_pdf_text) 
         text_chunks = get_text_chunks(combined_text)
 
-        get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/')
+        get_vector_store(text_chunks, filepath=f'compute/')
 
-        local_directory = f's3/{organization_id}/{class_id}/faiss_index/'
+        local_directory = f'compute/faiss_index/'
         for filename in os.listdir(local_directory):
             if os.path.isfile(os.path.join(local_directory, filename)):
-                s3_key = f'{organization_id}/{class_id}/faiss_index/{filename}'
+                s3_key = f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
-        console.log({'message': 'Text embedded successfully'}, log_locals=True) 
-        return jsonify({'message': 'Text embedded successfully'}), 200
+        shutil.rmtree(pdf_directory)
+        return jsonify({'success': True, 'message': 'Transcript files downloaded and processed successfully'}), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
-@app.route('/rag_embed_transcript', methods=['POST'])
-def rag_embed_transcript():
+@app.route('/rag_embed_lectures', methods=['POST'])
+def rag_embed_lectures():
     try:
-        organization_id = request.json['organization_id']
-        class_id = request.json['class_id']
-        lecture_id = request.json['lecture_id']
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request_data.get('lecture_id')
         
-        local_directory = f's3/{organization_id}/{class_id}/{lecture_id}/'
-        combined_text = ""
-        for filename in os.listdir(local_directory):
-            if filename.endswith('.txt'):
-                with open(os.path.join(local_directory, filename), 'r') as file:
-                    combined_text+=file.read()
+        text_directory = 'compute/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No Transcript files found for the given organization_id and class_id'})
+        if not os.path.exists(text_directory):
+            os.makedirs(text_directory)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'):]:
+                if key.lower().endswith('.txt'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(text_directory, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
 
+        if not os.path.isdir(text_directory):
+            return jsonify({'error': 'Text directory not found'}), 400
+
+        text_files = os.listdir(text_directory)
+        if not text_files:
+            return jsonify({'error': 'No text files found in the directory'}), 400
+        
+        all_text_content = []
+        for text_file in text_files:
+            text_path = os.path.join(text_directory, text_file)
+            with open(text_path, 'r') as file:
+                text_content = file.read()
+                all_text_content.append(text_content)
+
+        combined_text = '\n'.join(all_text_content) 
         text_chunks = get_text_chunks(combined_text)
 
-        get_vector_store(text_chunks, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
+        get_vector_store(text_chunks, filepath=f'compute/')
 
-        local_directory = f's3/{organization_id}/{class_id}/{lecture_id}/faiss_index/'
+        local_directory = f'compute/faiss_index/'
         for filename in os.listdir(local_directory):
             if os.path.isfile(os.path.join(local_directory, filename)):
-                s3_key = f'{organization_id}/{class_id}/{lecture_id}/faiss_index/{filename}'
+                s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
-        console.log({'message': 'Text embedded successfully'}, log_locals=True) 
-        return jsonify({'message': 'Text embedded successfully'}), 200
+        shutil.rmtree(text_directory)
+        return jsonify({'success': True, 'message': 'Transcript files downloaded and processed successfully'}), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
-@app.route('/question_rag_pdf', methods=['POST'])
-def question_rag_pdf():
+@app.route('/question_rag_resources', methods=['POST'])
+def question_rag_resources():
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
         question = request_data.get('question')
-        answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/')
-        console.log(answer, log_locals=True) 
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        answer = user_input(question, filepath=f'compute/')
+        shutil.rmtree("compute")
         return jsonify(answer), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
-@app.route('/question_rag_transcript', methods=['POST'])
-def question_rag_transcript():
+@app.route('/question_rag_lectures', methods=['POST'])
+def question_rag_lectures():
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
-        lecture_id = request.json['lecture_id']
+        lecture_id = request_data.get('lecture_id')
         question = request_data.get('question')
-        answer = user_input(question, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
-        console.log(answer, log_locals=True) 
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        answer = user_input(question, filepath=f'compute/')
+        shutil.rmtree("compute")
         return jsonify(answer), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
-@app.route('/get_mcq_pdf', methods=['POST'])
-def get_mcq_pdf():
+@app.route('/get_mcq_resources', methods=['POST'])
+def get_mcq_resources():
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
         topic = request_data.get('topic')
         no_of_questions = request_data.get('no_of_questions')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
         prompt = '''
         Please provide a JSON with {} questions and answers of topic {} in the following schema:
 
@@ -442,23 +398,37 @@ def get_mcq_pdf():
 
         Ensure the provided JSON adheres to the defined schema.
         '''.format(no_of_questions,topic)
-        answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/')
+        answer = user_input(prompt, filepath=f'compute/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
+        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
 
-@app.route('/get_mcq_transcript', methods=['POST'])
-def get_mcq_transcript():
+@app.route('/get_mcq_lectures', methods=['POST'])
+def get_mcq_lectures():
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
         lecture_id = request_data.get('lecture_id')
         no_of_questions = request_data.get('no_of_questions')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
         prompt = '''
         Please provide a JSON with {} generated questions and answers in the following schema:
 
@@ -480,10 +450,11 @@ def get_mcq_transcript():
 
         Ensure the provided JSON adheres to the defined schema.
         '''.format(no_of_questions)
-        answer = user_input(prompt, filepath=f's3/{organization_id}/{class_id}/{lecture_id}/')
+        answer = user_input(prompt, filepath=f'compute/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
+        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 

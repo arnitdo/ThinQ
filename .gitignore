@@ -1,5 +1,6 @@
 flask/venv
 flask/.env
+flask/s3
 *.pyc
 .env
 
