@@ -57,8 +57,8 @@ const Page = () => {
         <Sidebar />
 
         <div className='rightWrapper | '>
-          <header className='font-medium p-[1.125rem] border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 sticky top-3 bg-white'>
-            <h1 className='text-xl'>Hello 👋, Admin</h1>
+          <header className='font-medium p-[1.125rem] max-sm:p-2 border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 sticky top-3 bg-white'>
+            <h1 className='text-xl  max-sm:text-lg'>Hello 👋, Admin</h1>
             <div className='flex gap-6 items-center'>
               <button className='hidden | md:block py-[0.625rem] px-5 text-[#847700] bg-[hsl(68,100%,64%,32%)] border border-[#9D8E00] rounded-full'>Upgrade</button>
               <div className="ignoreThisDiv line | border"></div>

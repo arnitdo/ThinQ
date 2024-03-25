@@ -105,18 +105,20 @@ img, picture, video, canvas, svg {
 
 /* custom scroll bar */
 ::-webkit-scrollbar {
-
+  height: 2px;
   width: 6px;
   background-color: #D9D9D9;
 
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #616161;
+  background-color: #8b8b8b;
   /* color of the thumb */
   border-radius: 6px;
   /* roundness of the thumb */
 }
+
+
 
 .bluegrad {
   width: 200px;
