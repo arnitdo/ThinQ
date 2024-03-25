@@ -36,6 +36,10 @@ export type GetClassroomResponse = {
 	classroom: Classroom
 }
 
+export type GetUserByIdResponse = {
+	user: AuthUser
+}
+
 export type DeletedClassroomResponse = {
 	deletedClassroom: Classroom
 }

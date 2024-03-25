@@ -10,6 +10,11 @@ export type OrgIdBaseParams = {
 	orgId: string
 }
 
+export type GetUserParams = {
+	orgId: string,
+	userId: string
+}
+
 export type CreateOrganizationBody = {
 	orgId: string
 	orgName: string

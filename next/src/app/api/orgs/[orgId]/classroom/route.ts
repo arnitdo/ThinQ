@@ -37,7 +37,7 @@ export const POST = withMiddlewares<OrgIdBaseParams, CreateClassroomBody>(
 			data: {
 				classroomName: classroomName,
 				classroomOrgId: orgId,
-				facultyUserId: facultyId
+				facultyUserId: facultyId,
 			}
 		})
 

@@ -10,8 +10,7 @@ import {AuthLoginUserBodyClientValidator} from "@/util/validators/client";
 import {STRLEN_NZ} from "@/util/validators/utils";
 import {makeAPIRequest} from "@/util/client/helpers";
 import {ResponseJSON} from "@/util/api/api_meta";
-import {useAPIRequest} from "@/util/client/hooks/useApi";
-import {GetUserResponse} from "@/util/api/api_responses";
+import { toast } from "sonner"
 
 const Page = () => {
   const loginForm = useForm<AuthLoginUserBody & AuthLoginUserParams>({
@@ -59,30 +58,14 @@ const Page = () => {
     })
 
     const {hasResponse, responseData, hasError, errorData, statusCode} = response
-    if (hasError){
-      // Network error occurred
-      console.error(errorData)
-    } else {
-      const {responseStatus} = responseData
-      if (responseStatus === "SUCCESS"){
-        // Request is correct
-        const {} = responseData
-      } else {
-        // Some err
+    
+    if (hasResponse){
+      if(responseData.responseStatus === "SUCCESS"){
+        toast.success("Logged in successfully!")
       }
     }
-    console.log(response)
+  
   }
-
-  const {isLoading, responseData} = useAPIRequest<GetUserResponse>({
-    requestUrl: "/api/me",
-    bodyParams: {},
-    urlParams: {},
-    queryParams: {},
-    requestMethod: "GET"
-  })
-
-  console.log(isLoading, responseData)
 
   return (
     <section className="h-[122vh]">

@@ -21,6 +21,7 @@ import {
 	DeleteEnrollmentQueryParams,
 	EditClassroomBody,
 	EditLectureBody,
+	GetUserParams,
 	LectureParams,
 	MediaEndpointRequestBody,
 	NotesParams,
@@ -95,6 +96,7 @@ export async function quizExists(quizId: string){
 }
 
 export async function userExists(userId: string){
+	console.log(userId)
 	const userExists = await db.user.findFirst({
 		where: {
 			userId: userId
@@ -226,6 +228,11 @@ export const EditClassroomBodyServerValidator: ServerValidator<EditClassroomBody
 export const ClassroomParamServerValidator: ServerValidator<ClassroomParams> = {
 	orgId: orgExists,
 	classroomId: classroomExists
+}
+
+export const GetUserParamsServerValidator: ServerValidator<GetUserParams> = {
+	orgId: orgExists,
+	userId: userExists
 }
 
 export const CreateLectureBodyServerValidator: ServerValidator<CreateLectureBody> = {

@@ -1,5 +1,10 @@
 "use client"
-import type {RequestMethod, ResponseJSON, StatusCode} from "@/util/api/api_meta";
+import type { RequestMethod, ResponseJSON, StatusCode } from "@/util/api/api_meta";
+import { toast } from "sonner";
+import { AuthUser } from "../middleware/auth";
+import useAuthStore from "@/lib/zustand";
+import { AuthLoginUserParams, NoParams } from "../api/api_requests";
+import { GetClassroomsResponse } from "../api/api_responses";
 
 type MakeAPIRequestArgs<ParamsT extends {} = {}, BodyT extends {} = {}, QueryT extends {} = {}> = {
 	requestUrl: string,
@@ -27,11 +32,11 @@ type MakeAPIRequestRet<ResponseT extends {} = {}, ParamsT extends {} = {}, BodyT
 export async function makeAPIRequest<ResponseT extends {} = {}, ParamsT extends {} = {}, BodyT extends {} = {}, QueryT extends {} = {}>(
 	args: MakeAPIRequestArgs<ParamsT, BodyT, QueryT>
 ): Promise<MakeAPIRequestRet<ResponseT, ParamsT, BodyT, QueryT>> {
-	const {requestMethod, requestUrl, urlParams, queryParams, bodyParams, customHeaders = {}} = args
+	const { requestMethod, requestUrl, urlParams, queryParams, bodyParams, customHeaders = {} } = args
 
 	let resolvedUrl = requestUrl
 
-	for (const paramKey in urlParams){
+	for (const paramKey in urlParams) {
 
 		const paramValue = urlParams[paramKey]
 		// @ts-ignore
@@ -59,7 +64,21 @@ export async function makeAPIRequest<ResponseT extends {} = {}, ParamsT extends 
 		)
 
 		const responseJson = await fetchResponse.json() as ResponseJSON<ResponseT, ParamsT, BodyT, QueryT>
-
+		if (responseJson.responseStatus === "ERR_INVALID_BODY_PARAMS" || responseJson.responseStatus === "ERR_INVALID_URL_PARAMS" || responseJson.responseStatus === "ERR_INVALID_QUERY_PARAMS") {
+			toast.error("Invalid Fields: " + ((responseJson.invalidParams.length > 1) ? responseJson.invalidParams.join(", ") : responseJson.invalidParams[0]).toString())
+		}
+		if (responseJson.responseStatus === "ERR_MISSING_BODY_PARAMS" || responseJson.responseStatus === "ERR_MISSING_QUERY_PARAMS" || responseJson.responseStatus === "ERR_MISSING_URL_PARAMS") {
+			toast.error("Invalid Fields: " + ((responseJson.missingParams.length > 1) ? responseJson.missingParams.join(", ") : responseJson.missingParams[0]).toString())
+		}
+		if (responseJson.responseStatus === "ERR_NOT_FOUND") {
+			toast.error("Not found!")
+		}
+		if (responseJson.responseStatus === "ERR_UNAUTHENTICATED") {
+			toast.error("Authentication Failed!")
+		}
+		if (responseJson.responseStatus === "ERR_UNAUTHORIZED") {
+			toast.error("Authorization Failed!")
+		}
 		return {
 			hasResponse: true,
 			hasError: false,
@@ -67,13 +86,79 @@ export async function makeAPIRequest<ResponseT extends {} = {}, ParamsT extends 
 			responseData: responseJson,
 			errorData: undefined
 		}
-	} catch (e){
-		return  {
+	} catch (e) {
+		const errorData = e as unknown as Error
+		toast.error(errorData.message)
+		return {
 			hasResponse: false,
 			hasError: true,
 			statusCode: 0,
 			responseData: undefined,
-			errorData: e as unknown as Error
+			errorData: errorData
 		}
 	}
 }
+
+export async function Signout() {
+	const {user,signout} = useAuthStore()
+	if(!user)return;
+	const response = await makeAPIRequest<ResponseJSON, AuthLoginUserParams, {}, {}>({
+		requestUrl: "/api/orgs/:orgId/auth/logout",
+		urlParams: {
+			orgId: user.userOrgId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "POST"
+	})
+	if(response.hasError){
+		toast.error("Error signing out!")
+		return;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		toast.success("Signed out successfully!")
+		signout()
+		return;
+	}
+}
+
+export async function getClassrooms(orgId:string) {
+	const response = await makeAPIRequest<GetClassroomsResponse, AuthLoginUserParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/",
+		urlParams: {
+			orgId: orgId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.classrooms;
+	}
+}
+
+
+// export async function getFaculty(orgId:string, class) {
+// 	const response = await makeAPIRequest<GetClassroomsResponse, AuthLoginUserParams, NoParams, NoParams>({
+// 		requestUrl: "/api/orgs/:orgId/classroom/",
+// 		urlParams: {
+// 			orgId: orgId
+// 		},
+// 		bodyParams: {},
+// 		queryParams: {},
+// 		requestMethod: "GET"
+// 	})
+// 	if(response.hasError){
+// 		toast.error("Error fetching data!")
+// 		return;
+// 	}
+// 	if(response.responseData.responseStatus==="SUCCESS"){
+// 		// toast.success("Signed out successfully!")
+// 		return response.responseData.classrooms;
+// 	}
+// }
