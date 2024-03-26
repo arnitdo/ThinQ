@@ -17,6 +17,12 @@ type ClassCardProps = {
 const ClassCard = ({item, activeId, setActive}: ClassCardProps) => {
 	const [faculty, setFaculty] = useState<AuthUser | null>(null)
 	const [enrollments, setEnrollments] = useState<ClassroomEnrollment[] | null>(null)
+  const [able, setAble] = useState(false)
+  const handleClick = ()=>{
+    setActive(item.classroomId)
+    setAble(!able)
+  
+  }
 
 	useEffect(() => {
 		const getClassData = async () => {
@@ -35,12 +41,12 @@ const ClassCard = ({item, activeId, setActive}: ClassCardProps) => {
 				<div className=' px-4 py-3 bg-blue-50 rounded-md'>
 					<h1 className='text-blue-600 font-bold text-xl'>{item.classroomName.slice(0, 2).toUpperCase()}</h1>
 				</div>
-				<h1 className='text-white text-2xl'>{item.classroomName}</h1>
+				<h1 className='text-white text-2xl max-sm:text-xl'>{item.classroomName}</h1>
 				<img src="/dots.svg" alt="" className='cursor-pointer'
-				     onClick={() => setActive(item.classroomId)}/>
+				     onClick={handleClick}/>
 			</div>
 			<div className='p-4'>
-				{activeId === item.classroomId && (
+				{activeId === item.classroomId && able && (
 					<div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
 						<div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
 						<div className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
@@ -77,6 +83,7 @@ const Page = () => {
 
 	const handlCreate = () => {
 		setCreate(!create);
+
 	};
 
 	const handleClick = (id: any) => {
@@ -106,7 +113,7 @@ const Page = () => {
 				</button>
 			</div>
 			{create && (
-				<div className="absolute bg-black w-full h-full top-0 left-0 bg-opacity-40">
+				<dialog className="absolute bg-black w-full h-full top-0 left-0 bg-opacity-40">
 					<div className="modal-form bg-white w-4/12 max-md:w-fit p-6 mx-auto my-36 rounded-md shadow-lg">
 						<div className="flex justify-between items-center">
 							<h2 className="text-black font-semibold text-xl mb-3">
@@ -153,7 +160,7 @@ const Page = () => {
 							</button>
 						</form>
 					</div>
-				</div>
+				</dialog>
 			)}
 
 			<main className='py-4'>
