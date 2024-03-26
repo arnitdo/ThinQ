@@ -67,52 +67,59 @@ const Page = () => {
 			</div>
 			{create && (
 				<div className="absolute isolate bg-black w-full h-full top-0 left-0 bg-opacity-40">
-					<div className="modal-form bg-white w-4/12 max-md:w-fit p-6 mx-auto my-36 rounded-2xl shadow-lg">
-						<div className="flex justify-between items-center mb-3 text-black">
-							<h2 className="font-semibold text-xl">
-								Create New Student
-							</h2>
-							<button onClick={handleClick} className="">X</button>
+					<div className="bg-white p-10 w-4/12 mx-auto rounded-[1.25rem] mt-[3%]">
+						<div className="flex items-center justify-between mb-7 px-1 text-black">
+							<h1 className="text-2xl">Create New Student</h1>
+							<button onClick={handleClick} className="text-2xl">X</button>
 						</div>
-						<form className="max-w-md mx-auto">
-							<div className="mb-4">
-								<label htmlFor="name" className="block mb-1">
-									Name:
-								</label>
-								<input
-									type="text"
-									id="name"
-									className="w-full border rounded-md py-2 px-3"
-								/>
-							</div>
-							<div className="mb-4">
-								<label htmlFor="class" className="block mb-1">
-									Class:
-								</label>
-								<input
-									type="text"
-									id="class"
-									className="w-full border rounded-md py-2 px-3"
-								/>
-							</div>
-							<div className="mb-4">
-								<label htmlFor="date" className="block mb-1">
-									Date:
-								</label>
-								<input
-									type="date"
-									id="date"
-									className="w-full border rounded-md py-2 px-3"
-								/>
+
+						<div className="">
+							<div className="max-md:w-fit p-6 rounded-2xl border border-[#A5A5A5] mb-11 text-center">
+								<h2 className="font-semibold text-xl text-black mb-6 text-start">Upload using CSV File</h2>
+								<Link href="#" className="flex gap-2 text-black py-1 px-4 border border-[#A3A3A3] mx-auto w-fit rounded-full mb-8 shadow-[0_9px_14px_hsl(0,0%,0%,25%)]">Visit Sample Link <img src="/modalSampleLinkIcon.svg" alt=""/></Link>
+								<input type="file" name="csvFileUpload" id="csvFileUpload" className="p-6 border-2 border-[#909090] border-dashed rounded-[0.5625rem] w-full"/>
 							</div>
 
-							<button
-								type="submit"
-								className="bg-gradient-to-b from-blue-700 to-blue-900 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-							>
-								Create
-							</button>
-						</form>
+							<p className="mb-11 font-bold text-black text-xl text-center">OR</p>
+
+							<div className="modal-form max-md:w-fit p-6 rounded-2xl border border-[#A5A5A5]">
+								<div className="flex justify-between items-center mb-3 text-black">
+									<h2 className="font-semibold text-xl">
+										Manually type data
+									</h2>
+								</div>
+								<form className="max-w-md mx-auto">
+									<div className="mb-4">
+										<label htmlFor="name" className="block mb-1">
+											Student Name:
+										</label>
+										<input
+											type="text"
+											id="name"
+											className="w-full border rounded-md py-2 px-3 placeholder:pl-3"
+											placeholder="E.g. Rishabh Pandey"
+										/>
+									</div>
+									<div className="mb-4">
+										<label htmlFor="class" className="block mb-1">
+											Student Class:
+										</label>
+										<input
+											type="text"
+											id="class"
+											className="w-full border rounded-md py-2 px-3"
+											placeholder="E.g. IT-2"
+										/>
+									</div>
+									<button
+										type="submit"
+										className="bg-gradient-to-b from-blue-700 to-blue-900 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+									>
+										Create
+									</button>
+								</form>
+							</div>
+						</div>
 					</div>
 				</div>
 			)}
@@ -133,9 +140,10 @@ const Page = () => {
 				<table className="w-full">
 					<thead>
 					<tr>
-						<th className="w-1/2 text-start p-3 border-b">Student Name</th>
-						<th className="text-start p-3 border-b">
+						<th className="text-start w-1/2 p-3 border-b">Student Name</th>
+						<th className="text-start p-3 border-b items-center flex">
 							Username
+							{/*<img src="/sidebarCalendar.png" alt="" className="inline-block ml-2 w-4"/>*/}
 						</th>
 						<th className="border-b"></th>
 					</tr>

@@ -184,4 +184,6 @@ img, picture, video, canvas, svg {
     transform: translateY(0);
   }
 } */
-
+dialog::backdrop {
+  outline: solid;
+}

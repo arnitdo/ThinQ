@@ -18,7 +18,7 @@ export default function RootLayout({children}: Readonly<{
 					className='gridWrapper | text-[#6C6C6C] grid grid-cols-[auto_1fr] gap-3 h-full'>
 					<Sidebar/>
 
-					<div className='rightWrapper | relative'>
+					<div className='rightWrapper |'>
 						<header
 							className='font-medium p-[1.125rem] max-sm:p-2 border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 sticky top-3 bg-white'>
 							<h1 className='text-xl  max-sm:text-lg'>Hello 👋, Admin</h1>
