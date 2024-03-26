@@ -116,7 +116,7 @@ const Page = () => {
 				<div className="absolute isolate bg-black w-full h-full top-0 left-0 bg-opacity-40">
 					<div className="bg-white p-10 w-4/12 max-[1106px]:w-7/12 mx-auto rounded-[1.25rem] max-sm:w-11/12 max-sm:mt-[8%] mt-[3%] max-sm:text-sm">
 						<div className="flex items-center justify-between mb-7 px-1 text-black">
-							<h1 className="text-2xl max-sm:text-lg">Create New Student</h1>
+							<h1 className="text-2xl max-sm:text-lg">Create New Classroom</h1>
 							<button onClick={handlCreate} className="text-2xl">X</button>
 						</div>
 
