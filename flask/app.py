@@ -399,7 +399,7 @@ def get_mcq_resources():
         Ensure the provided JSON adheres to the defined schema.
         '''.format(no_of_questions,topic)
         answer = user_input(prompt, filepath=f'compute/')
-        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
         shutil.rmtree("compute")
@@ -451,7 +451,158 @@ def get_mcq_lectures():
         Ensure the provided JSON adheres to the defined schema.
         '''.format(no_of_questions)
         answer = user_input(prompt, filepath=f'compute/')
-        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
+        data = json.loads(cleaned_json_string)
+        console.log(data, log_locals=True) 
+        shutil.rmtree("compute")
+        return jsonify(data), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/get_short_ans_questions_resources', methods=['POST'])
+def get_short_ans_questions_resources():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        topic = request_data.get('topic')
+        no_of_questions = request_data.get('no_of_questions')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        prompt = '''
+        Please provide a JSON with {} questions of topic {} in the following schema:
+
+        {{
+        "questions": [
+            {{
+            "questionText": "Question text goes here",
+            }},
+            {{
+            "questionText": "Question text goes here",
+            }},
+            // Add more questions as needed
+        ]
+        }}
+
+        Ensure the provided JSON adheres to the defined schema.
+        '''.format(no_of_questions,topic)
+        answer = user_input(prompt, filepath=f'compute/')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
+        print(cleaned_json_string)
+        data = json.loads(cleaned_json_string)
+        console.log(data, log_locals=True) 
+        shutil.rmtree("compute")
+        return jsonify(data), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/get_short_ans_questions_lectures', methods=['POST'])
+def get_short_ans_questions_lectures():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request_data.get('lecture_id')
+        no_of_questions = request_data.get('no_of_questions')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        prompt = '''
+        Please provide a JSON with {} generated questions in the following schema:
+
+        {{
+        "questions": [
+            {{
+            "questionText": "Question text goes here",
+            }},
+            {{
+            "questionText": "Question text goes here",
+            }},
+            // Add more questions as needed
+        ]
+        }}
+
+        Ensure the provided JSON adheres to the defined schema.
+        '''.format(no_of_questions)
+        answer = user_input(prompt, filepath=f'compute/')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
+        data = json.loads(cleaned_json_string)
+        console.log(data, log_locals=True) 
+        shutil.rmtree("compute")
+        return jsonify(data), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/validate_short_ans_questions', methods=['POST'])
+def validate_short_ans_questions():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        question = request_data.get('question')
+        answer = request_data.get('answer')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        prompt = '''
+        Calculate the semantic similarity and literal similarity of the provided answer '{}' to the question '{}' based on meaning and literal match respectively.
+
+        Semantic similarity represents the degree to which the meaning of the provided answer matches the actual answer.
+
+        Literal similarity represents the degree to which the provided answer matches the actual answer word-for-word.
+
+        Please provide a JSON of semantic similarity and literal similarity scores in the following schema:
+
+        {{
+        "output": [
+            {{
+            "question": "Question text goes here",
+            "answer": "Answer text goes here",
+            "semanticSimilarity": "Semantic similarity score (0-100)",
+            "literalSimilarity": "Literal similarity score (0-100)"
+            }}
+        ]
+        }}
+        
+        Ensure that the provided scores are within the range of 0 to 100.
+        Ensure the provided JSON adheres to the defined schema.
+        '''.format(answer,question)
+        result = user_input(prompt, filepath=f'compute/')
+        cleaned_json_string = result['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
         shutil.rmtree("compute")
