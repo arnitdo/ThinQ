@@ -160,9 +160,10 @@ const Page = () => {
 				<div className='grid grid-cols-3 gap-3 max-sm:grid-cols-1 max-[1000px]:grid-cols-2'>
 					{data.length === 0 ?
 						(
-							<div className='max-sm:col-span-1 max-[1000px]:col-span-2 col-span-3 '>
+							// relative to rightWrapper
+							<div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
 								<Loader/>
-						    </div>
+							</div>
 						) : (
 							data.map((item) => {
                                 return (

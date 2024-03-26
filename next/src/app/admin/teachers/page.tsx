@@ -138,8 +138,8 @@ const Page = () => {
         <table className="w-full">
           <thead>
             <tr>
-              <th className="text-start w-1/2 p-3 border-b">Teacher Name</th>
-              <th className="text-start p-3 border-b items-center flex">Username <img src="/sidebarCalendar.png" alt="" className="inline-block ml-2 w-4" /></th>
+              <th className="w-1/2 text-start p-3 border-b">Teacher Name</th>
+              <th className="text-start p-3 border-b">Username</th>
               <th className="border-b"></th>
             </tr>
           </thead>
