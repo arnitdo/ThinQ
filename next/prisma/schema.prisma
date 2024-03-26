@@ -28,7 +28,7 @@ model User {
   quizAttempts      QuizAttempt[]
   userReportTargets ReportTarget[]
   s3Requests        S3Request[]
-  userOrg           Organization          @relation(fields: [userOrgId], references: [orgId])
+  userOrg           Organization          @relation(fields: [userOrgId], references: [orgId], onDelete: Cascade)
 }
 
 model ReportTarget {
@@ -45,8 +45,8 @@ model Classroom {
   classroomName        String
   classroomOrgId       String
   facultyUserId        String
-  classroomOrg         Organization          @relation(fields: [classroomOrgId], references: [orgId])
-  User                 User                  @relation(fields: [facultyUserId], references: [userId])
+  classroomOrg         Organization          @relation(fields: [classroomOrgId], references: [orgId], onDelete: Cascade)
+  User                 User                  @relation(fields: [facultyUserId], references: [userId], onDelete: Cascade)
   classroomEnrollments ClassroomEnrollment[]
   classroomLectures    Lecture[]
 }
@@ -54,8 +54,8 @@ model Classroom {
 model ClassroomEnrollment {
   userId            String
   classroomId       String
-  enrolledClassroom Classroom @relation(fields: [classroomId], references: [classroomId])
-  enrolledUser      User      @relation(fields: [userId], references: [userId])
+  enrolledClassroom Classroom @relation(fields: [classroomId], references: [classroomId], onDelete: Cascade)
+  enrolledUser      User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@id([userId, classroomId])
 }
@@ -66,7 +66,7 @@ model Lecture {
   lectureStartTimestamp DateTime
   lectureEndTimestamp   DateTime
   lectureClassroomId    String
-  lectureClassroom      Classroom           @relation(fields: [lectureClassroomId], references: [classroomId])
+  lectureClassroom      Classroom           @relation(fields: [lectureClassroomId], references: [classroomId], onDelete: Cascade)
   lectureAttendance     LectureAttendance[]
   lectureTranscripts    LectureTranscript[]
   notes                 Notes[]
@@ -76,8 +76,8 @@ model Lecture {
 model LectureAttendance {
   lectureId       String
   userId          String
-  attendedLecture Lecture @relation(fields: [lectureId], references: [lectureId])
-  attendingUser   User    @relation(fields: [userId], references: [userId])
+  attendedLecture Lecture @relation(fields: [lectureId], references: [lectureId], onDelete: Cascade)
+  attendingUser   User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@id([userId, lectureId])
 }
@@ -86,7 +86,7 @@ model LectureTranscript {
   transcriptId       String  @default(uuid())
   lectureId          String
   transcriptText     String
-  transcribedLecture Lecture @relation(fields: [lectureId], references: [lectureId])
+  transcribedLecture Lecture @relation(fields: [lectureId], references: [lectureId], onDelete: Cascade)
 
   @@id([lectureId, transcriptId])
 }
@@ -95,7 +95,7 @@ model Quiz {
   quizId        String         @id @default(uuid())
   quizName      String
   lectureId     String
-  quizLecture   Lecture        @relation(fields: [lectureId], references: [lectureId])
+  quizLecture   Lecture        @relation(fields: [lectureId], references: [lectureId], onDelete: Cascade)
   quizAttempts  QuizAttempt[]
   quizQuestions QuizQuestion[]
 }
@@ -106,7 +106,7 @@ model QuizQuestion {
   questionText        String
   questionOptions     String[]
   questionAnswerIndex Int
-  questionParentQuiz  Quiz           @relation(fields: [quizId], references: [quizId])
+  questionParentQuiz  Quiz           @relation(fields: [quizId], references: [quizId], onDelete: Cascade)
   questionResponses   QuizResponse[]
 }
 
@@ -115,8 +115,8 @@ model QuizAttempt {
   quizId           String
   attemptTimestamp DateTime
   userId           String
-  attemptedQuiz    Quiz           @relation(fields: [quizId], references: [quizId])
-  attemptUser      User           @relation(fields: [userId], references: [userId])
+  attemptedQuiz    Quiz           @relation(fields: [quizId], references: [quizId], onDelete: Cascade)
+  attemptUser      User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
   attemptReport    QuizReport?
   attemptResponses QuizResponse[]
 }
@@ -127,14 +127,14 @@ model QuizResponse {
   questionId        String
   responseContent   String
   responseAccuracy  Float
-  responseAttempt   QuizAttempt  @relation(fields: [attemptId], references: [attemptId])
-  attemptedQuestion QuizQuestion @relation(fields: [questionId], references: [questionId])
+  responseAttempt   QuizAttempt  @relation(fields: [attemptId], references: [attemptId], onDelete: Cascade)
+  attemptedQuestion QuizQuestion @relation(fields: [questionId], references: [questionId], onDelete: Cascade)
 }
 
 model QuizReport {
   reportId    String      @id @default(uuid())
   attemptId   String      @unique
-  quizAttempt QuizAttempt @relation(fields: [attemptId], references: [attemptId])
+  quizAttempt QuizAttempt @relation(fields: [attemptId], references: [attemptId], onDelete: Cascade)
 }
 
 model Notes {
@@ -142,7 +142,7 @@ model Notes {
   notesContent String
   notesTitle   String
   lectureId    String
-  notesLecture Lecture @relation(fields: [lectureId], references: [lectureId])
+  notesLecture Lecture @relation(fields: [lectureId], references: [lectureId], onDelete: Cascade)
 }
 
 model S3Object {
@@ -157,7 +157,7 @@ model S3Request {
   objectKey     String
   requestMethod S3RequestMethod
   requestUserId String?
-  requestUser   User?           @relation(fields: [requestUserId], references: [userId])
+  requestUser   User?           @relation(fields: [requestUserId], references: [userId], onDelete: Cascade)
 }
 
 enum UserType {

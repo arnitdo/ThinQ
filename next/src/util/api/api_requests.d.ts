@@ -1,13 +1,17 @@
 // Write your API Request Types Here
 
-// Use this in place of {}
 import type {S3Object, User, UserType} from "@prisma/client";
 import {S3ObjectMethod} from "@/util/s3/types";
 
+// Use this in place of {}
 export type NoParams = {}
 
 export type OrgIdBaseParams = {
 	orgId: string
+}
+
+export type UserIdBaseParams = {
+	userId: string
 }
 
 export type GetUserParams = {
@@ -177,3 +181,5 @@ export type CreateBulkUserBody = {
 }
 
 export type GetOrgUsersParams = OrgIdBaseParams
+
+export type DeleteUserParams = OrgIdBaseParams & UserIdBaseParams

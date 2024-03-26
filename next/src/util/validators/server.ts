@@ -19,6 +19,7 @@ import {
 	CreateUserBody,
 	CreateUserParams,
 	DeleteEnrollmentQueryParams,
+	DeleteUserParams,
 	EditClassroomBody,
 	EditLectureBody,
 	GetUserParams,
@@ -409,5 +410,21 @@ export const CreateBulkUsersServerValidator: ServerValidator<CreateBulkUserBody>
 		} catch (e){
 			return false
 		}
+	}
+}
+
+export const DeleteUserServerValidator: ServerValidator<DeleteUserParams, DeleteUserParams> = {
+	orgId: orgExists,
+	userId: async (userId: string, req) => {
+		const {orgId} = req.params
+
+		const userCount = await db.user.count({
+			where: {
+				userOrgId: orgId,
+				userId: userId
+			}
+		})
+
+		return userCount !== 0
 	}
 }
