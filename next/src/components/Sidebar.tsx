@@ -31,19 +31,19 @@ const Sidebar = () => {
 
               <label htmlFor="sidebarClose" className="hidden | md:block">
                 <input type="checkbox" name="sidebarClose" id="sidebarClose" className="hidden peer" />
-                <img src="/sidebarOpenCloseButton.svg" alt="" className='hidden | rotate-180 md:block cursor-pointer peer-checked:rotate-0' onClick={handleClick} />
+                <img src="/sidebarOpenCloseButton.svg" alt="" className='hidden | rotate-0 md:block cursor-pointer peer-checked:rotate-180' onClick={handleClick} />
               </label>
             </div>
 
             <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer'>
-              <img src="/sidebarHome.svg" alt="" />
+              <img src="/sidebarHome.svg" alt="" className="w-[min(100%,26px)]"/>
               {sidebarActive && (
                 <p className='hidden | md:block'>Home</p>
               )}
             </div>
 
             <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] flex gap-3 items-center cursor-pointer'>
-              <img src="/sidebarCalendar.svg" alt="" />
+              <img src="/sidebarCalendar.svg" alt="" className="w-[min(100%,26px)]"/>
               {sidebarActive && (
                 <p className='hidden | md:block'>Calendar</p>
               )}
