@@ -95,6 +95,10 @@ img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
 }
+html,
+body {
+  height: 100%;
+}
 
 .swiper-pagination-bullet-active {
   background: #fff;
@@ -184,3 +188,26 @@ img, picture, video, canvas, svg {
     transform: translateY(0);
   }
 } */
+/* .modalFlex {
+  gap: 0.75rem;  
+}
+@media (max-height: 900px) {
+  .modalFlex {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+} */
+.modalGrid {
+  display: block;
+}
+@media (max-height: 900px) {
+  .modalGrid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+  .modalContainer {
+    width: 33%;
+  }
+}

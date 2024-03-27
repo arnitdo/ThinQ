@@ -18,7 +18,7 @@ const Sidebar = () => {
   return (
     <>
       <div className='leftWrapper | h-full'>
-        <nav className="sideBar | max-sm:p-1  p-[1.125rem] border border-[#8C8C8C] rounded-[0.5rem] h-[96vh] flex flex-col justify-between sticky top-3 md:w-[248px] has-[:checked]:w-auto">
+        <nav className="sideBar | max-sm:p-1  p-[1.125rem] border border-[#8C8C8C] rounded-[0.5rem] h-full flex flex-col justify-between md:w-[248px] has-[:checked]:w-auto">
           <div>
             <div className='mb-5 flex justify-between items-center | has-[:checked]:flex-col has-[:checked]:items-center has-[:checked]:gap-3'>
               <img src="/sidebarMobileLogo.png" alt="" className={`w-[calc(100%_-_0.5rem)] mx-auto mt-2 md:hidden`} />

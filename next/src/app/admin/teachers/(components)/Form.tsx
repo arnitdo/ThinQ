@@ -164,15 +164,15 @@ export default function Form({ create, setCreate }: { create: boolean, setCreate
       }
 
     return (
-        <div className="absolute isolate bg-black w-full h-full top-0 left-0 bg-opacity-40">
-            <div className="bg-white p-10 w-4/12 max-[1106px]:w-7/12 mx-auto rounded-[1.25rem] max-sm:w-11/12 max-sm:mt-[8%] mt-[3%] max-sm:text-sm">
+        <div className="absolute bg-black inset-0 top-0 left-0 bg-opacity-40">
+            <div className="modalContainer | absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-10 w-4/12 max-[1106px]:w-7/12 mx-auto rounded-[1.25rem] max-sm:w-11/12 max-sm:text-sm">
                 <div className="flex items-center justify-between mb-7 px-1 text-black">
-                    <h1 className="text-2xl max-sm:text-lg">Create New Classroom</h1>
+                    <h1 className="text-2xl max-sm:text-lg">Add New Teacher</h1>
                     <button onClick={handleCreate} className="text-2xl">X</button>
                 </div>
 
-                <div className="">
-                    <div className="max-md:w-fit p-6 rounded-2xl border border-[#A5A5A5] mb-3 text-center">
+                <div className="modalGrid">
+                    <div className="w-full p-6 rounded-2xl border border-[#A5A5A5] text-center">
                         <h2 className="font-semibold text-xl text-black mb-6 text-start">Upload using CSV File</h2>
                         <a href="https://docs.google.com/spreadsheets/d/11wiOOCADxM1GuEl3W6jo8_g3LjxU9Q8iaE8HDXlyEZI/edit#gid=1777853821" target="_blank" className="flex gap-2 text-black py-1 px-4 border border-[#A3A3A3] mx-auto w-fit rounded-full mb-8 shadow-[0_9px_14px_hsl(0,0%,0%,25%)]">Visit Sample Link <img src="/modalSampleLinkIcon.svg" alt="" /></a>
                         {/* <input onChange={(e) => { handleFileUpload(e) }} type="file" name="csvFileUpload" accept=".csv" id="csvFileUpload" className="p-6 border-2 border-[#909090] border-dashed rounded-[0.5625rem] w-full" /> */}
@@ -190,7 +190,7 @@ export default function Form({ create, setCreate }: { create: boolean, setCreate
                         </Dropzone>
                     </div>
 
-                    <p className="mb-3 font-bold text-gray-400 text-sm text-center">OR</p>
+                    <p className="font-bold text-gray-400 text-sm text-center">OR</p>
 
                     <div className="modal-form max-md:w-full p-6 rounded-2xl border border-[#A5A5A5]">
                         <div className="flex justify-between items-center mb-3 text-black">
