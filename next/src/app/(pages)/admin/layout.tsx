@@ -1,4 +1,3 @@
-import "../globals.css";
 import type {Metadata} from "next";
 import RoleChecker from "@/components/RoleChecker";
 import Sidebar from "@/components/Sidebar";

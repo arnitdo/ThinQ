@@ -3,7 +3,7 @@ import { DeleteEnrollmentQueryParams, NoParams } from "@/util/api/api_requests";
 import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireQueryParams, validateQueryParams } from "@/util/middleware/helpers";
 import { DeleteEnrollmentQueryParamServerValidator } from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedEnrollmentResponse, GetEnrollmentsResponse } from "@/util/api/api_responses";
+import { DeletedEnrollmentResponse, GetClassroomsResponse, GetEnrollmentsResponse } from "@/util/api/api_responses";
 
 export const GET = withMiddlewares<NoParams>(
 	authParser(),
@@ -11,15 +11,19 @@ export const GET = withMiddlewares<NoParams>(
 	requireAuthorizedUser({ matchUserTypes: ["Student"] }),
 	async (req, res) => {
 
-		const enrollments = await db.classroomEnrollment.findMany({
+		const enrollments = await db.classroom.findMany({
 			where: {
-				userId: req.user!.userId
-			}
+				classroomEnrollments: {
+					some: {
+						userId: req.user!.userId
+					}
+				}
+			},
 		})
 
-		res.status(200).json<GetEnrollmentsResponse>({
+		res.status(200).json<GetClassroomsResponse>({
 			responseStatus: "SUCCESS",
-			enrollments: enrollments
+			classrooms: enrollments
 		})
 	}
 )

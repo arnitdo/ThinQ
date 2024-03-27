@@ -446,7 +446,7 @@ export const CreateBulkClassroomsServerValidator: ServerValidator<CreateBulkUser
 		try {
 			const parsedData = parse(data, {
 				trim: true,
-				columns: ["classroomName", "facultyUserId"]
+				columns: ["classroomName", "facultyUserName"]
 			}) as any[]
 
 			for (const parsedRow of parsedData){

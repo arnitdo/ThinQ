@@ -2,84 +2,82 @@
 import Loader from '@/components/Loader'
 import SmallLoader from '@/components/SmallLoader'
 import useAuthStore from '@/lib/zustand'
-import {deleteClassroom, getClassrooms, getEnrollments, getFaculty} from '@/util/client/helpers'
+import {deleteClassroom, deleteLecture, getClassrooms, getEnrollments, getFaculty, getLectures} from '@/util/client/helpers'
 import {AuthUser} from '@/util/middleware/auth'
-import {Classroom, ClassroomEnrollment} from '@prisma/client'
+import {Classroom, ClassroomEnrollment, Lecture} from '@prisma/client'
 import Link from 'next/link'
 import {useEffect, useRef, useState} from 'react'
 import Form from './(components)/Form'
-import { create } from 'domain'
 import { toast } from 'sonner'
 
 type ClassCardProps = {
-	item: Classroom,
-	activeId: string | null,
-	setActive: (classId: string) => void
+	item: Lecture
 }
 
-const Page = () => {
+const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 	const {user} = useAuthStore()
-	const [data, setData] = useState<Classroom[]>([]);
-	const [clickedCardId, setClickedCardId] = useState<string | null>(null)
+	const [data, setData] = useState<Lecture[]>([]);
 	const [create, setCreate] = useState<boolean>(false)
 
 	useEffect(() => {
 		const getData = async () => {
 			if (!user) return;
-			const classrooms = await getClassrooms(user.userOrgId)
-			if (classrooms) setData(classrooms)
+			const lectures = await getLectures(user.userOrgId, classroomId)
+			if (lectures) setData(lectures)
 		}
 		if(!create)
 		getData()
 	}, [user, create])
 
-	const ClassCard = ({item, activeId, setActive}: ClassCardProps) => {
+	const ClassCard = ({item}: ClassCardProps) => {
 		const [faculty, setFaculty] = useState<AuthUser | null>(null)
 		const [enrollments, setEnrollments] = useState<ClassroomEnrollment[] | null>(null)
 	  const [able, setAble] = useState(false)
 	  const handleClick = ()=>{
-		setActive(item.classroomId)
 		setAble(!able)
-	  
 	  }
 	
-		useEffect(() => {
-			const getClassData = async () => {
-				const faculty = await getFaculty(item.classroomOrgId, item.facultyUserId)
-				if (faculty) setFaculty(faculty)
-				const enrollments = await getEnrollments(item.classroomOrgId, item.classroomId)
-				if (enrollments) setEnrollments(enrollments)
-			}
-			getClassData()
-		}, [item.facultyUserId])
+		// useEffect(() => {
+		// 	const getClassData = async () => {
+		// 		const faculty = await getFaculty(item.classroomOrgId, item.facultyUserId)
+		// 		if (faculty) setFaculty(faculty)
+		// 		const enrollments = await getEnrollments(item.classroomOrgId, item.classroomId)
+		// 		if (enrollments) setEnrollments(enrollments)
+		// 	}
+		// 	getClassData()
+		// }, [item.facultyUserId])
 	
-		async function handleDelete(classroomId: string) {
+		async function handleDelete(lectureId: string) {
 			if(!user)return
-			setData(data.filter((item) => item.classroomId !== classroomId))
-			const res = await deleteClassroom(user.userOrgId, classroomId)
+			setData(data.filter((item) => item.lectureId !== lectureId))
+			const res = await deleteLecture(user.userOrgId, classroomId, lectureId)
 			if(res)toast.success("Classroom deleted successfully!")
 		}
 	
 		return (
-			<div key={item.classroomId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
+			<div key={item.lectureId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
 				<div
 					className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
 					<div className=' px-4 py-3 bg-blue-50 rounded-md'>
-						<h1 className='text-blue-600 font-bold text-xl'>{item.classroomName.slice(0, 2).toUpperCase()}</h1>
+						<h1 className='text-blue-600 font-bold text-xl'>{item.title.slice(0, 2).toUpperCase()}</h1>
 					</div>
-					<h1 className='text-white text-2xl max-sm:text-xl'>{item.classroomName}</h1>
+					<h1 className='text-white text-2xl max-sm:text-xl'>{item.title}</h1>
 					<img src="/dots.svg" alt="" className='cursor-pointer'
 						 onClick={handleClick}/>
 				</div>
 				<div className='p-4'>
-					{activeId === item.classroomId && able && (
+					{
+					able && (
 						<div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
 							<div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
-							<div onClick={()=>handleDelete(item.classroomId)} className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
+							<div onClick={()=>{
+								handleDelete(item.lectureId)
+								}} className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
 						</div>
-					)}
+					)
+					}
 					<h1 className='text-[#6C6C6C] flex flex-row justify-start items-center'>Class
-						Incharge: {faculty ? faculty.userDisplayName : <span><SmallLoader/></span>}</h1>
+						Faculty: {user ? user.userDisplayName : <span><SmallLoader/></span>}</h1>
 					<h1 className='text-[#6C6C6C] mt-20 flex justify-start'>
 						Attendee:
 						<img src="/attendee.svg" alt=""
@@ -91,27 +89,17 @@ const Page = () => {
 			</div>
 		)
 	}
-	
-
-
-	const handleClick = (id: any) => {
-		if (clickedCardId === id) {
-			setClickedCardId(null); // Toggle off if already clicked
-		} else {
-			setClickedCardId(id);
-		}
-	};
 
 	return (
 		<>
 			<div className="flex justify-between items-end border-b pb-2">
 				<nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
 					<Link href="/admin/classrooms"
-					      className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Classrooms</Link>
+					      className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Lectures</Link>
 					<Link href="/admin/teachers" className="">
-						Teachers
+						Quizzes
 					</Link>
-					<Link href="/admin/students" className="">Students</Link>
+					<Link href="/admin/students" className="">Nptes</Link>
 				</nav>
 				<button
 					className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={()=>setCreate(true)}
@@ -121,7 +109,7 @@ const Page = () => {
 				</button>
 			</div>
 			{create && (
-				<Form create={create} setCreate={setCreate}/>
+				<Form create={create} setCreate={setCreate} classroomId={classroomId}/>
 			)}
 
 			<main className='py-4'>
@@ -136,10 +124,8 @@ const Page = () => {
 							data.map((item) => {
                                 return (
                                     <ClassCard
-                                        key={item.classroomId}
+                                        key={item.lectureId}
                                         item={item}
-                                        activeId={clickedCardId}
-                                        setActive={setClickedCardId}
                                     />
                                 )
 						}))}
@@ -150,3 +136,4 @@ const Page = () => {
 }
 
 export default Page
+

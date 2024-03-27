@@ -17,7 +17,7 @@ import {
 import db from "@/util/db";
 import {DeletedEnrollmentResponse, GetEnrollmentsResponse} from "@/util/api/api_responses";
 
-export const HEAD = withMiddlewares<ClassroomParams>(
+export const POST = withMiddlewares<ClassroomParams>(
 	authParser(),
 	requireAuthenticatedUser(),
 	requireAuthorizedUser({ matchUserTypes: ["Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),

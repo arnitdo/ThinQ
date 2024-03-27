@@ -22,7 +22,7 @@ import db from "@/util/db";
 
 type ParsedData = {
 	classroomName: string,
-	facultyUserId: string
+	facultyUserName: string
 }
 
 export const POST = withMiddlewares<OrgIdBaseParams, CreateBulkUserBody, NoParams>(
@@ -41,19 +41,27 @@ export const POST = withMiddlewares<OrgIdBaseParams, CreateBulkUserBody, NoParam
 		const {orgId} = req.params
 		const parsedData = parse(csvData, {
 			trim: true,
-			columns: ["classroomName", "facultyUserId"]
+			columns: ["classroomName", "facultyUserName"]
 		}) as ParsedData[]
 
 		await Promise.all(
 			parsedData.map(async (parsedObj) => {
 				try {
 
-					const mappedObj = {
-						...parsedObj,
-						classroomOrgId: orgId
-					}
+                    const faculty = await db.user.findFirst({
+						where: {
+							userName: parsedObj.facultyUserName,
+							userType: UserType.Teacher
+						}
+					})
 
-                    if(! await userExists(mappedObj.facultyUserId)) return
+					if(!faculty) return
+					
+					const mappedObj = {
+						classroomName: parsedObj.classroomName,
+						classroomOrgId: orgId,
+						facultyUserId: faculty.userId
+					}
 
                     console.log(mappedObj)
 

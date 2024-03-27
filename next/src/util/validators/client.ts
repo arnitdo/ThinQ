@@ -1,5 +1,5 @@
 import {ClientValidator} from "@/util/validators/index";
-import {AuthLoginUserBody, CreateClassroomBody, CreateOrganizationBody, CreateUserBody} from "@/util/api/api_requests";
+import {AuthLoginUserBody, ClassroomParams, CreateClassroomBody, CreateLectureBody, CreateOrganizationBody, CreateUserBody} from "@/util/api/api_requests";
 import {STRLEN_NZ} from "@/util/validators/utils";
 
 export const CreateOrgClientValidator: ClientValidator<CreateOrganizationBody> = {
@@ -22,4 +22,12 @@ export const CreateUserBodyClientValidator: ClientValidator<CreateUserBody> = {
 export const CreateClassroomBodyClientValidator: ClientValidator<CreateClassroomBody> = {
 	classroomName: STRLEN_NZ,
 	facultyId: STRLEN_NZ
+}
+
+export const CreateEnrollmentBodyClientValidator: ClientValidator<ClassroomParams> = {
+	classroomId: STRLEN_NZ
+}
+
+export const CreateLectureBodyClientValidator: ClientValidator<CreateLectureBody> = {
+
 }
