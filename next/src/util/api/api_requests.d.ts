@@ -183,3 +183,8 @@ export type CreateBulkUserBody = {
 export type GetOrgUsersParams = OrgIdBaseParams
 
 export type DeleteUserParams = OrgIdBaseParams & UserIdBaseParams
+
+export type GetTeacherByNameParams = {
+	orgId: string,
+	name: string
+}
