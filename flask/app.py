@@ -1,4 +1,3 @@
-from calendar import c
 from functions import *
 
 app = Flask(__name__) 
