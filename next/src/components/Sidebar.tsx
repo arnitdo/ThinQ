@@ -31,19 +31,19 @@ const Sidebar = () => {
 
               <label htmlFor="sidebarClose" className="hidden | md:block">
                 <input type="checkbox" name="sidebarClose" id="sidebarClose" className="hidden peer" />
-                <img src="/sidebarOpenCloseButton.png" alt="" className='hidden | rotate-180 md:block cursor-pointer peer-checked:rotate-0' onClick={handleClick} />
+                <img src="/sidebarOpenCloseButton.svg" alt="" className='hidden | rotate-180 md:block cursor-pointer peer-checked:rotate-0' onClick={handleClick} />
               </label>
             </div>
 
             <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer'>
-              <img src="/sidebarHome.png" alt="" />
+              <img src="/sidebarHome.svg" alt="" />
               {sidebarActive && (
                 <p className='hidden | md:block'>Home</p>
               )}
             </div>
 
             <div className='p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] flex gap-3 items-center cursor-pointer'>
-              <img src="/sidebarCalendar.png" alt="" />
+              <img src="/sidebarCalendar.svg" alt="" />
               {sidebarActive && (
                 <p className='hidden | md:block'>Calendar</p>
               )}
@@ -51,9 +51,9 @@ const Sidebar = () => {
           </div>
 
           <button onClick={() => { handleSignout() }} className='p-[0.625rem] items-center rounded-[0.3125rem] border border-[#646464] hover:bg-[#ECECEc] shadow-[0_4px_33.3px_hsl(0,0%,0%,16%)] flex gap-3 cursor-pointer'>
-            <img src="/sidebarPremium.png" alt="" />
+            <img src="/logout.svg" alt="" className="opacity-55" />
             {sidebarActive && (
-              <p className='hidden | md:block'>Premium</p>
+              <p className='hidden | md:block'>Logout</p>
             )}
           </button>
         </nav>
