@@ -74,3 +74,19 @@ def convert_html_to_pdf(html_string):
     else:
         pdf.seek(0)
         return pdf
+
+def save_json_to_s3(json_data, s3_path, filename):
+    json_string = json.dumps(json_data)
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=f"{s3_path}/{filename}",
+        Body=json_string
+    )
+
+def download_json_from_s3(s3_path, filename):
+    response = s3.get_object(
+        Bucket=S3_BUCKET,
+        Key=f"{s3_path}/{filename}"
+    )
+    json_data = json.loads(response['Body'].read())
+    return json_data
