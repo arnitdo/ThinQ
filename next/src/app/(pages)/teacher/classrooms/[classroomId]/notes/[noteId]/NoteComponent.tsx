@@ -1,4 +1,4 @@
-// @ts-nocheck
+//@ts-nocheck
 "use client"
 import React, { useEffect, useState } from 'react'
 import Output from "./(components)/Output"
@@ -9,7 +9,7 @@ import LoadingScreen from '@/components/Loader'
 import { Volume2 } from 'lucide-react'
 
 
-export default function NotesComponent({ noteId, classroomId }: { noteId: string, classroomId: string}) {
+export default function NotesComponent({ noteId, classroomId }) {
   const [loading, setloading] = useState(true)
   const [notes, setNotes] = useState("Lorem ipsum dolor sit amet consectetur adipisicing elit. \nLorem ipsum dolor sit amet consectetur adipisicing elit. \n\nLorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda repellat omnis totam sed blanditiis eos obcaecati impedit? Ipsa a quis consequatur, dignissimos necessitatibus totam, nesciunt eos expedita adipisci accusamus pariatur?")
   const addFunctionality = () => {
@@ -25,7 +25,7 @@ export default function NotesComponent({ noteId, classroomId }: { noteId: string
       const pageEl = document.querySelector<HTMLElement>('.page-a');
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-      const addFontFromFile = (fileObj : File) => {
+      const addFontFromFile = (fileObj ) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             if(!e.target)return
@@ -47,7 +47,7 @@ export default function NotesComponent({ noteId, classroomId }: { noteId: string
        * @description
        * Creates PDF from list of given images
        */
-      const  createPDF = (imgs: HTMLCanvasElement[]) =>{
+      const  createPDF = (imgs) =>{
         // eslint-disable-next-line new-cap
         const doc = new jsPDF('p', 'pt', 'a4');
         const width = doc.internal.pageSize.width;

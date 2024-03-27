@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import QuizCard from "./(components)/QuizCard";
-import Navbar from "@/components/Navbar";
 import Loader from "@/components/Loader";
 
 export default function QuizPage({
