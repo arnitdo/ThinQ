@@ -2,11 +2,11 @@
 import Loader from '@/components/Loader'
 import SmallLoader from '@/components/SmallLoader'
 import useAuthStore from '@/lib/zustand'
-import {deleteClassroom, deleteLecture, getClassrooms, getEnrollments, getFaculty, getLectures} from '@/util/client/helpers'
+import { deleteLecture, getLectures} from '@/util/client/helpers'
 import {AuthUser} from '@/util/middleware/auth'
-import {Classroom, ClassroomEnrollment, Lecture} from '@prisma/client'
+import { ClassroomEnrollment, Lecture} from '@prisma/client'
 import Link from 'next/link'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import Form from './(components)/Form'
 import { toast } from 'sonner'
 
@@ -94,12 +94,12 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		<>
 			<div className="flex justify-between items-end border-b pb-2">
 				<nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
-					<Link href="/admin/classrooms"
+					<Link href={`/teacher/classrooms/${classroomId}/lectures`}
 					      className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Lectures</Link>
-					<Link href="/admin/teachers" className="">
+					<Link href={`/teacher/classrooms/${classroomId}/quiz`} className="">
 						Quizzes
 					</Link>
-					<Link href="/admin/students" className="">Nptes</Link>
+					<Link href={`/teacher/classrooms/${classroomId}/notes`} className="">Notes</Link>
 				</nav>
 				<button
 					className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={()=>setCreate(true)}
