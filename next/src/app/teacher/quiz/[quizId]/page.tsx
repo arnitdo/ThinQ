@@ -110,7 +110,7 @@ const Page = () => {
   const outerRadius = isMobile ? 60 : 140;
   return (
     <>
-      <div className="text-zinc-700 font-medium text-3xl max-sm:text-2xl">
+      <div className="text-zinc-700 font-medium text-4xl max-sm:text-2xl">
         Quiz Dashboard
       </div>
       <p className="mt-2 max-sm:text-xs">Operating System Quiz</p>
@@ -178,7 +178,7 @@ const Page = () => {
         </div>
       </div>
       <div className="Questions p-4">
-        <div className="text-zinc-700 font-medium text-3xl max-sm:text-2xl">
+        <div className="text-zinc-700 font-medium text-4xl max-sm:text-2xl mt-4">
           Questions
         </div>
         
