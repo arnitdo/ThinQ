@@ -22,6 +22,7 @@ import {
 	DeleteUserParams,
 	EditClassroomBody,
 	EditLectureBody,
+	GetMeetingTokenParams,
 	GetUserParams,
 	LectureParams,
 	MediaEndpointRequestBody,
@@ -483,5 +484,62 @@ export const DeleteUserServerValidator: ServerValidator<DeleteUserParams, Delete
 		})
 
 		return userCount !== 0
+	}
+}
+
+export const GetLectureTokenValidator: ServerValidator<GetMeetingTokenParams, GetMeetingTokenParams> = {
+	orgId: orgExists,
+	classroomId: async (classroomId, req) => {
+		// User must be enrolled in the classroom
+		if (req.user === undefined){
+			return false
+		}
+
+		const {userType, userId} = req.user
+
+		const classroomData = await db.classroom.findFirst({
+			where: {
+				classroomId: classroomId,
+				classroomOrgId: req.params.orgId
+			}
+		})
+
+		const isValidClassroom = classroomData !== null
+
+		if (!isValidClassroom){
+			return false
+		}
+
+		if (userType === "Teacher"){
+			return classroomData.facultyUserId === userId;
+		}
+
+		const studentEnrollmentData = await db.classroomEnrollment.findFirst({
+			where: {
+				classroomId: classroomId,
+				userId: userId
+			}
+		})
+
+		return studentEnrollmentData !== null
+	},
+	lectureId: async (lectureId, req) => {
+		// Lecture must exist, and be active Start <= Now() <= End
+		const nowTimestamp = new Date()
+
+		const lectureData = await db.lecture.findFirst({
+			where: {
+				lectureClassroomId: req.params.classroomId,
+				lectureId: lectureId,
+				lectureStartTimestamp: {
+					lte: nowTimestamp
+				},
+				lectureEndTimestamp: {
+					gte: nowTimestamp
+				},
+			}
+		})
+
+		return lectureData !== null
 	}
 }

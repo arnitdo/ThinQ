@@ -188,3 +188,5 @@ export type GetTeacherByNameParams = {
 	orgId: string,
 	name: string
 }
+
+export type GetMeetingTokenParams = LectureParams

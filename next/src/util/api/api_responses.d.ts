@@ -163,3 +163,7 @@ export type CreateSingleUserResponse = {
 export type GetOrgUsersResponse = {
 	orgUsers: User[]
 }
+
+export type GetLectureTokenResponse = {
+	accessToken: string
+}
