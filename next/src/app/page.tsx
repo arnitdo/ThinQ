@@ -49,7 +49,7 @@ export default function Home() {
     setIsNavOpen(!isNavOpen);
   };
   return (
-    <main>
+    <>
       <section className="hero p-[28px] max-sm:px-4 font-spaceG">
         <div className="grid gap-7 auto-cols-fr auto-rows-[auto] relative isolate">
           <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vrNigga.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
@@ -226,6 +226,6 @@ export default function Home() {
           <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-2 row-span-1 col-start-3 col-span-1 bg-[radial-gradient(circle_at_0_0,#F722B7_1.75rem,white_calc(1.75rem+1px))]"></div>
         </div>
       </section>
-    </main>
+    </>
   );
 }
