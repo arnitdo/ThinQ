@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import QuizCard from "./(components)/QuizCard";
 import Loader from "@/components/Loader";
 
@@ -75,7 +75,7 @@ export default function QuizPage({
   
 
   // const getData = async() => {
-  //   const res = await fetch(`/api/orgs/test/classroom/${params.classId}/lecture/${params.lectureId}/quiz`)
+  //   const res = await fetch(`/api/orgs/test/classroom/${params.classId}/rooms/${params.lectureId}/quiz`)
   //   const data = await res.json()
   //   if(data.responseStatus !== 'SUCCESS') useRouter().push(`/class/${params.classId}/`)
   //   const promises = data.quizes.map(async (quiz: any) => {
@@ -88,7 +88,7 @@ export default function QuizPage({
   //     } )
   //     const data2 = await res2.json()
   //     setAttemptId(data2.createdQuizAttemptId)
-  //     const res = await fetch(`/api/orgs/test/classroom/${params.classId}/lecture/${params.lectureId}/quiz/${quiz.quizId}/question`);
+  //     const res = await fetch(`/api/orgs/test/classroom/${params.classId}/rooms/${params.lectureId}/quiz/${quiz.quizId}/question`);
   //     const quizData = await res.json();
   //     return quizData.quizQuestions;
   //   });

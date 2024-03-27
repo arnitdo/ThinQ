@@ -10,7 +10,7 @@ import {
 import {UserType} from "@prisma/client";
 import {GetLectureTokenValidator} from "@/util/validators/server";
 import {AccessToken} from "livekit-server-sdk"
-import {GetLectureTokenResponse} from "@/util/api/api_responses";
+import {GetMeetingTokenResponse} from "@/util/api/api_responses";
 
 export const GET = withMiddlewares<GetMeetingTokenParams>(
 	authParser(),
@@ -45,7 +45,7 @@ export const GET = withMiddlewares<GetMeetingTokenParams>(
 
 		const tokenString = await accessToken.toJwt()
 
-		res.status(200).json<GetLectureTokenResponse>({
+		res.status(200).json<GetMeetingTokenResponse>({
 			responseStatus: "SUCCESS",
 			accessToken: tokenString
 		})

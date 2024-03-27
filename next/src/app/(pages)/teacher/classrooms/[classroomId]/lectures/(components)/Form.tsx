@@ -1,14 +1,13 @@
-
 import useAuthStore from "@/lib/zustand";
-import { ClassroomParams, CreateBulkUserBody, CreateLectureBody, OrgIdBaseParams } from "@/util/api/api_requests";
-import { getTeachers, makeAPIRequest } from "@/util/client/helpers";
-import { useForm } from "@/util/client/hooks/useForm";
-import { AuthUser } from "@/util/middleware/auth";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { CreateLectureBodyClientValidator } from "@/util/validators/client";
-import { ResponseJSON } from "@/util/api/api_meta";
-import { Calendar } from "@/components/ui/calendar"
+import {ClassroomParams, CreateLectureBody} from "@/util/api/api_requests";
+import {getTeachers, makeAPIRequest} from "@/util/client/helpers";
+import {useForm} from "@/util/client/hooks/useForm";
+import {AuthUser} from "@/util/middleware/auth";
+import {useEffect, useState} from "react";
+import {toast} from "sonner";
+import {CreateLectureBodyClientValidator} from "@/util/validators/client";
+import {ResponseJSON} from "@/util/api/api_meta";
+import {Calendar} from "@/components/ui/calendar"
 
 export default function Form({ create, setCreate, classroomId }: { create: boolean, setCreate: (value: boolean) => void, classroomId: string }) {
     const [start, setStart] = useState<Date | undefined>(undefined)
@@ -81,7 +80,7 @@ export default function Form({ create, setCreate, classroomId }: { create: boole
     console.log({start, end})
         if (!user) return;
         const response = await makeAPIRequest<ResponseJSON, ClassroomParams, CreateLectureBody>({
-            requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture",
+            requestUrl: "/api/orgs/:orgId/classroom/:classroomId/rooms",
             urlParams: {
                 orgId: user.userOrgId,
                 classroomId: classroomId
@@ -142,7 +141,7 @@ export default function Form({ create, setCreate, classroomId }: { create: boole
                                     // disabled
                                     className="w-full text-left border rounded-md py-2 px-3"
                                     // placeholder="E.g. Comps-1"
-                                >{start&&end? ((new Date(start)).toLocaleDateString().toString()+", "+((new Date(start).getHours().toString())+":"+(new Date(start).getMinutes().toString()))+" to "+((new Date(end).getHours().toString())+":"+(new Date(end).getMinutes().toString()))) :"Select lecture start and end time"}</button>
+                                >{start&&end? ((new Date(start)).toLocaleDateString().toString()+", "+((new Date(start).getHours().toString())+":"+(new Date(start).getMinutes().toString()))+" to "+((new Date(end).getHours().toString())+":"+(new Date(end).getMinutes().toString()))) :"Select rooms start and end time"}</button>
                                 {calender==="start"?<div className=" absolute top-0">
                                     <Calendar mode="single" selected={date} onSelect={setDate} setVisible={setCalender} onEndDate={setEnd} onDate={setStart} className="rounded-xl border bg-white"/>
                                 </div>:<></>}

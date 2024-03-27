@@ -1,10 +1,22 @@
 "use client"
-import type { RequestMethod, ResponseJSON, StatusCode } from "@/util/api/api_meta";
-import { toast } from "sonner";
-import { AuthUser } from "../middleware/auth";
-import useAuthStore from "@/lib/zustand";
-import { AuthLoginUserParams, ClassroomParams, GetUserParams, LectureParams, NoParams, OrgIdBaseParams, UserIdBaseParams } from "../api/api_requests";
-import { DeletedLectureResponse, GetClassroomsResponse, GetEnrollmentsResponse, GetLecturesResponse, GetUserByIdResponse, GetUsersResponse } from "../api/api_responses";
+import type {RequestMethod, ResponseJSON, StatusCode} from "@/util/api/api_meta";
+import {toast} from "sonner";
+import {
+	AuthLoginUserParams,
+	ClassroomParams,
+	GetUserParams,
+	LectureParams,
+	NoParams,
+	OrgIdBaseParams
+} from "../api/api_requests";
+import {
+	DeletedLectureResponse,
+	GetClassroomsResponse,
+	GetEnrollmentsResponse,
+	GetLecturesResponse,
+	GetUserByIdResponse,
+	GetUsersResponse
+} from "../api/api_responses";
 
 type MakeAPIRequestArgs<ParamsT extends {} = {}, BodyT extends {} = {}, QueryT extends {} = {}> = {
 	requestUrl: string,
@@ -322,7 +334,7 @@ export async function getFacultyStudents(orgId:string) {
 
 export async function getLectures(orgId:string, classroomId:string) {
 	const response = await makeAPIRequest<GetLecturesResponse, ClassroomParams, NoParams, NoParams>({
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture",
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/rooms",
 		urlParams: {
 			orgId,
 			classroomId
@@ -343,7 +355,7 @@ export async function getLectures(orgId:string, classroomId:string) {
 
 export async function deleteLecture(orgId:string, classroomId:string, lectureId:string) {
 	const response = await makeAPIRequest<DeletedLectureResponse, LectureParams, NoParams, NoParams>({
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture/:lectureId",
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/rooms/:lectureId",
 		urlParams: {
 			orgId,
 			classroomId,

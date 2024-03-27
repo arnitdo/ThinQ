@@ -164,6 +164,6 @@ export type GetOrgUsersResponse = {
 	orgUsers: User[]
 }
 
-export type GetLectureTokenResponse = {
+export type GetMeetingTokenResponse = {
 	accessToken: string
 }

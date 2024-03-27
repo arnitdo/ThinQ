@@ -1,19 +1,12 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { redirect } from "next/navigation";
-import React, { useEffect } from "react";
+import {Card, CardContent, CardDescription, CardTitle,} from "@/components/ui/card";
+import {useRouter} from "next/navigation";
+import React, {useEffect} from "react";
 import {toast} from "sonner";
-import { Volume2 } from "lucide-react";
-import { QuizQuestion } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import {Volume2} from "lucide-react";
+import {QuizQuestion} from "@prisma/client";
 
 export default function QuizCard({
   QuizArray,
@@ -47,7 +40,7 @@ export default function QuizCard({
   }
   // const saveRecord = async (questionId: string, correctAnswerInd: number, selectedAnswer: string, quizId: string) => {
   //   try {
-  //     const res = await fetch(`/api/orgs/test/classroom/${classId}/lecture/${lectureId}/quiz/${quizId}/attempt/${attemptId}/response?questionId=${questionId}`,{
+  //     const res = await fetch(`/api/orgs/test/classroom/${classId}/rooms/${lectureId}/quiz/${quizId}/attempt/${attemptId}/response?questionId=${questionId}`,{
   //       method:"POST",
   //       headers:{
   //         "Content-type":"application/json"
