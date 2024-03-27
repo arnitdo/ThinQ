@@ -197,7 +197,7 @@ body {
     align-items: center;
   }
 } */
-.modalGrid {
+/* .modalGrid {
   display: block;
 }
 @media (max-height: 900px) {
@@ -207,7 +207,4 @@ body {
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
   }
-  .modalContainer {
-    width: 33%;
-  }
-}
+} */
