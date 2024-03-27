@@ -3,7 +3,7 @@ import type { RequestMethod, ResponseJSON, StatusCode } from "@/util/api/api_met
 import { toast } from "sonner";
 import { AuthUser } from "../middleware/auth";
 import useAuthStore from "@/lib/zustand";
-import { AuthLoginUserParams, ClassroomParams, GetUserParams, NoParams, OrgIdBaseParams } from "../api/api_requests";
+import { AuthLoginUserParams, ClassroomParams, GetUserParams, NoParams, OrgIdBaseParams, UserIdBaseParams } from "../api/api_requests";
 import { GetClassroomsResponse, GetEnrollmentsResponse, GetUserByIdResponse, GetUsersResponse } from "../api/api_responses";
 
 type MakeAPIRequestArgs<ParamsT extends {} = {}, BodyT extends {} = {}, QueryT extends {} = {}> = {
@@ -217,5 +217,47 @@ export async function getStudents(orgId:string) {
 	if(response.responseData.responseStatus==="SUCCESS"){
 		// toast.success("Signed out successfully!")
 		return response.responseData.users;
+	}
+}
+
+export async function deleteClassroom(orgId:string, classroomId:string) {
+	const response = await makeAPIRequest<ResponseJSON, ClassroomParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId",
+		urlParams: {
+			orgId: orgId,
+			classroomId: classroomId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "DELETE"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.responseStatus;
+	}
+}
+
+export async function deleteUser(orgId:string, userId:string) {
+	const response = await makeAPIRequest<ResponseJSON, GetUserParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/users/:userId",
+		urlParams: {
+			orgId: orgId,
+			userId: userId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "DELETE"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.responseStatus;
 	}
 }

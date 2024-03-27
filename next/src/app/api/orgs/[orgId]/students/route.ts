@@ -18,21 +18,12 @@ export const GET = withMiddlewares<GetOrgUsersParams>(
 	requireURLParams(["orgId"]),
 	validateURLParams(BaseOrgIdParamServerValidator),
 	async (req, res) => {
-		const allClasses = await db.classroom.findMany({
-			where: {
-				classroomOrgId: req.params.orgId
-			},
-			select: {
-				classroomEnrollments: {
-					select: {
-						enrolledUser: true
-					}
-				}
+		const users = await db.user.findMany({
+			where:{
+				userOrgId: req.params.orgId,
+				userType: "Student",
 			}
 		})
-
-        const users = allClasses.map( (classroom) => classroom.classroomEnrollments.map( (enrollment) => enrollment.enrolledUser ) ).flat()
-
 		res.status(200).json<GetUsersResponse>({
 			responseStatus: "SUCCESS",
 			users: users

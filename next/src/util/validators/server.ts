@@ -413,6 +413,63 @@ export const CreateBulkUsersServerValidator: ServerValidator<CreateBulkUserBody>
 	}
 }
 
+export const CreateBulkStudentsServerValidator: ServerValidator<CreateBulkUserBody> = {
+	csvData: (data: string) => {
+		try {
+			const parsedData = parse(data, {
+				trim: true,
+				columns: ["userName", "userDisplayName", "userPassword"]
+			}) as any[]
+
+			for (const parsedRow of parsedData){
+				const parsedValues = Object.values(parsedRow)
+				const hasBadValue = parsedValues.some((parsedValue) => {
+					return (
+						parsedValue === "" || parsedValue === null ||
+						parsedValue === undefined || typeof parsedValue !== "string"
+					)
+				})
+				if (hasBadValue){
+					return false
+				}
+			}
+
+			return true
+		} catch (e){
+			return false
+		}
+	}
+}
+
+export const CreateBulkClassroomsServerValidator: ServerValidator<CreateBulkUserBody> = {
+	csvData: (data: string) => {
+		try {
+			const parsedData = parse(data, {
+				trim: true,
+				columns: ["classroomName", "facultyUserId"]
+			}) as any[]
+
+			for (const parsedRow of parsedData){
+				const parsedValues = Object.values(parsedRow)
+				const hasBadValue = parsedValues.some((parsedValue) => {
+					return (
+						parsedValue === "" || parsedValue === null ||
+						parsedValue === undefined || typeof parsedValue !== "string"
+					)
+				})
+				if (hasBadValue){
+					return false
+				}
+			}
+
+			return true
+		} catch (e){
+			return false
+		}
+	}
+}
+
+
 export const DeleteUserServerValidator: ServerValidator<DeleteUserParams, DeleteUserParams> = {
 	orgId: orgExists,
 	userId: async (userId: string, req) => {
