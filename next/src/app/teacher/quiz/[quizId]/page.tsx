@@ -7,6 +7,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { useState } from "react";
+import Accordion from "./Accordion";
 import {
   BarChart,
   Bar,
@@ -73,7 +74,29 @@ const score = [
     marks: 100,
   },
 ];
-
+const questions = [
+  {
+    question: "What is the capital of India?",
+    answer: "New Delhi",
+  },
+  {
+    question: "What is the capital of USA?",
+    answer: "Washington DC",
+  },
+  {
+    question: "What is the capital of UK?",
+    answer: "London",
+  },
+  {
+    question: "What is the capital of Australia?",
+    answer: "Canberra",
+  },
+  {
+    question: "What is the capital of Japan?",
+    answer: "Tokyo",
+  }
+  
+]
 const Page = () => {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
@@ -87,73 +110,83 @@ const Page = () => {
   const outerRadius = isMobile ? 60 : 140;
   return (
     <>
-      <div>
-        <div className="text-zinc-700 font-medium text-3xl max-sm:text-2xl">Quiz Dashboard</div>
-        <p className="mt-2 max-sm:text-xs">Operating System Quiz</p>
-        <p className="max-sm:text-xs">Date Generated: 20/7/2024</p>
-        <div className="flex max-[987px]:flex-col gap-4 my-4">
+      <div className="text-zinc-700 font-medium text-3xl max-sm:text-2xl">
+        Quiz Dashboard
+      </div>
+      <p className="mt-2 max-sm:text-xs">Operating System Quiz</p>
+      <p className="max-sm:text-xs">Date Generated: 20/7/2024</p>
+      <div className="flex max-[987px]:flex-col gap-4 my-4">
         <div className="bg-white border rounded-md shadow-lg p-4 w-6/12 max-[987px]:w-full h-96">
-            <div className="text-black font-medium">Score Graph</div>
-            <div className="w-full h-full py-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={score}>
-                  <CartesianGrid strokeDasharray="3 3" />
+          <div className="text-black font-medium">Score Graph</div>
+          <div className="w-full h-full py-4">
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={score}>
+                <CartesianGrid strokeDasharray="3 3" />
 
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="marks"
-                    stroke="#8884d8"
-                    fill="#8884d8"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="marks"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
-          <div className="bg-white border rounded-md shadow-lg p-4 w-7/12 max-[987px]:w-full h-96">
-            <div className="text-black font-medium">Overall Attendance</div>
-            <div className="w-full h-full py-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    dataKey="value"
-                    data={[
-                      { name: "Attempted", value: attendance[0].attempted },
-                      {
-                        name: "Not Attempted",
-                        value:
-                          attendance[0].totalStudents - attendance[0].attempted,
-                      },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={innerRadius}
-                    outerRadius={outerRadius}
-                    fill="#8884d8"
-                    label={({ name, percent }) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
-                    }
-                    labelLine={false}
-                    paddingAngle={5}
-                    startAngle={90}
-                    endAngle={-270}
-                  >
-                    {attendance.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-          
         </div>
+        <div className="bg-white border rounded-md shadow-lg p-4 w-7/12 max-[987px]:w-full h-96">
+          <div className="text-black font-medium">Overall Attendance</div>
+          <div className="w-full h-full py-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  dataKey="value"
+                  data={[
+                    { name: "Attempted", value: attendance[0].attempted },
+                    {
+                      name: "Not Attempted",
+                      value:
+                        attendance[0].totalStudents - attendance[0].attempted,
+                    },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={innerRadius}
+                  outerRadius={outerRadius}
+                  fill="#8884d8"
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
+                  labelLine={false}
+                  paddingAngle={5}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  {attendance.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+      <div className="Questions p-4">
+        <div className="text-zinc-700 font-medium text-3xl max-sm:text-2xl">
+          Questions
+        </div>
+        
+        {questions.map((q) => (
+          <Accordion title={q.question} answer={q.answer} />
+        ))}
+        
+
       </div>
     </>
   );
