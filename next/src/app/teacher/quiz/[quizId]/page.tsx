@@ -76,22 +76,27 @@ const score = [
 ];
 const questions = [
   {
+    id: 1,
     question: "What is the capital of India?",
     answer: "New Delhi",
   },
   {
+    id: 2,
     question: "What is the capital of USA?",
     answer: "Washington DC",
   },
   {
+    id: 3,
     question: "What is the capital of UK?",
     answer: "London",
   },
   {
+    id: 4,
     question: "What is the capital of Australia?",
     answer: "Canberra",
   },
   {
+    id: 5,
     question: "What is the capital of Japan?",
     answer: "Tokyo",
   }
@@ -183,7 +188,7 @@ const Page = () => {
         </div>
         
         {questions.map((q) => (
-          <Accordion title={q.question} answer={q.answer} />
+          <Accordion title={q.question} answer={q.answer} key={q.id} />
         ))}
         
 
