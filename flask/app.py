@@ -1,3 +1,4 @@
+from calendar import c
 from functions import *
 
 app = Flask(__name__) 
@@ -124,45 +125,6 @@ def s3_download_lectures():
         return jsonify({'success': True, 'message': 'Transcript files downloaded successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-@app.route('/send_whatsapp_text', methods=['POST'])
-def send_whatsapp_text():
-    try:
-        data = request.get_json()
-        recipient_number = data.get('recipient_number')
-        number = "whatsapp:" + recipient_number
-        message_body = data.get('message_body')
-
-        message = twilio_client.messages.create(
-            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
-            body=message_body,
-            to=number
-        )
-        console.log({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}, log_locals=True)
-        return jsonify({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}), 200
-    except Exception as e:
-        console.log({'error': str(e)}, log_locals=True)
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/send_whatsapp_image', methods=['POST'])
-def send_whatsapp_image():
-    try:
-        data = request.get_json()
-        recipient_number = data.get('recipient_number')
-        number = "whatsapp:" + recipient_number
-        image_url = data.get('image_url')
-        caption = data.get('caption')
-        message = twilio_client.messages.create(
-            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
-            body=caption,
-            media_url=[image_url],
-            to=number
-        )
-        console.log({'message': 'WhatsApp message with image sent successfully', 'message_sid': message.sid}, log_locals=True)
-        return jsonify({'message': 'WhatsApp message with image sent successfully', 'message_sid': message.sid}), 200
-    except Exception as e:
-        console.log({'error': str(e)}, log_locals=True)
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/recommend_yt_videos', methods=['POST'])
 def recommend_yt_videos():
@@ -241,11 +203,12 @@ def rag_embed_resources():
                 s3_key = f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
-        shutil.rmtree(pdf_directory)
         return jsonify({'success': True, 'message': 'Transcript files downloaded and processed successfully'}), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree(pdf_directory)
 
 @app.route('/rag_embed_lectures', methods=['POST'])
 def rag_embed_lectures():
@@ -295,11 +258,12 @@ def rag_embed_lectures():
                 s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
-        shutil.rmtree(text_directory)
         return jsonify({'success': True, 'message': 'Transcript files downloaded and processed successfully'}), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree(text_directory)
 
 @app.route('/question_rag_resources', methods=['POST'])
 def question_rag_resources():
@@ -322,11 +286,12 @@ def question_rag_resources():
                 local_file_path = os.path.join(save_dir, filename)
                 s3.download_file(S3_BUCKET, key, local_file_path)
         answer = user_input(question, filepath=f'compute/')
-        shutil.rmtree("compute")
         return jsonify(answer), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
 
 @app.route('/question_rag_lectures', methods=['POST'])
 def question_rag_lectures():
@@ -350,11 +315,12 @@ def question_rag_lectures():
                 local_file_path = os.path.join(save_dir, filename)
                 s3.download_file(S3_BUCKET, key, local_file_path)
         answer = user_input(question, filepath=f'compute/')
-        shutil.rmtree("compute")
         return jsonify(answer), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
 
 @app.route('/get_mcq_resources', methods=['POST'])
 def get_mcq_resources():
@@ -402,11 +368,12 @@ def get_mcq_resources():
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
-        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
 
 @app.route('/get_mcq_lectures', methods=['POST'])
 def get_mcq_lectures():
@@ -454,11 +421,88 @@ def get_mcq_lectures():
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
-        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
+
+@app.route('/get_notes_resources', methods=['POST'])
+def get_notes_resources():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        topic = request_data.get('topic')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        prompt = '''
+        Generate comprehensive notes on the topic "{}" based on the provided resources.
+        Consider the following aspects:
+        - Summarize key points covered in the resources.
+        - Include relevant insights and examples.
+        - Ensure clarity and coherence in the generated notes.
+
+        Topic: {}
+        '''.format(topic, topic)
+        answer = user_input(prompt, filepath=f'compute/')
+        answer = answer["output_text"].replace("**","").replace("`","")
+        console.log(answer, log_locals=True) 
+        return jsonify({"output_text": answer}), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
+
+@app.route('/get_notes_lectures', methods=['POST'])
+def get_notes_lectures():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request_data.get('lecture_id')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        prompt = '''
+        Generate comprehensive notes based on the provided resources.
+        Consider the following aspects:
+        - Summarize key points covered in the resources.
+        - Include relevant insights and examples.
+        - Ensure clarity and coherence in the generated notes.
+        '''
+        answer = user_input(prompt, filepath=f'compute/')
+        answer = answer["output_text"].replace("**","").replace("`","")
+        console.log(answer, log_locals=True) 
+        return jsonify({"output_text": answer}), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
 
 @app.route('/get_short_ans_questions_resources', methods=['POST'])
 def get_short_ans_questions_resources():
@@ -503,11 +547,12 @@ def get_short_ans_questions_resources():
         print(cleaned_json_string)
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
-        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
 
 @app.route('/get_short_ans_questions_lectures', methods=['POST'])
 def get_short_ans_questions_lectures():
@@ -551,11 +596,12 @@ def get_short_ans_questions_lectures():
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
-        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
 
 @app.route('/validate_short_ans_questions', methods=['POST'])
 def validate_short_ans_questions():
@@ -605,10 +651,58 @@ def validate_short_ans_questions():
         cleaned_json_string = result['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         console.log(data, log_locals=True) 
-        shutil.rmtree("compute")
         return jsonify(data), 200
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
+
+@app.route('/transcript_correct_grammar', methods=['POST'])
+def transcript_correct_grammar():
+    request_data = request.get_json()
+    transcript = request_data.get('transcript')
+    corrected_text = correct_grammar(transcript)
+    console.log({"transcript": corrected_text}, log_locals=True) 
+    return jsonify({"transcript": corrected_text}),200
+
+@app.route('/send_whatsapp_text', methods=['POST'])
+def send_whatsapp_text():
+    try:
+        data = request.get_json()
+        recipient_number = data.get('recipient_number')
+        number = "whatsapp:" + recipient_number
+        message_body = data.get('message_body')
+
+        message = twilio_client.messages.create(
+            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
+            body=message_body,
+            to=number
+        )
+        console.log({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}, log_locals=True)
+        return jsonify({'message': 'WhatsApp message sent successfully', 'message_sid': message.sid}), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/send_whatsapp_image', methods=['POST'])
+def send_whatsapp_image():
+    try:
+        data = request.get_json()
+        recipient_number = data.get('recipient_number')
+        number = "whatsapp:" + recipient_number
+        image_url = data.get('image_url')
+        caption = data.get('caption')
+        message = twilio_client.messages.create(
+            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
+            body=caption,
+            media_url=[image_url],
+            to=number
+        )
+        console.log({'message': 'WhatsApp message with image sent successfully', 'message_sid': message.sid}, log_locals=True)
+        return jsonify({'message': 'WhatsApp message with image sent successfully', 'message_sid': message.sid}), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/search_images')
@@ -631,14 +725,6 @@ def search_images():
     except Exception as e:
         console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
-
-@app.route('/transcript_correct_grammar', methods=['POST'])
-def transcript_correct_grammar():
-    request_data = request.get_json()
-    transcript = request_data.get('transcript')
-    corrected_text = correct_grammar(transcript)
-    console.log({"transcript": corrected_text}, log_locals=True) 
-    return jsonify({"transcript": corrected_text}),200
 
 @app.route('/report_generation', methods=['POST'])
 def report_generation():
