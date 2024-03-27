@@ -1,4 +1,3 @@
-from calendar import c
 from functions import *
 
 app = Flask(__name__) 
@@ -367,11 +366,16 @@ def get_mcq_resources():
         answer = user_input(prompt, filepath=f'compute/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
+        save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/resources', f'mcq_{topic}.json')
         console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
-        return jsonify({'error': str(e)}), 500
+        try:
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/resources', f'mcq_{topic}.json')
+            return jsonify(json_data), 200
+        except:
+            console.log({'error': str(e)}, log_locals=True) 
+            return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
 
@@ -420,11 +424,16 @@ def get_mcq_lectures():
         answer = user_input(prompt, filepath=f'compute/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
+        save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
         console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
-        return jsonify({'error': str(e)}), 500
+        try:
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
+            return jsonify(json_data), 200
+        except:
+            console.log({'error': str(e)}, log_locals=True) 
+            return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
 
@@ -459,11 +468,16 @@ def get_notes_resources():
         '''.format(topic, topic)
         answer = user_input(prompt, filepath=f'compute/')
         answer = answer["output_text"].replace("**","").replace("`","")
+        save_json_to_s3(answer, f'orgs/{organization_id}/classrooms/{class_id}/resources', f'notes_{topic}.json')
         console.log(answer, log_locals=True) 
         return jsonify({"output_text": answer}), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
-        return jsonify({'error': str(e)}), 500
+        try:
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/resources', f'notes_{topic}.json')
+            return jsonify(json_data), 200
+        except:
+            console.log({'error': str(e)}, log_locals=True) 
+            return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
 
@@ -496,11 +510,16 @@ def get_notes_lectures():
         '''
         answer = user_input(prompt, filepath=f'compute/')
         answer = answer["output_text"].replace("**","").replace("`","")
+        save_json_to_s3(answer, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
         console.log(answer, log_locals=True) 
         return jsonify({"output_text": answer}), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
-        return jsonify({'error': str(e)}), 500
+        try:
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
+            return jsonify(json_data), 200
+        except:
+            console.log({'error': str(e)}, log_locals=True) 
+            return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
 
@@ -546,11 +565,16 @@ def get_short_ans_questions_resources():
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         print(cleaned_json_string)
         data = json.loads(cleaned_json_string)
+        save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/resources', f'short_ans_{topic}.json')
         console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
-        return jsonify({'error': str(e)}), 500
+        try:
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/resources', f'short_ans_{topic}.json')
+            return jsonify(json_data), 200
+        except:
+            console.log({'error': str(e)}, log_locals=True) 
+            return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
 
@@ -595,11 +619,16 @@ def get_short_ans_questions_lectures():
         answer = user_input(prompt, filepath=f'compute/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
+        save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'short_ans.json')
         console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
-        return jsonify({'error': str(e)}), 500
+        try:
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'short_ans.json')
+            return jsonify(json_data), 200
+        except:
+            console.log({'error': str(e)}, log_locals=True) 
+            return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
 
