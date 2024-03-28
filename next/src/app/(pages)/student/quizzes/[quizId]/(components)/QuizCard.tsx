@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Volume2 } from "lucide-react";
+import { Volume2, VolumeX  } from "lucide-react";
 import { QuizQuestion } from "@prisma/client";
 
 export default function QuizCard({
@@ -76,12 +76,13 @@ export default function QuizCard({
     }
     if (currentQuestion === randomQuiz.length - 1) {
       router.push("/student/quizzes");
-      return;
+      return toast.success("You have completed the quiz 🎉");
     }
     setCurrentQuestion(currentQuestion + 1);
   };
-
+const [paused, setPaused] = useState(false);
   const textToAudio = () => {
+    setPaused(!paused);
     const text =
       randomQuiz[currentQuestion].questionText.replaceAll(/_/g, "") +
       " " +
@@ -96,6 +97,7 @@ export default function QuizCard({
     speech.rate = 1;
     speech.pitch = 1;
 
+    if(paused) return window.speechSynthesis.cancel(); 
     window.speechSynthesis.speak(speech);
     // speechSynthesis.cancel();
   };
@@ -121,7 +123,9 @@ export default function QuizCard({
                     textToAudio();
                   }}
                 >
-                  <Volume2 className="cursor-pointer"/>
+
+                  {paused?  <Volume2 className="cursor-pointer"/>:
+                  <VolumeX className="cursor-pointer" />}
                 </span>
               </CardTitle>
               <CardDescription className="capitalize max-sm:text-sm ">
