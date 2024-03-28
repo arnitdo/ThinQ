@@ -14,7 +14,6 @@ import {useEffect, useState} from 'react';
 import {GetMeetingTokenResponse} from "@/util/api/api_responses";
 import {GetMeetingTokenParams} from "@/util/api/api_requests";
 import {useAPIRequest} from "@/util/client/hooks/useApi";
-import Dictaphone from "@/components/Dictaphone";
 import Draw from "@/components/Draw";
 
 type PageParams = {
@@ -48,14 +47,10 @@ export default function Page({params}: {params: PageParams}) {
 				}
 			}
 		}
-	}, []);
+	}, [isLoading]);
 
 	if (isLoading){
 		return <div>Loading the ThinQ Web Platform</div>
-	}
-
-	if (accessToken === null){
-		return <div>An unexpected error occurred, please notify your organization administrator</div>
 	}
 
 	return (
@@ -63,7 +58,7 @@ export default function Page({params}: {params: PageParams}) {
 		<LiveKitRoom
 			video={true}
 			audio={true}
-			token={accessToken}
+			token={accessToken!}
 			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
 			// Use the default LiveKit theme for nice styles.
 			data-lk-theme="default"
@@ -85,7 +80,7 @@ export default function Page({params}: {params: PageParams}) {
       share tracks and to leave the room. */}
 			<div className=' flex flex-row gap-2 justify-center w-full items-center'>
 				<ControlBar />
-				<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>
+				{/*<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>*/}
 			</div>
 		</LiveKitRoom>
 	);

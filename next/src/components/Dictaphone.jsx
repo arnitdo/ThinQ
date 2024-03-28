@@ -1,3 +1,5 @@
+"use client";
+
 import React, {useEffect, useState} from "react";
 import "babel-polyfill";
 import SpeechRecognition, {useSpeechRecognition,} from "react-speech-recognition";
