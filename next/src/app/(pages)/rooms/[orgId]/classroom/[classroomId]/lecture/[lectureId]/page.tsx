@@ -31,7 +31,7 @@ export default function Page({params}: {params: PageParams}) {
 
 	const {isLoading, hasResponse, responseData, hasError, errorData, statusCode} = useAPIRequest<GetMeetingTokenResponse, GetMeetingTokenParams>({
 		requestMethod: "GET",
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture/token",
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture/:lectureId/token",
 		urlParams: {
 			lectureId, orgId, classroomId
 		},
