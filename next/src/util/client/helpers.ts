@@ -11,6 +11,7 @@ import {
 } from "../api/api_requests";
 import {
 	DeletedLectureResponse,
+	GetClassroomResponse,
 	GetClassroomsResponse,
 	GetEnrollmentsResponse,
 	GetLecturesResponse,
@@ -372,5 +373,66 @@ export async function deleteLecture(orgId:string, classroomId:string, lectureId:
 	if(response.responseData.responseStatus==="SUCCESS"){
 		// toast.success("Signed out successfully!")
 		return response.responseData.deletedLecture;
+	}
+}
+
+export async function getTeacherCalender(orgId:string) {
+	const response = await makeAPIRequest<GetLecturesResponse, OrgIdBaseParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/teachers/calender",
+		urlParams: {
+			orgId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.lectures;
+	}
+}
+
+export async function getStudentCalender(orgId:string) {
+	const response = await makeAPIRequest<GetLecturesResponse, OrgIdBaseParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/students/calender",
+		urlParams: {
+			orgId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.lectures;
+	}
+}
+
+export async function getClassroom(orgId:string, classroomId:string) {
+	const response = await makeAPIRequest<GetClassroomResponse, ClassroomParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId",
+		urlParams: {
+			orgId,
+			classroomId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.classroom;
 	}
 }

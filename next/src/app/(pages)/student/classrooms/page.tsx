@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import Form from './(components)/Form'
 import { toast } from 'sonner'
+import NestedNav, { NavLink } from '@/components/NestedNav'
 
 type ClassCardProps = {
 	item: Classroom
@@ -55,7 +56,7 @@ const Page = () => {
 		}
 
 		return (
-			<div key={item.classroomId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
+			<Link href={`/student/classrooms/${item.classroomId}/lectures`} key={item.classroomId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
 				<div
 					className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
 					<div className=' px-4 py-3 bg-blue-50 rounded-md'>
@@ -66,13 +67,13 @@ const Page = () => {
 						onClick={handleClick} />
 				</div>
 				<div className='p-4'>
-					{ 
-					// able && (
-					// 	<div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
-					// 		<div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
-					// 		<div onClick={()=>handleDelete(item.classroomId)} className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
-					// 	</div>
-					// )
+					{
+						// able && (
+						// 	<div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
+						// 		<div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
+						// 		<div onClick={()=>handleDelete(item.classroomId)} className='p-2 text-red-800 hover:bg-red-100 rounded-sm cursor-pointer'>Delete</div>
+						// 	</div>
+						// )
 					}
 					<h1 className='text-[#6C6C6C] flex flex-row justify-start items-center'>Class
 						Incharge: {faculty ? faculty.userDisplayName : <span><SmallLoader /></span>}</h1>
@@ -84,28 +85,26 @@ const Page = () => {
 					</h1>
 				</div>
 
-			</div>
+			</Link>
 		)
 	}
 
+	const navlinks: NavLink[] = [
+		{
+			href: "/student/classrooms",
+			title: "Classrooms"
+		}
+	]
+
 	return (
 		<>
-			<div className="flex justify-between items-end border-b pb-2">
-				<nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
-					<Link href="/student/classrooms"
-						className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Classrooms</Link>
-					{/* <Link href="/student/quizzes" className="">
-						Quizzes
-					</Link>
-					<Link href="/student/doubts" className="">Doubts</Link> */}
-				</nav>
-				<button
-					className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={() => setCreate(true)}
-				>
-					{/* onClick function left to add on this button, present in /teachers */}
-					+ Join
-				</button>
-			</div>
+
+			<NestedNav items={navlinks} button={(<button
+				className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={() => setCreate(true)}
+			>
+				+ Join
+			</button>)} />
+
 			{create && (
 				<Form create={create} setCreate={setCreate} />
 			)}

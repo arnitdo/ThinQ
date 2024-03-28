@@ -9,7 +9,7 @@ import Link from 'next/link'
 import {useEffect, useState} from 'react'
 import Form from './(components)/Form'
 import { toast } from 'sonner'
-import { get } from 'http'
+import NestedNav, { NavLink } from '@/components/NestedNav'
 
 type ClassCardProps = {
 	item: Lecture
@@ -116,24 +116,29 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		)
 	}
 
+	const navlinks : NavLink[] = [
+		{
+			href: `/teacher/classrooms/${classroomId}/lectures`,
+			title: "Lectures"
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/quiz`,
+			title: "Quizzes"
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/notes`,
+			title: "Notes"
+		}
+	]
+
 	return (
 		<>
-			<div className="flex justify-between items-end border-b pb-2">
-				<nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
-					<Link href={`/teacher/classrooms/${classroomId}/lectures`}
-					      className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Lectures</Link>
-					<Link href={`/teacher/classrooms/${classroomId}/quiz`} className="">
-						Quizzes
-					</Link>
-					<Link href={`/teacher/classrooms/${classroomId}/notes`} className="">Notes</Link>
-				</nav>
-				<button
+				<NestedNav items={navlinks} button={(<button
 					className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={()=>setCreate(true)}
 				>
 					{/* onClick function left to add on this button, present in /teachers */}
 					+ Create
-				</button>
-			</div>
+				</button>)}/>
 			{create && (
 				<Form create={create} setCreate={setCreate} classroomId={classroomId}/>
 			)}

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import {CreateUserBodyClientValidator} from "@/util/validators/client";
 import { ResponseJSON } from "@/util/api/api_meta";
 import Dropzone from "react-dropzone";
+import { PlusCircle } from "lucide-react";
 
 
 export default function Form({ create, setCreate }: { create: boolean, setCreate: (value: boolean) => void }) {
@@ -168,7 +169,7 @@ export default function Form({ create, setCreate }: { create: boolean, setCreate
             <div className="modalContainer | absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-10 w-2/3 max-sm:w-11/12 mx-auto rounded-[1.25rem] max-sm:text-sm">
                 <div className="flex items-center justify-between mb-7 px-1 text-black">
                     <h1 className="text-2xl max-sm:text-lg">Add New Teacher</h1>
-                    <button onClick={handleCreate} className="text-2xl">X</button>
+                    <button onClick={handleCreate} className="text-2xl"><PlusCircle style={{rotate:"45deg"}}/></button>
                 </div>
 
                 <div className="modalGrid | grid gap-3 sm:grid-cols-[1fr_auto_1fr] grid-cols-[auto] items-center">

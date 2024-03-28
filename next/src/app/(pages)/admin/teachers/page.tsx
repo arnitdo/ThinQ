@@ -8,6 +8,7 @@ import { AuthUser } from "@/util/middleware/auth";
 import Form from "./(components)/Form";
 import { toast } from "sonner";
 import Loader from "@/components/Loader";
+import NestedNav, { NavLink } from "@/components/NestedNav";
 interface TeacherData {
   id: number;
   name: string;
@@ -60,23 +61,30 @@ const Page = () => {
     alert(id);
   };
 
+  const navlinks: NavLink[] = [
+		{
+			href: `/admin/classrooms`,
+			title: "Classrooms"
+		},
+		{
+			href: `/admin/teachers`,
+			title: "Teachers"
+		},
+		{
+			href: `/admin/students`,
+			title: "Students"
+		}
+	]
+
+
   return (
     <>
-      <div className="flex justify-between items-end border-b pb-2">
-        <nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
-          <Link href="/admin/classrooms" className="">Classrooms</Link>
-          <Link href="/admin/teachers" className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">
-            Teachers
-          </Link>
-          <Link href="/admin/students" className="">Students</Link>
-        </nav>
-        <button
+        <NestedNav items={navlinks} button={(<button
           className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]"
           onClick={handleCreate}
         >
           + Create
-        </button>
-      </div>
+        </button>)}/>
       {create && <Form create={create} setCreate={setCreate} />}
       {
         showToast && (<div className="absolute w-full h-full bg-opacity-40 top-0 left-0">

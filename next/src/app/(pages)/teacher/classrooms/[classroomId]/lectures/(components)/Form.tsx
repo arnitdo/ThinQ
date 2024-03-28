@@ -8,6 +8,7 @@ import {toast} from "sonner";
 import {CreateLectureBodyClientValidator} from "@/util/validators/client";
 import {ResponseJSON} from "@/util/api/api_meta";
 import {Calendar} from "@/components/ui/calendar"
+import { PlusCircle } from "lucide-react";
 
 export default function Form({ create, setCreate, classroomId }: { create: boolean, setCreate: (value: boolean) => void, classroomId: string }) {
     const [start, setStart] = useState<Date | undefined>(undefined)
@@ -120,7 +121,7 @@ export default function Form({ create, setCreate, classroomId }: { create: boole
             <div className="bg-white p-10 w-4/12 max-[1106px]:w-7/12 mx-auto rounded-[1.25rem] max-sm:w-11/12 max-sm:mt-[8%] mt-[3%] max-sm:text-sm">
                 <div className="flex items-center justify-between mb-7 px-1 text-black">
                     <h1 className="text-2xl max-sm:text-lg">Create New Lecture</h1>
-                    <button onClick={handleCreate} className="text-2xl">X</button>
+                    <button onClick={handleCreate} className="text-2xl"><PlusCircle style={{rotate:"45deg"}}/></button>
                 </div>
 
                 <div className="">

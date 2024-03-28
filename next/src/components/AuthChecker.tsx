@@ -8,16 +8,16 @@ import {usePathname, useRouter} from "next/navigation"
 import {useEffect} from "react"
 import {toast} from "sonner"
 
+export const roleRoute: Record<UserType, string> = {
+	Administrator: "/admin",
+	Student: "/student",
+	Teacher: "/teacher",
+}
+
 export default function AuthChecker() {
 	const {auth, setAuth, user, authenticate} = useAuthStore()
 	const path = usePathname()
 	const router = useRouter()
-
-	const roleRoute: Record<UserType, string> = {
-		Administrator: "/admin",
-		Student: "/student",
-		Teacher: "/teacher",
-	}
 
 	const getUser = async () => {
 		const response = await makeAPIRequest<GetUserResponse, NoParams, NoParams>({

@@ -1,5 +1,6 @@
 "use client"
 import Loader from '@/components/Loader'
+import NestedNav, { NavLink } from '@/components/NestedNav'
 import SmallLoader from '@/components/SmallLoader'
 import useAuthStore from '@/lib/zustand'
 import { getLectures} from '@/util/client/helpers'
@@ -49,25 +50,26 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 			</Link>
 		)
 	}
+	
+	const navlinks : NavLink[] = [
+		{
+			href: `/teacher/classrooms/${classroomId}/lectures`,
+			title: "Lectures"
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/quiz`,
+			title: "Quizzes"
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/notes`,
+			title: "Notes"
+		}
+	]
+
 
 	return (
 		<>
-			<div className="flex justify-between items-end border-b pb-2">
-				<nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
-					<Link href={`/teacher/classrooms/${classroomId}/lectures`}
-					      className="">Lectures</Link>
-					<Link href={`/teacher/classrooms/${classroomId}/quiz`} className="">
-						Quizzes
-					</Link>
-					<Link href={`/teacher/classrooms/${classroomId}/notes`} className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">Notes</Link>
-				</nav>
-				{/* <button
-					className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={()=>setCreate(true)}
-				>
-					+ Create
-				</button> */}
-			</div>
-
+			<NestedNav items={navlinks} button={(<></>)}/>
 			<main className='py-4'>
 				<div className='grid grid-cols-3 gap-3 max-sm:grid-cols-1 max-[1000px]:grid-cols-2'>
 					{data.length === 0 ?
