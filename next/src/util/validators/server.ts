@@ -530,13 +530,7 @@ export const GetLectureTokenValidator: ServerValidator<GetMeetingTokenParams, Ge
 		const lectureData = await db.lecture.findFirst({
 			where: {
 				lectureClassroomId: req.params.classroomId,
-				lectureId: lectureId,
-				lectureStartTimestamp: {
-					lte: nowTimestamp
-				},
-				lectureEndTimestamp: {
-					gte: nowTimestamp
-				},
+				lectureId: lectureId
 			}
 		})
 

@@ -334,7 +334,7 @@ export async function getFacultyStudents(orgId:string) {
 
 export async function getLectures(orgId:string, classroomId:string) {
 	const response = await makeAPIRequest<GetLecturesResponse, ClassroomParams, NoParams, NoParams>({
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/rooms",
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture",
 		urlParams: {
 			orgId,
 			classroomId
