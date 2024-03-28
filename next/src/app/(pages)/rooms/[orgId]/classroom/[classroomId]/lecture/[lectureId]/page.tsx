@@ -15,6 +15,7 @@ import {GetMeetingTokenResponse} from "@/util/api/api_responses";
 import {GetMeetingTokenParams} from "@/util/api/api_requests";
 import {useAPIRequest} from "@/util/client/hooks/useApi";
 import Draw from "@/components/Draw";
+import useAuthStore from "@/lib/zustand";
 
 type PageParams = {
 	orgId: string,
@@ -27,6 +28,8 @@ export default function Page({params}: {params: PageParams}) {
 	const [liveTranscript, setLiveTranscript] = useState<string>("")
 
 	const {lectureId, orgId, classroomId} = params
+
+	const {user} = useAuthStore()
 
 	const {isLoading, hasResponse, responseData, hasError, errorData, statusCode} = useAPIRequest<GetMeetingTokenResponse, GetMeetingTokenParams>({
 		requestMethod: "GET",
@@ -66,7 +69,7 @@ export default function Page({params}: {params: PageParams}) {
 		>
 			<div className=' flex w-full px-6 py-8 rounded-lg h-fit'>
 				<div className={` h-[70vh] rounded-xl w-full flex`}>
-					<Draw room={lectureId}/>
+					<Draw room={lectureId} name={user?.userDisplayName || "Guest User"}/>
 				</div>
 			</div>
 			{/* Your custom component with basic video conferencing functionality. */}

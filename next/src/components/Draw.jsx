@@ -1,10 +1,10 @@
 import {Tldraw, track, useEditor} from '@tldraw/tldraw'
 import '@tldraw/tldraw/tldraw.css'
-import {useYjsStore} from '../util/client/hooks/useYjsStore'
+import {useYjsStore} from '@/util/client/hooks/useYjsStore'
 
 const HOST_URL = 'wss://droplet.arnitdo.dev/tldraw'
 
-export default function Draw({room}) {
+export default function Draw({room, name}) {
 	const store = useYjsStore({
 		roomId:  room,
 		hostUrl: HOST_URL,
@@ -16,17 +16,19 @@ export default function Draw({room}) {
 				autoFocus
 				store={store}
 				components={{
-					SharePanel: NameEditor,
+					SharePanel: () => {
+						return <NameEditor name={name} />
+					},
 				}}
 			/>
 		</div>
 	)
 }
 
-const NameEditor = track(() => {
+const NameEditor = track(({name}) => {
 	const editor = useEditor()
 
-	const { color, name } = editor.user.getUserPreferences()
+	const { color } = editor.user.getUserPreferences()
 
 	return (
 		<div style={{ pointerEvents: 'all', display: 'flex' }}>
@@ -41,6 +43,7 @@ const NameEditor = track(() => {
 			/>
 			<input
 				value={name}
+				disabled
 				onChange={(e) => {
 					editor.user.updateUserPreferences({
 						name: e.currentTarget.value,
