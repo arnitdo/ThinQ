@@ -425,11 +425,37 @@ def get_mcq_lectures():
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
+        existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
+        quizTitle = existing_lecture.title
+        quiz = db.quiz.create({
+            "quizName" : quizTitle,
+            "lectureId" : lecture_id,
+        })
+        for question in data["questions"]:
+            create_mcq_prisma(
+                quiz.quizId,
+                question["questionText"],
+                question["questionOptions"],
+                question["questionAnswerIndex"]
+            )
         console.log(data, log_locals=True) 
         return jsonify(data), 200
     except Exception as e:
         try:
             json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
+            existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
+            quizTitle = existing_lecture.title
+            quiz = db.quiz.create({
+                "quizName" : quizTitle,
+                "lectureId" : lecture_id,
+            })
+            for question in json_data["questions"]:
+                create_mcq_prisma(
+                    quiz.quizId,
+                    question["questionText"],
+                    question["questionOptions"],
+                    question["questionAnswerIndex"]
+                )
             return jsonify(json_data), 200
         except:
             console.log({'error': str(e)}, log_locals=True) 
@@ -468,9 +494,10 @@ def get_notes_resources():
         '''.format(topic, topic)
         answer = user_input(prompt, filepath=f'compute/')
         answer = answer["output_text"].replace("**","").replace("`","")
+        answer = {"output_text": answer}
         save_json_to_s3(answer, f'orgs/{organization_id}/classrooms/{class_id}/resources', f'notes_{topic}.json')
         console.log(answer, log_locals=True) 
-        return jsonify({"output_text": answer}), 200
+        return jsonify(answer), 200
     except Exception as e:
         try:
             json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/resources', f'notes_{topic}.json')
@@ -510,12 +537,17 @@ def get_notes_lectures():
         '''
         answer = user_input(prompt, filepath=f'compute/')
         answer = answer["output_text"].replace("**","").replace("`","")
+        answer = {"output_text": answer}
         save_json_to_s3(answer, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
         console.log(answer, log_locals=True) 
-        return jsonify({"output_text": answer}), 200
+        note = create_notes_prisma(notesContent=answer['output_text'], lectureId=lecture_id)
+        print(note)
+        return jsonify(answer), 200
     except Exception as e:
         try:
             json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
+            note = create_notes_prisma(notesContent=answer['output_text'], lectureId=lecture_id)
+            print(note)
             return jsonify(json_data), 200
         except:
             console.log({'error': str(e)}, log_locals=True) 
