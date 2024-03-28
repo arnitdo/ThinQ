@@ -90,3 +90,30 @@ def download_json_from_s3(s3_path, filename):
     )
     json_data = json.loads(response['Body'].read())
     return json_data
+
+def create_mcq_prisma(quizId,questionText,questionOptions,questionAnswerIndex):
+    quizquestion = db.quizquestion.create({
+        "quizId": quizId,
+        "questionText": questionText,
+        "questionOptions": questionOptions,
+        "questionAnswerIndex": questionAnswerIndex,
+    })
+    return quizquestion
+
+def create_notes_prisma(notesContent, lectureId):
+    existing_notes = db.notes.find_many(where={"lectureId": lectureId})
+    if existing_notes:
+        for note in existing_notes:
+            db.notes.delete_many(where={"lectureId": lectureId})
+    existing_lecture = db.lecture.find_unique(where={"lectureId": lectureId})
+    if existing_lecture:
+        notesTitle = existing_lecture.title
+        notes = db.notes.create({
+            "notesContent": notesContent,
+            "notesTitle": notesTitle,
+            "lectureId": lectureId,
+        })
+        return notes
+    else:
+        print("Lecture not found.")
+        return None

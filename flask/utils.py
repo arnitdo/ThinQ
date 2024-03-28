@@ -30,3 +30,4 @@ import base64
 import io
 from rich.console import Console
 import shutil
+from prisma import Prisma

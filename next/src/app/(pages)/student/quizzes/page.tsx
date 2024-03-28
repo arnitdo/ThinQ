@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Link from "next/link";
 import { useEffect } from "react";
 import useAuthStore from "@/lib/zustand";
@@ -89,7 +89,7 @@ const Page = () => {
           </div>
         </div>)
       }
-      <main className="py-4 max-sm:text-xs overflow-auto text-[#525354] tables">
+      <div className="py-4 max-sm:text-xs overflow-auto text-[#525354] tables">
         <table className="w-full">
           <thead>
             <tr>
@@ -121,7 +121,7 @@ const Page = () => {
             ))}
           </tbody>
         </table>
-      </main>
+      </div>
     </>
   );
 };
