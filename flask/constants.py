@@ -31,3 +31,6 @@ tokenizer = AutoTokenizer.from_pretrained("vennify/t5-base-grammar-correction")
 model = AutoModelForSeq2SeqLM.from_pretrained("vennify/t5-base-grammar-correction")
 
 console = Console()
+
+db = Prisma()
+db.connect()
