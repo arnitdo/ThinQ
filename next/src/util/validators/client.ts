@@ -29,5 +29,5 @@ export const CreateEnrollmentBodyClientValidator: ClientValidator<ClassroomParam
 }
 
 export const CreateLectureBodyClientValidator: ClientValidator<CreateLectureBody> = {
-
+	title: STRLEN_NZ,
 }

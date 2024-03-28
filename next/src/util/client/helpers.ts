@@ -355,7 +355,7 @@ export async function getLectures(orgId:string, classroomId:string) {
 
 export async function deleteLecture(orgId:string, classroomId:string, lectureId:string) {
 	const response = await makeAPIRequest<DeletedLectureResponse, LectureParams, NoParams, NoParams>({
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/rooms/:lectureId",
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture/:lectureId",
 		urlParams: {
 			orgId,
 			classroomId,

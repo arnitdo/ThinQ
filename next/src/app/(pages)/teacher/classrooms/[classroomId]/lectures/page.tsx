@@ -9,6 +9,7 @@ import Link from 'next/link'
 import {useEffect, useState} from 'react'
 import Form from './(components)/Form'
 import { toast } from 'sonner'
+import { get } from 'http'
 
 type ClassCardProps = {
 	item: Lecture
@@ -29,6 +30,7 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		getData()
 	}, [user, create])
 
+
 	const ClassCard = ({item}: ClassCardProps) => {
 		const [faculty, setFaculty] = useState<AuthUser | null>(null)
 		const [enrollments, setEnrollments] = useState<ClassroomEnrollment[] | null>(null)
@@ -36,7 +38,20 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 	  const handleClick = ()=>{
 		setAble(!able)
 	  }
+
+	  function getStringDate(start: Date | string | number, end: Date | string | number) {
+        let date = (new Date(start)).toLocaleDateString().toString();
+        return date;
+    }
+
+	function getStringTime(start: Date | string | number) {
+		let time = (new Date(start)).toLocaleTimeString().toString();
+		return time;
+	}
+
+
 	
+	  console.log({start:item.lectureStartTimestamp, end:item.lectureEndTimestamp})
 		// useEffect(() => {
 		// 	const getClassData = async () => {
 		// 		const faculty = await getFaculty(item.classroomOrgId, item.facultyUserId)
@@ -76,8 +91,19 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 						</div>
 					)
 					}
+					<div className=' flex flex-col gap-2 '>
 					<h1 className='text-[#6C6C6C] flex flex-row justify-start items-center'>Class
-						Faculty: {user ? user.userDisplayName : <span><SmallLoader/></span>}</h1>
+						Scheduled at: <span className='font-semibold px-2'>{getStringDate(item.lectureStartTimestamp, item.lectureEndTimestamp)}</span></h1>
+						<div className=' flex flex-row gap-4 justify-start items-center'>
+							<div className=' py-1 px-3 rounded-full bg-primary text-white font-semibold text-ms'>
+								{getStringTime(item.lectureStartTimestamp)}
+							</div>
+							<h1 className=' font-bold text-xl text-zinc-950'>-</h1>
+							<div className=' py-1 px-3 rounded-full bg-secondary text-white font-semibold text-md'>
+								{getStringTime(item.lectureEndTimestamp)}
+							</div>
+						</div>
+						</div>
 					<h1 className='text-[#6C6C6C] mt-20 flex justify-start'>
 						Attendee:
 						<img src="/attendee.svg" alt=""

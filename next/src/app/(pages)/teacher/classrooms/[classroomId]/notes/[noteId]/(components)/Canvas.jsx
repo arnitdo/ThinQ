@@ -2,86 +2,83 @@ import React from 'react'
 
 export default function Canvas() {
   return (
-    <section className="generate-image-section"  id="homework" style={{display:"none"}}>
-        <br /><br />
-        <form id="generate-image-form">
-          {/* <!-- Generate Image Section --> */}
-          <div className="display-flex output-grid responsive-flex">
-            <div className="flex-1 page-container-super  flex justify-center items-center">
-              {/* <!-- <div>
-                <h2 style="marginTop: 0px;">Input</h2>
-                <label className="block" for="note">Type/Paste text here</label>
-              </div> --> */}
-
-              <div className="flex-1 page-container w-full flex justify-center items-center">
-                <div className="page-a margined lines">
-                  <div contenteditable="true" className="top-margin"></div>
-                  <div className="display-flex left-margin-and-content">
-                    <div contenteditable="true" className="left-margin"></div>
-                    <div className="paper-content" id="note" contenteditable="true" style={{outline: "none"}}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Ut rhoncus dui eget tortor feugiat iaculis. Morbi et dolor
-                      in felis viverra efficitur. Integer id laoreet arcu.
-                      Mauris turpis nibh, scelerisque sed tristique non,
-                      hendrerit in erat. Duis interdum nisl risus, ac ultrices
-                      ipsum auctor at. Aliquam faucibus iaculis metus sit amet
-                      tincidunt. Vestibulum cursus urna vel nunc imperdiet
-                      suscipit. Ut eu augue egestas, porta orci lobortis,
-                      pharetra orci. Morbi eu tellus quis nisi tempor accumsan
-                      nec eu urna. empor, ullamcorper tortor. Mauris quis
-                      fermentum augue. Phasellus ac nisl hendrerit, fringilla
-                      enim aliquam, placerat odio. Ut tortor nisi, pellentesque
-                      sed nisi at, hendrerit imperdiet turpis. Proin interdum
-                      porttitor metus at hendrerit. Proin ipsum nisl, lacinia
-                      vitae purus ullamcorper, maximus convallis sem. Sed nec
-                      lacinia lorem. Duis arcu metus, cursus non odio quis,
-                      tincidunt tempor augue. Donec eget vestibulum risus.
-                      Nullam blandit quis est vitae feugiat.
-                    </div>
+    <section className="generate-image-section" id="homework">
+      {/* <br /><br /> */}
+      <form id="generate-image-form" className=''>
+        {/* <!-- Generate Image Section --> */}
+        <div className="display-flex output-grid responsive-flex">
+          <div className="flex-1 page-container-super  flex justify-center">
+            <div className="flex-1 page-container w-full flex justify-center">
+              <div className="page-a margined lines">
+                <div contenteditable="true" className="top-margin"></div>
+                <div className="display-flex left-margin-and-content">
+                  <div contenteditable="true" className="left-margin"></div>
+                  <div className="paper-content" id="note" contenteditable="true" style={{ outline: "none" }}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Ut rhoncus dui eget tortor feugiat iaculis. Morbi et dolor
+                    in felis viverra efficitur. Integer id laoreet arcu.
+                    Mauris turpis nibh, scelerisque sed tristique non,
+                    hendrerit in erat. Duis interdum nisl risus, ac ultrices
+                    ipsum auctor at. Aliquam faucibus iaculis metus sit amet
+                    tincidunt. Vestibulum cursus urna vel nunc imperdiet
+                    suscipit. Ut eu augue egestas, porta orci lobortis,
+                    pharetra orci. Morbi eu tellus quis nisi tempor accumsan
+                    nec eu urna. empor, ullamcorper tortor. Mauris quis
+                    fermentum augue. Phasellus ac nisl hendrerit, fringilla
+                    enim aliquam, placerat odio. Ut tortor nisi, pellentesque
+                    sed nisi at, hendrerit imperdiet turpis. Proin interdum
+                    porttitor metus at hendrerit. Proin ipsum nisl, lacinia
+                    vitae purus ullamcorper, maximus convallis sem. Sed nec
+                    lacinia lorem. Duis arcu metus, cursus non odio quis,
+                    tincidunt tempor augue. Donec eget vestibulum risus.
+                    Nullam blandit quis est vitae feugiat.
                   </div>
-                  <div className="overlay"></div>
                 </div>
-                <br />
+                <div className="overlay"></div>
               </div>
-
-              <div>
-                <button
-                  id="draw-diagram-button"
-                  type="button"
-                  style={{fontSize: "0.9rem", marginTop: "5px", display: "none"}}
-                  className="draw-button"
-                >
-                  Draw <small>(Beta)</small>
-                </button>
-              </div>
+              <br />
             </div>
-            <div className="customization-col">
-              {/* <!-- Handwriting Font --> */}
-              <div style={{padding: "5px 0px 5px 0px"}}>
-                <b>Customizations</b> <small>(Optional)</small>
-                {/* <p style={{fontSize: "0.8rem"}}>
+
+            <div>
+              <button
+                id="draw-diagram-button"
+                type="button"
+                style={{ fontSize: "0.9rem", marginTop: "5px", display: "none" }}
+                className="draw-button"
+              >
+                Draw <small>(Beta)</small>
+              </button>
+            </div>
+          </div>
+          
+          <div className="customization-col">
+            {/* <!-- Handwriting Font --> */}
+            <div style={{ padding: "5px 0px 5px 0px" }}>
+              <b>Customizations</b> <small>(Optional)</small>
+              {/* <p style={{fontSize: "0.8rem"}}>
                   <em>Note: Few changes may reflect only in the generated image
                     and not in the preview</em>
                 </p> */}
-              </div>
+            </div>
+            <div className='customizationFieldsetGrid | grid'>
               <fieldset>
                 <legend>Handwriting Options</legend>
 
-                <div className="w-full grid grid-cols-2 gap-5">
+                <div className="handWritingGrid | w-full grid">
                   <div>
                     <label className="block" for="handwriting-font"
-                      >Handwriting Font</label>
+                    >Handwriting Font</label>
                     <select id="handwriting-font">
                       <option
                         selected
-                        style={{fontFamily: 'Homemade Apple'}}
+                        style={{ fontFamily: 'Homemade Apple' }}
                         value="'Homemade Apple', cursive"
                       >
                         Homemade Apple
                       </option>
                       <option value="Hindi_Font">Kruti-dev(Hindi)</option>
                       <option
-                        style={{fontFamily: "'Caveat' ,cursive", fontSize: "13pt"}}
+                        style={{ fontFamily: "'Caveat' ,cursive", fontSize: "13pt" }}
                         value="'Caveat', cursive"
                       >
                         Caveat
@@ -99,11 +96,11 @@ export default function Canvas() {
                   </div>
                   <div>
                     <label className="block" for="font-file"
-                      >Upload your handwriting font <small>(ttf)</small>&nbsp;
-                      
+                    >Upload your handwriting font <small>(ttf)</small>&nbsp;
+
                     </label>
-                    <input accept=".ttf, .otf" type="file" id="font-file" 
-                        style={{fontSize: "0.9rem"}}/>
+                    <input accept=".ttf, .otf" type="file" id="font-file"
+                      style={{ fontSize: "0.9rem" }} />
                   </div>
                 </div>
               </fieldset>
@@ -121,7 +118,7 @@ export default function Canvas() {
                       step="0.5"
                       defaultValue="10"
                       type="number"
-                      style={{fontSize: "0.9rem"}}
+                      style={{ fontSize: "0.9rem" }}
                     />
                   </div>
                   <div>
@@ -165,7 +162,7 @@ export default function Canvas() {
                 <div className="category-grid">
                   <div className="postfix-input" data-postfix="px">
                     <label for="top-padding">Vertical Position</label>
-                    <input id="top-padding" min="0" defaultValue="5"  type="number" />
+                    <input id="top-padding" min="0" defaultValue="5" type="number" />
                   </div>
                   <div className="postfix-input" data-postfix="px">
                     <label for="word-spacing">Word Spacing</label>
@@ -197,9 +194,9 @@ export default function Canvas() {
                 <div className="category-grid">
                   <div>
                     <label for="paper-margin-toggle"
-                      >Paper Margin:
+                    >Paper Margin:
                       <span aria-label="paper margin status" className="status"
-                        >on</span>
+                      > on</span>
                     </label>
                     <label className="switch-toggle outer">
                       <input
@@ -215,9 +212,9 @@ export default function Canvas() {
 
                   <div>
                     <label for="paper-line-toggle"
-                      >Paper Lines:
+                    >Paper Lines:
                       <span aria-label="paper line status" className="status"
-                        >on</span>
+                      > on</span>
                     </label>
                     <label className="switch-toggle outer">
                       <input
@@ -234,39 +231,39 @@ export default function Canvas() {
                     {/* <!-- Removed option --> */}
                     <div className="upload-paper-container">
                       <label className="block" for="paper-file"
-                        >Upload Paper Image as Background</label  >
+                      >Upload Paper Image as Background</label  >
                       <input
                         accept=".jpg, .jpeg, .png"
                         type="file"
                         id="paper-file"
-                        style={{fontSize: "0.8rem"}}
+                        style={{ fontSize: "0.8rem" }}
                       />
                     </div>
                   </div>
                 </div>
               </fieldset>
+            </div>
 
-              {/* <!-- GENERATE IMAGE BUTTONS --> */}
-              <hr
-                style={{
-                    marginTop : "3vh",
-                  border: "0.3px solid var(--elevation-background)",
-                  width: "100%"
-                }}
-              />
-              <div style={{textAlign: "center", padding: "30px 0px"}}>
-                <button
-                  type="submit"
-                  data-testid="generate-image-button"
-                  className="button generate-image-button"
-                  style={{width: "100%", color: "#434343"}}
-                >
-                  Generate Image
-                </button>
-              </div>
+            {/* <!-- GENERATE IMAGE BUTTONS --> */}
+            <hr style={{
+                marginTop: "3vh",
+                // border: "0.3px solid var(--elevation-background)",
+                width: "100%"
+              }}
+            />
+            <div style={{ textAlign: "center", padding: "30px 0px" }}>
+              <button
+                type="submit"
+                data-testid="generate-image-button"
+                className="button generate-image-button"
+                style={{ width: "100%", color: "#434343" }}
+              >
+                Generate Image
+              </button>
             </div>
           </div>
-        </form>
-      </section>
+        </div>
+      </form>
+    </section>
   )
 }

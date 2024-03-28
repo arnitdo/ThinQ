@@ -12,14 +12,14 @@ export default function RootLayout({children}: Readonly<{
 }>) {
 	return (
 		<>
-			<div className='py-4 px-5 h-dvh'>
+			<div className='py-4 px-5 relative h-full'>
 				<div
 					className='gridWrapper | text-[#6C6C6C] grid grid-cols-[auto_1fr] gap-3 h-full'>
 					<Sidebar item1="Home" item2="Calendar" item3="Dashboard"/>
 
 					<div className='rightWrapper |'>
 						<header
-							className='font-medium p-[1.125rem] max-sm:p-2 border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 sticky top-3 bg-white'>
+							className='font-medium p-[1.125rem] max-sm:p-2 border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-between mb-4 bg-white'>
 							<h1 className='text-xl  max-sm:text-lg'>Hello 👋, Teacher</h1>
 							<div className='flex gap-6'>
 								<div className="ignoreThisDiv line | border"></div>

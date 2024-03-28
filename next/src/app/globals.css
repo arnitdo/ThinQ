@@ -89,7 +89,7 @@
 }
 * {
   margin: 0;
-  /* outline: solid hsl(0,0%,0%,10%); */
+  /* outline: solid hsl(0,0%,0%,5%); */
 }
 img, picture, video, canvas, svg {
   display: block;

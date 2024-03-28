@@ -78,11 +78,13 @@
 }
 
 /* Default CSS Changes */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 .notesbody {
-  background-image: var(--background-primary);
+  /* background-image: var(--background-primary); */
   color: var(--font-color-primary);
   font-size: 1.05rem;
   font-family: var(--font-family-primary);
@@ -117,11 +119,11 @@ button {
 }
 
 
-hr{
+/* hr{
   height: 1px;
   border: none;
   background-color: var(--font-color-primary);
-}
+} */
 .generate-image-button, .download-image-button{
   background-color: #234cd5;
   background: var(--blue-gradient);
@@ -163,7 +165,7 @@ select {
   border: none;
   color: #333;
   border-radius: 4px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   display: block;
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -232,7 +234,7 @@ ul.info-ul > li {
 
 /* Other Styles */
 .generate-image-section {
-  padding: 10px 10px;
+  padding: 10px 0;
   font-size: 1.2rem;
 }
 .generate-image-button {
@@ -413,7 +415,7 @@ input::placeholder{
   text-align: center;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1030px) {
   .notesbody {
     --clipPath : rect(-500px, 500px, 220px, -150px);
   }
@@ -421,15 +423,15 @@ input::placeholder{
     padding-left: 5px;
     padding-right: 5px;
   }
-  .display-flex.responsive-flex {
-    flex-direction: column;
+  .output-grid.responsive-flex {
+    grid-template-columns: auto;
   }
   .customization-col {
     padding: 100px 5px !important;
   }
   .page-container {
     width: 100%;
-    overflow-x: scroll;
+    /* overflow-x: scroll; */
   }
 
   .page-container-super {
@@ -460,6 +462,7 @@ input::placeholder{
 }
 
 fieldset {
+  --field-borders: #0a349e;
   padding: 17px 20px;
   border-radius: 5px;
   border: 1px solid var(--field-borders);
@@ -474,6 +477,7 @@ legend {
 
 select,
 input {
+  --field-borders: #222;
   width: 100%;
   border: 1px solid var(--field-borders);
   padding: 10px;
@@ -504,9 +508,13 @@ input[type='file']::before {
 .postfix-input::after {
   content: attr(data-postfix);
   position: absolute;
-  right: 25px;
-  bottom: 12px;
+  /* right: 25px;
+  bottom: 12px; */
+  font-weight: 700;
+  color: hsl(0,0%,40%);
   font-size: 12px;
+  top: 35%;
+  right: 4%;
 }
 
 .upload-handwriting-container {
@@ -521,8 +529,8 @@ input[type='file']::before {
 .category-grid {
   display: grid;
   grid-gap: 10px;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  /* grid-auto-flow: column;
+  grid-auto-columns: 1fr; */
 }
 
 .fade-in-dark,
@@ -782,4 +790,87 @@ img.contributor-avatar {
 
 .contributor-username {
   margin-top: 7px;
+}
+
+
+/* New Styles */
+/* .category-grid */
+.category-grid {
+  grid-template-columns: repeat(auto-fit,minmax(95px,1fr));
+}
+.output-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+.page-container {
+  /* padding-inline-start: 1rem; */
+}
+.margined {
+  aspect-ratio: 0.71;
+  position: sticky;
+  top: 0;
+
+  border-radius: 0.5rem;
+  border: 1px solid #8C8C8C !important;
+  /* inline style overwrite kar raha tha isliye !important */
+}
+
+.customizationFieldsetGrid {
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+}
+
+select,
+input {
+  font-size: 0.8rem;
+}
+
+.ttsButton {
+  z-index: 100;
+  background: var(--background-primary);
+  /* box-shadow: 0 0.3rem 1rem hsl(0,0%,0%,20%); */
+}
+
+fieldset {
+  --field-borders: #0a349e;
+  border-width: 0.125rem;
+}
+fieldset label {
+  font-weight: 500;
+}
+legend {
+  font-size: 1rem;
+  font-weight: 900;
+}
+select,
+input {
+  --field-borders: #222;
+}
+
+.handWritingGrid {
+  gap: 1.25rem;
+}
+
+hr {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 100%;
+  border-image-source: linear-gradient(90deg, transparent, #8C8C8C, transparent);
+  border-image-slice: 1;
+}
+
+
+#output-header {
+  font-size: 1.2rem;
+  color: var(--font-color-primary);
+  font-weight: bold;
+}
+.output {
+  border-radius: 0.5rem;
+  border: 1px solid #8C8C8C;
+}
+
+.output .close-button {
+  top: 0;
+  right: 0;
 }
