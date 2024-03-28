@@ -78,16 +78,17 @@ export default function Form({ create, setCreate, classroomId }: { create: boole
     const onSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
     console.log({start, end})
+        if(!(start&&end))return toast.error("Please select start and end time")
         if (!user) return;
         const response = await makeAPIRequest<ResponseJSON, ClassroomParams, CreateLectureBody>({
-            requestUrl: "/api/orgs/:orgId/classroom/:classroomId/rooms",
+            requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture",
             urlParams: {
                 orgId: user.userOrgId,
                 classroomId: classroomId
             },
             bodyParams: {
-                lectureEndTimestamp: new Date(loginForm.formValues.lectureEndTimestamp),
-                lectureStartTimestamp: new Date(loginForm.formValues.lectureStartTimestamp),
+                lectureEndTimestamp: new Date(end),
+                lectureStartTimestamp: new Date(start),
                 title: loginForm.formValues.title
             },
             queryParams: {},
@@ -105,6 +106,13 @@ export default function Form({ create, setCreate, classroomId }: { create: boole
             toast.error("Error creating Lecture!")
         }
 
+    }
+
+    function getStringDate(start: Date | string | number, end: Date | string | number) {
+        let date = (new Date(start)).toLocaleDateString().toString();
+        let startTime = (new Date(start)).toLocaleTimeString().toString();
+        let endTime = (new Date(end)).toLocaleTimeString().toString();
+        return date+", "+startTime+" to "+endTime;
     }
 
     return (
@@ -141,7 +149,7 @@ export default function Form({ create, setCreate, classroomId }: { create: boole
                                     // disabled
                                     className="w-full text-left border rounded-md py-2 px-3"
                                     // placeholder="E.g. Comps-1"
-                                >{start&&end? ((new Date(start)).toLocaleDateString().toString()+", "+((new Date(start).getHours().toString())+":"+(new Date(start).getMinutes().toString()))+" to "+((new Date(end).getHours().toString())+":"+(new Date(end).getMinutes().toString()))) :"Select rooms start and end time"}</button>
+                                >{start&&end?  getStringDate(start, end):"Select rooms start and end time"}</button>
                                 {calender==="start"?<div className=" absolute top-0">
                                     <Calendar mode="single" selected={date} onSelect={setDate} setVisible={setCalender} onEndDate={setEnd} onDate={setStart} className="rounded-xl border bg-white"/>
                                 </div>:<></>}
