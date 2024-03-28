@@ -765,9 +765,9 @@ export default function NotesComponent({ noteId, classroomId }) {
   return (
     <>
       {loading && <LoadingScreen />}
-      <div className=' notesbody flex flex-col relative px-12 min-h-screen' style={{ display: loading ? "none" : "block" }}>
-        <button onClick={()=>{textToAudio()}} style={{position:"fixed",bottom:"2rem", right:"2rem", borderRadius:"50%", backgroundColor:"white", padding:"1rem"}}><Volume2/></button>
-        <div className=' flex flex-col py-2'>
+      <div className=' notesbody relative min-h-screen' style={{ display: loading ? "none" : "block" }}>
+        <button className='ttsButton' onClick={()=>{textToAudio()}} style={{position:"fixed",bottom:"2rem", right:"2rem", borderRadius:"50%", backgroundColor:"white", padding:"1rem"}}><Volume2/></button>
+        <div className=''>
           <Canvas />
           <Output />
         </div>
