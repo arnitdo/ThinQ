@@ -14,8 +14,8 @@ import {useEffect, useState} from 'react';
 import {GetMeetingTokenResponse} from "@/util/api/api_responses";
 import {GetMeetingTokenParams} from "@/util/api/api_requests";
 import {useAPIRequest} from "@/util/client/hooks/useApi";
-import Dictaphone from "@/components/Dictaphone";
 import Draw from "@/components/Draw";
+import useAuthStore from "@/lib/zustand";
 
 type PageParams = {
 	orgId: string,
@@ -29,9 +29,11 @@ export default function Page({params}: {params: PageParams}) {
 
 	const {lectureId, orgId, classroomId} = params
 
+	const {user} = useAuthStore()
+
 	const {isLoading, hasResponse, responseData, hasError, errorData, statusCode} = useAPIRequest<GetMeetingTokenResponse, GetMeetingTokenParams>({
 		requestMethod: "GET",
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture/token",
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/lecture/:lectureId/token",
 		urlParams: {
 			lectureId, orgId, classroomId
 		},
@@ -48,14 +50,10 @@ export default function Page({params}: {params: PageParams}) {
 				}
 			}
 		}
-	}, []);
+	}, [isLoading]);
 
 	if (isLoading){
 		return <div>Loading the ThinQ Web Platform</div>
-	}
-
-	if (accessToken === null){
-		return <div>An unexpected error occurred, please notify your organization administrator</div>
 	}
 
 	return (
@@ -63,7 +61,7 @@ export default function Page({params}: {params: PageParams}) {
 		<LiveKitRoom
 			video={true}
 			audio={true}
-			token={accessToken}
+			token={accessToken!}
 			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
 			// Use the default LiveKit theme for nice styles.
 			data-lk-theme="default"
@@ -71,7 +69,7 @@ export default function Page({params}: {params: PageParams}) {
 		>
 			<div className=' flex w-full px-6 py-8 rounded-lg h-fit'>
 				<div className={` h-[70vh] rounded-xl w-full flex`}>
-					<Draw room={lectureId}/>
+					<Draw room={lectureId} name={user?.userDisplayName || "Guest User"}/>
 				</div>
 			</div>
 			{/* Your custom component with basic video conferencing functionality. */}
@@ -85,7 +83,7 @@ export default function Page({params}: {params: PageParams}) {
       share tracks and to leave the room. */}
 			<div className=' flex flex-row gap-2 justify-center w-full items-center'>
 				<ControlBar />
-				<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>
+				{/*<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>*/}
 			</div>
 		</LiveKitRoom>
 	);

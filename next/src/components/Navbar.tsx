@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import "../app/globals.css";
 import {motion} from "framer-motion";
 import Link from "next/link";
+
 const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, item3: any, specialitem: any}) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const handleClick = () => {
@@ -25,7 +26,7 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
             {item3}
           </Link>}
           <Link
-            href="/auth/login"
+            href="/login"
             className="text-white bg-[#3D4242] rounded-full px-4 py-2"
           >
             {specialitem}

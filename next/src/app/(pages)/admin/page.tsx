@@ -1,8 +1,9 @@
-import { redirect } from "next/navigation"
+import {redirect} from "next/navigation"
 
-export default async function page() {
-    redirect("/admin/classrooms")
-  return (
-    <></>
-  )
+export default async function Page() {
+	redirect("/admin/classrooms")
+	return (
+		<>
+		</>
+	)
 }

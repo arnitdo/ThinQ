@@ -1,13 +1,9 @@
-"use client"
+import {redirect} from "next/navigation"
 
-import {useRouter} from "next/navigation";
-
-export default function PageNotFound() {
-	const router = useRouter()
-
-	router.push("/")
-
+export default async function Page() {
+	redirect("/")
 	return (
-		null
+		<>
+		</>
 	)
 }

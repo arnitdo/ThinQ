@@ -104,9 +104,10 @@ export default function QuizPage({
   return loading?
   (<Loader/>):
   (
-    <div className=" flex flex-col min-h-screen px-6">
-    <div className="min-h-[80vh] flex justify-center items-center ">
-      <div className=" w-[80vw]">
+    <div className=" flex flex-col">
+    <div className="min-h-[80vh] flex ">
+      <div className=" w-full p-1">
+        <div className="text-3xl font-semibold text-black max-sm:text-2xl">Multiple Choice Questions</div>
       <QuizCard
         QuizArray={quizArray}
         lectureId={params.quizId}
@@ -114,7 +115,6 @@ export default function QuizPage({
         attemptId = {attemptId}
       />
       </div>
-      <div className="gradient1"></div>
     </div>
     </div>
   );
