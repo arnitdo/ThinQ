@@ -73,7 +73,7 @@ const Page = () => {
 
   return (
     <section className="h-[122vh]">
-      <Navbar item1="Features" item2="Contact" item3="About" specialitem="Log in" />
+      <Navbar item1="Features" item2="Contact" item3={null} specialitem="Log in" />
       <Marquee
         autoFill
         gradient

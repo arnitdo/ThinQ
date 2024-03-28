@@ -42,14 +42,14 @@ const Navbar = ({item1, item2, item3, specialitem}: {item1: any, item2: any, ite
         </div>
         {isNavOpen && (
               <motion.div
-                initial={{ opacity: 0, y: -30 }}
+                initial={{ opacity: 0, y: 0 }}
                 animate={{ opacity: 1, y: 180 }}
                 exit={{ opacity: 0 }}
-                className="md:hidden bg-black backdrop-blur-md z-10 bg-opacity-70 absolute w-[91.333333%] rounded-xl max-[438px]:-ml-2 h-fit"
+                className="md:hidden bg-black backdrop-blur-md z-10 bg-opacity-70 absolute w-[86%] rounded-xl max-[438px]:ml-0 h-fit"
               >
                 <div className="text-center text-white p-6 text-md">{item1}</div>{" "}
                 <div className="text-center p-6 text-white text-md">{item2}</div>
-                <div className="">{item3}</div>
+                <div className="text-center text-white text-md">{item3}</div>
 
                 <div className="text-center p-6 text-white text-md">
                   <div className="px-16 text-black font-semibold bg-white py-2 rounded-full border w-fit mx-auto">

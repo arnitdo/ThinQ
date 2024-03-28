@@ -15,7 +15,7 @@ export default function RootLayout({children}: Readonly<{
 			<div className='py-4 px-5 h-dvh'>
 				<div
 					className='gridWrapper | text-[#6C6C6C] grid grid-cols-[auto_1fr] gap-3 h-full'>
-					<Sidebar/>
+					<Sidebar item1="Home" item2="Calendar" item3={null}/>
 
 					<div className='rightWrapper |'>
 						<header
