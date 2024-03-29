@@ -816,6 +816,7 @@ def generate_mcq_notes_transcript():
         data = json.loads(cleaned_json_string)
         return data
     try:
+        mcq_res = None
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
