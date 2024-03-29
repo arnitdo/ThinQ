@@ -776,14 +776,52 @@ def validate_short_ans_questions():
 
 @app.route('/generate_mcq_notes_transcript', methods=['POST'])
 def generate_mcq_notes_transcript():
+    def notes():
+        notes_prompt = '''
+        Generate comprehensive notes based on the provided resources.
+        Consider the following aspects:
+        - Summarize key points covered in the resources.
+        - Include relevant insights and examples.
+        - Ensure clarity and coherence in the generated notes.
+        '''
+        notes_answer = user_input(notes_prompt, filepath=f'compute/')
+        notes_answer = notes_answer["output_text"].replace("**","").replace("`","")
+        notes_answer = {"output_text": notes_answer}
+        # print(notes_answer)
+        return notes_answer
+    def mcq():
+        mcq_prompt = '''
+        Please provide a JSON with 5 generated questions and answers in the following schema:
+
+        {{
+        "questions": [
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 0,
+            }},
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 1,
+            }},
+            // Add more questions as needed
+        ]
+        }}
+        Dont give answer as Answer is not available in the context if not then also generate the json
+        Ensure the provided JSON adheres to the defined schema.
+        '''
+        answer = user_input(mcq_prompt, filepath=f'compute/')
+        cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
+        data = json.loads(cleaned_json_string)
+        return data
     try:
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
         lecture_id = request_data.get('lecture_id')
-        no_of_questions = 10
-
         text_directory = 'compute/'
+
         response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/')
         objects = response.get('Contents')
         if not objects:
@@ -823,65 +861,44 @@ def generate_mcq_notes_transcript():
                 s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/{filename}'
                 with open(os.path.join(local_directory, filename), 'rb') as file:
                     s3.upload_fileobj(file, S3_BUCKET, s3_key)
-        
-        notes_prompt = '''
-        Generate comprehensive notes based on the provided resources.
-        Consider the following aspects:
-        - Summarize key points covered in the resources.
-        - Include relevant insights and examples.
-        - Ensure clarity and coherence in the generated notes.
-        '''
-        notes_answer = user_input(notes_prompt, filepath=f'compute/')
-        notes_answer = notes_answer["output_text"].replace("**","").replace("`","")
-        notes_answer = {"output_text": notes_answer}
-        save_json_to_s3(notes_answer, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
-        create_notes_prisma(notesContent=notes_answer['output_text'], lectureId=lecture_id)
-        
+        try:
+            notes_res = notes()
+        except Exception as e:
+            notes_res = notes()
+        finally:
+            if notes_res is not None:
+                save_json_to_s3(notes_res, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
+                create_notes_prisma(notesContent=notes_res['output_text'], lectureId=lecture_id)
 
-        mcq_prompt = '''
-        Please provide a JSON with {} generated questions and answers in the following schema:
-
-        {{
-        "questions": [
-            {{
-            "questionText": "Question text goes here",
-            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
-            "questionAnswerIndex": 0,
-            }},
-            {{
-            "questionText": "Question text goes here",
-            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
-            "questionAnswerIndex": 1,
-            }},
-            // Add more questions as needed
-        ]
-        }}
-
-        Ensure the provided JSON adheres to the defined schema.
-        '''.format(no_of_questions)
-        mcq_answer = user_input(mcq_prompt, filepath=f'compute/')
-        cleaned_json_string = mcq_answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
-        data = json.loads(cleaned_json_string)
-        print(data)
-        save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
-        existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
-        quizTitle = existing_lecture.title
-        quiz = db.quiz.create({
-            "quizName" : quizTitle,
-            "lectureId" : lecture_id,
-        })
-        for question in data["questions"]:
-            create_mcq_prisma(
-                quiz.quizId,
-                question["questionText"],
-                question["questionOptions"],
-                question["questionAnswerIndex"]
-            )
-        return jsonify({'Message': "done successfully"}), 200
+        try:
+            mcq_res = mcq()
+        except Exception as e:
+            mcq_res = mcq()
+        finally:
+            print(mcq_res)
+            print(type(mcq_res))
+            if mcq_res is not None:
+                save_json_to_s3(mcq_res, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
+                existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
+                quizTitle = existing_lecture.title
+                db.quiz.delete_many(where = {"lectureId": lecture_id})
+                quiz = db.quiz.create({
+                    "quizName" : quizTitle,
+                    "lectureId" : lecture_id,
+                })
+                quiz_id = quiz.quizId
+                for question in mcq_res["questions"]:
+                    create_mcq_prisma(
+                        quiz_id,
+                        question["questionText"],
+                        question["questionOptions"],
+                        question["questionAnswerIndex"]
+                    )
+        return jsonify({"res":"success"}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
-        shutil.rmtree(text_directory)
+        shutil.rmtree("compute")
 
 @app.route('/transcript_correct_grammar', methods=['POST'])
 def transcript_correct_grammar():
