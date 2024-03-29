@@ -99,7 +99,7 @@ export default function Page() {
                     -
                     <span className="lectureEndTime">{formatTime(item.lectureEndTimestamp.toString())}</span>
                   </p>
-              <div className="lectureCard | grid hover:gap-[0.9375rem] grid-cols-[0_1fr] hover:grid-cols-[0.5rem_1fr] transition-[grid-template-columns]">
+              <div className="lectureCard | grid hover:gap-[0.9375rem] grid-cols-[0_1fr] hover:grid-cols-[0.5rem_1fr] transition-[grid-template-columns] mb-6">
                 <div className="lectureCardActiveBar | bg-primary rounded-full"></div>
                 <div className="p-[0.9375rem] border border-[#7C7A7A] rounded-[0.3125rem] bg-[hsl(0,0%,95%,20%)] hover:shadow-[0_8px_15.1px_hsl(0,1%,25%,10%)] flex justify-between items-center">
                   <div>
