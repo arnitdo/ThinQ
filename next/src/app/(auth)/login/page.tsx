@@ -70,6 +70,7 @@ const Page = () => {
     }
   
   }
+
   return (
     <section className="h-[122vh]">
       <Navbar item1="Features" item2="Contact" item3={null} specialitem="Log in" />
@@ -143,8 +144,8 @@ const Page = () => {
             </form>
           </div>
         </motion.div>
-        <motion.img  initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
+        <motion.img  initial={{ opacity: 0, x: 270 * 6 }}
+           animate={{ opacity: 1 , x: 270 * 3}}
            transition={{ duration: 1, delay: 1, ease: "linear", stiffness: 10 }}
            alt="IPhone"
            src={"/Iphone.png"}  width={269.4} height={583} className="absolute -mt-4 max-md:hidden ml-32 max-sm:ml-6 overflow-x-hidden shadowph"
