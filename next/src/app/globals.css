@@ -208,3 +208,18 @@ body {
     align-items: center;
   }
 } */
+
+.tl-canvas-no-pointer-events {
+  pointer-events: none;
+}
+@keyframes opacityZeroToOne {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animationOpacityOne {
+  animation: opacityZeroToOne 500ms ease-in-out forwards;
+}

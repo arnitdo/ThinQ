@@ -71,7 +71,7 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		}
 	
 		return (
-			<div key={item.lectureId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
+			<div key={item.lectureId} className='border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
 				<div
 					className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
 					<div className=' px-4 py-3 bg-blue-50 rounded-md'>
@@ -81,10 +81,10 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 					<img src="/dots.svg" alt="" className='cursor-pointer'
 						 onClick={handleClick}/>
 				</div>
-				<div className='p-4'>
+				<div className='p-4 relative'>
 					{
 					able && (
-						<div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute ml-28'>
+						<div className='bg-white h-fit w-44 p-4 border -mt-6 rounded-md shadow-2xl absolute top-4 right-4'>
 							<div className='p-2 hover:bg-gray-200 rounded-sm cursor-pointer'>Edit</div>
 							<div onClick={()=>{
 								handleDelete(item.lectureId)
