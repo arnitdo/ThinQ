@@ -23,7 +23,7 @@ export default function Page() {
   return (
     <>
         <div className="p-6 border border-[#8C8C8C] rounded-[0.5rem]">
-          <div className="flex justify-between items-center mb-7 out">
+          <div className="flex justify-between items-end mb-7 out">
             <div>
               <p className="text-xs font-medium text-[#7E7E7E]">Today</p>
               <div className="flex gap-4">
@@ -59,7 +59,7 @@ export default function Page() {
                     <h2 className="text-xl font-medium text-black">Linear Algebra</h2>
                     <h3 className="text-[0.9375rem] text-[#A1A1A1]">Faculty: <span>Prinkal Doshi</span></h3>
                   </div>
-                  <Link href={"/"} className="px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] bg-[linear-gradient(45deg,#38A2F8_50%,white_50%,white_70%)] bg-[100%_100%] text-sm font-medium text-[#6F6F6F]">
+                  <Link href={"/"} className="calendarJoinButton | px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] text-sm font-medium text-[#6F6F6F] hover:text-white hover:border-none">
                     <button className="">Join <span className="">{">"}</span></button>
                   </Link>
                 </div>
