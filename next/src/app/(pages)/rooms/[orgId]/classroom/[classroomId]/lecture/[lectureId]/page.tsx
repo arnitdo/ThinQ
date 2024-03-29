@@ -10,7 +10,7 @@ import {
 	useTracks,
 } from '@livekit/components-react';
 import {Track} from 'livekit-client';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {GetMeetingTokenResponse} from "@/util/api/api_responses";
 import {GetMeetingTokenParams} from "@/util/api/api_requests";
 import {useAPIRequest} from "@/util/client/hooks/useApi";
@@ -82,7 +82,7 @@ export default function Page({params}: {params: PageParams}) {
 			{/* Controls for the user to start/stop audio, video, and screen
       share tracks and to leave the room. */}
 			<div className=' flex flex-row gap-2 justify-center w-full items-center'>
-				<ControlBar />
+				<ControlBar controls={{camera: false}} />
 				{/*<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>*/}
 			</div>
 		</LiveKitRoom>
@@ -100,13 +100,13 @@ function MyVideoConference() {
 		{ onlySubscribed: false },
 	);
 
-	const definedTracks = tracks.filter((track) => {
-		return track.publication !== undefined
-	})
+	const vidRef = useRef<HTMLVideoElement | null>(null)
 
-	console.log(definedTracks.map((trk) => {
-		return trk.publication?.track?.mediaStream
-	}))
+
+	useEffect(() => {
+		const videoElements = Array.from(document.querySelectorAll("video"))
+			
+	}, [tracks]);
 
 	return (
 		<GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
