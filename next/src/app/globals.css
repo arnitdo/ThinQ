@@ -208,3 +208,7 @@ body {
     align-items: center;
   }
 } */
+
+.tl-canvas-no-pointer-events {
+  pointer-events: none;
+}
