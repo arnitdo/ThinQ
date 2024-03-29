@@ -10,6 +10,7 @@ import {useEffect, useState} from 'react'
 import Form from './(components)/Form'
 import { toast } from 'sonner'
 import NestedNav, { NavLink } from '@/components/NestedNav'
+import { motion } from 'framer-motion'
 
 type ClassCardProps = {
 	item: Lecture
@@ -152,12 +153,15 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 								<Loader/>
 							</div>
 						) : (
-							data.map((item) => {
+							data.map((item,index) => {
                                 return (
+									<motion.div initial={{ opacity: 0, x: 0 }}
+									animate={{ opacity: 1 , x:0}}
+									transition={{ duration: 0.5, delay: index*0.5 }}>
                                     <ClassCard
                                         key={item.lectureId}
                                         item={item}
-                                    />
+                                    /></motion.div>
                                 )
 						}))}
 				</div>

@@ -7,7 +7,7 @@
   --background-primary: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%);
   --promptField-bg : linear-gradient(19deg, #808080 0%, #454040 100%);
   --font-color-primary: #333;
-  --elevation-background: #1d1d1d;
+  --elevation-background: #F722B7;
   --featureCard-bg: rgb(203, 213, 225);
   --link-color: #fff;
   /* --font-family-primary: 'monument', sans-serif; */
@@ -18,7 +18,7 @@
   --label-color: #333;
   --primary-button-bg: #1d1d1d;
   --primary-button-color: #eee;
-  --font-color-delete: #dc3545;
+  --font-color-delete: white;
   --delete-button-borders: #dc3545;
   --loading-spinner-color: #000;
   --primary:#000;
@@ -127,7 +127,7 @@ button {
 .generate-image-button, .download-image-button{
   background-color: #234cd5;
   background: var(--blue-gradient);
-  background-image: linear-gradient(to right, #b3ffab, #12fff7, #21D4FD, #B721FF);
+  background-image: linear-gradient(to right, #2b49d2, #203ec0, #1b36b0, #072195);
   cursor: pointer;
   background-size: 400% 200%;
   moz-transition: all .5s ease-in-out;
@@ -706,7 +706,7 @@ input[type='file']::before {
 
 .switch-toggle input:checked + div {
   left: 28px;
-  background-color: #999f;
+  background-color: white;
 }
 
 .switch-toggle.outer div {

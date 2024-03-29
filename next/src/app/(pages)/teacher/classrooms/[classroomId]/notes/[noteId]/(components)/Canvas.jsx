@@ -256,7 +256,7 @@ export default function Canvas() {
                 type="submit"
                 data-testid="generate-image-button"
                 className="button generate-image-button"
-                style={{ width: "100%", color: "#434343" }}
+                style={{ width: "100%", color: "white" }}
               >
                 Generate Image
               </button>

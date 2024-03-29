@@ -5,6 +5,7 @@ import useAuthStore from '@/lib/zustand'
 import {deleteClassroom, getClassrooms, getEnrollments, getFaculty, getFacultyClassrooms} from '@/util/client/helpers'
 import {AuthUser} from '@/util/middleware/auth'
 import {Classroom, ClassroomEnrollment} from '@prisma/client'
+import { motion } from 'framer-motion'
 import { get } from 'http'
 import Link from 'next/link'
 import {useEffect, useRef, useState} from 'react'
@@ -123,12 +124,15 @@ const Page = () => {
 								<Loader/>
 							</div>
 						) : (
-							data.map((item) => {
+							data.map((item,index) => {
                                 return (
+									<motion.div initial={{ opacity: 0, x: 0 }}
+									animate={{ opacity: 1 , x:0}}
+									transition={{ duration: 0.5, delay: index*0.5 }}>
                                     <ClassCard
                                         key={item.classroomId}
                                         item={item}
-                                    />
+                                    /></motion.div>
                                 )
 						}))}
 				</div>
