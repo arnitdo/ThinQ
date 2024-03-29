@@ -39,7 +39,12 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		{
 			href: `/teacher/classrooms/${classroomId}/notes`,
 			title: "Notes"
-		}
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/assessments`,
+			title: "Assessments"
+		},
+
 	]
 
 	const QuizCard = ({item}: {item: Quiz}) => {
