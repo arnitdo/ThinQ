@@ -30,26 +30,8 @@ const Dictaphone = ({setDesc, setLang}) => {
 	//     setLang(lang)
 	//   },[lang])
 	
-	return !use ? (!lang ? (<button
-			onClick={() => {
-				setlang("hi");
-			}}
-			className=" py-1 px-3 bg-slate-100/0  border-2 border-green-600 text-green-600 hover:text-slate-100 hover:bg-green-600 rounded-2xl transition-all"
-		>
-			Use speech recognition
-		</button>) : (<div className=" flex flex-row gap-2  justify-center items-center">
-			<button
-				onClick={() => {
-					setlang("en");
-					setuse(true);
-				}}
-				className=" py-1 px-3 bg-slate-100/0 border-2 border-green-600 text-green-600 hover:text-slate-100 hover:bg-green-600 rounded-2xl transition-all"
-			>
-				English
-			</button>
-		</div>)
-	) : (
-		<div className=" hidden flex-row mt-6 gap-2 w-fit px-4 justify-center items-center">
+	return (
+		<div className="  flex-row mt-6 gap-2 w-fit px-4 justify-center items-center">
 			<p className=" text-xs flex font-medium">
 				{listening ? (<img src="/unmute.png" alt=""/>) : (<img src="/mute.png" alt=""/>)}{" "}
 			</p>

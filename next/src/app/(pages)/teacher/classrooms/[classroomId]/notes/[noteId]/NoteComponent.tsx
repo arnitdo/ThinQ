@@ -9,9 +9,9 @@ import LoadingScreen from '@/components/Loader'
 import { Volume2 } from 'lucide-react'
 
 
-export default function NotesComponent({ noteId, classroomId }) {
+export default function NotesComponent({ noteId, classroomId, notes }) {
   const [loading, setloading] = useState(true)
-  const [notes, setNotes] = useState("Lorem ipsum dolor sit amet consectetur adipisicing elit. \nLorem ipsum dolor sit amet consectetur adipisicing elit. \n\nLorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda repellat omnis totam sed blanditiis eos obcaecati impedit? Ipsa a quis consequatur, dignissimos necessitatibus totam, nesciunt eos expedita adipisci accusamus pariatur?")
+  // const [notes, setNotes] = useState("Lorem ipsum dolor sit amet consectetur adipisicing elit. \nLorem ipsum dolor sit amet consectetur adipisicing elit. \n\nLorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda repellat omnis totam sed blanditiis eos obcaecati impedit? Ipsa a quis consequatur, dignissimos necessitatibus totam, nesciunt eos expedita adipisci accusamus pariatur?")
   const addFunctionality = () => {
     // const localPreference = typeof (window) !== "undefined" ? window.localStorage.getItem('prefers-theme') : 'dark';
     // if (localPreference) {

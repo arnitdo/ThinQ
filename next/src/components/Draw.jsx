@@ -9,7 +9,7 @@ const HOST_URL = 'wss://droplet.arnitdo.dev/tldraw'
 export default function Draw({room, name}) {
 	const store = useYjsStore({
 		roomId:  room,
-		hostUrl: HOST_URL,
+		hostUrl: HOST_URL
 	})
 	
 	const {user} = useAuthStore()

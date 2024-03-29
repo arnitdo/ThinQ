@@ -1,216 +1,145 @@
-// Individual Quiz Dash
+"use client"
 
-/*
- * Graphs and stuff
- * No tabular option, graphs only
- * */
-"use client";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import Accordion from "./Accordion";
-import {
-  BarChart,
-  Bar,
-  ResponsiveContainer,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  AreaChart,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
-import Link from "next/link";
+import React, {useEffect, useState} from "react";
+import QuizCard from "./(components)/QuizCard";
+import Loader from "@/components/Loader";
+import useAuthStore from "@/lib/zustand";
+import { Lecture, Quiz, QuizAttempt, QuizQuestion } from "@prisma/client";
+import { createQuizAttempt, getAllQuizzes, getLectures, getQuizData } from "@/util/client/helpers";
 
-const attendance = [
-  {
-    attempted: 80,
-    totalStudents: 90,
-  },
-];
-const COLORS = ["#0088FE", "#00C49F"]; // Colors for attempted and total students
+export default function QuizPage({
+  params,
+}: {
+  params: { classroomId: string, quizId: string };
+}) {
+  const {user} = useAuthStore()
+	const [data, setData] = useState<{
+		quizId: string,
+		quizName: string,
+		quizQuestions: QuizQuestion[],
+		quizAttempts: QuizAttempt[],
+		quizLecture: Lecture
+	}| null>(null);
 
-const score = [
-  {
-    name: "roshan",
-    marks: 80,
-  },
-  {
-    name: "roshan",
-    marks: 43,
-  },
-  {
-    name: "roshan",
-    marks: 54,
-  },
-  {
-    name: "roshan",
-    marks: 65,
-  },
-  {
-    name: "roshan",
-    marks: 76,
-  },
-  {
-    name: "roshan",
-    marks: 87,
-  },
-  {
-    name: "roshan",
-    marks: 98,
-  },
-  {
-    name: "roshan",
-    marks: 89,
-  },
-  {
-    name: "roshan",
-    marks: 90,
-  },
-  {
-    name: "roshan",
-    marks: 100,
-  },
-];
-const questions = [
-  {
-    id: 1,
-    question: "What is the capital of India?",
-    answer: "New Delhi",
-  },
-  {
-    id: 2,
-    question: "What is the capital of USA?",
-    answer: "Washington DC",
-  },
-  {
-    id: 3,
-    question: "What is the capital of UK?",
-    answer: "London",
-  },
-  {
-    id: 4,
-    question: "What is the capital of Australia?",
-    answer: "Canberra",
-  },
-  {
-    id: 5,
-    question: "What is the capital of Japan?",
-    answer: "Tokyo",
-  }
-  
-]
-const Page = ({params: {classroomId, quizId}}: {params: {classroomId:string, quizId:string}}) => {
-  const [isClient, setIsClient] = useState(false);
+	useEffect(() => {
+		const getData = async () => {
+			if (!user) return;
+			const quizzes = await getQuizData(user.userOrgId, params.classroomId, params.quizId)
+			if (quizzes) setData(quizzes)
+		}
+		getData()
+	}, [user])
+  const exampleQuiz = [
+    {
+      "questionText": "What is the first step in solving simultaneous equations by equating coefficients?",
+      "questionOptions": [
+        "Multiply both equations by the same number",
+        "Subtract one equation from the other",
+        "Add the two equations together",
+        "Divide one equation by the other"
+      ],
+      "questionAnswerIndex": 0
+    },
+    {
+      "questionText": "Which variable is typically eliminated first when solving simultaneous equations by equating coefficients?",
+      "questionOptions": [
+        "x",
+        "y",
+        "z",
+        "w"
+      ],
+      "questionAnswerIndex": 0
+    },
+    {
+      "questionText": "What is the next step after eliminating one variable when solving simultaneous equations by equating coefficients?",
+      "questionOptions": [
+        "Solve for the remaining variable",
+        "Substitute the value of the eliminated variable back into one of the original equations",
+        "Multiply both equations by the same number",
+        "Subtract one equation from the other"
+      ],
+      "questionAnswerIndex": 1
+    },
+    {
+      "questionText": "Which of the following is an example of a simultaneous equation?",
+      "questionOptions": [
+        "2x + 3y = 5",
+        "x^2 + y^2 = 1",
+        "sin(x) + cos(y) = 0",
+        "e^x + ln(y) = 0"
+      ],
+      "questionAnswerIndex": 0
+    },
+    {
+      "questionText": "What is the purpose of solving simultaneous equations?",
+      "questionOptions": [
+        "To find the values of the variables that satisfy both equations",
+        "To eliminate one variable from a system of equations",
+        "To simplify a system of equations",
+        "To graph a system of equations"
+      ],
+      "questionAnswerIndex": 0
+    }
+  ]
+  const [quizArray, setQuizArray] = useState<any>([])
+  const [attemptId, setAttemptId] = useState<string>("")
+  const [loading, setloading] = useState(true)
+  const url = process.env.NEXT_PUBLIC_FLASK_URL
+
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if(!data)return
+    setQuizArray(data.quizQuestions)
+    if(!user) return
+    const sendAttempt = async() => {
+      const response = await createQuizAttempt(user.userOrgId,params.classroomId, params.quizId)
+      if(!response) return
+      setAttemptId(response)
+      setloading(false)
+    }
+    sendAttempt()
+  }, [data, user])
+  
+  
 
-  if (!isClient) return null;
+  // const getData = async() => {
+  //   const res = await fetch(`/api/orgs/test/classroom/${params.classId}/rooms/${params.lectureId}/quiz`)
+  //   const data = await res.json()
+  //   if(data.responseStatus !== 'SUCCESS') useRouter().push(`/class/${params.classId}/`)
+  //   const promises = data.quizes.map(async (quiz: any) => {
+  //     const res2 = await fetch(`/api/orgs/test/classroom/${params.classId}/leacture/${params.lectureId}/quiz/${quiz.quizId}/attempt`,{
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({attemptTimestamp:Date.now()})
+  //     } )
+  //     const data2 = await res2.json()
+  //     setAttemptId(data2.createdQuizAttemptId)
+  //     const res = await fetch(`/api/orgs/test/classroom/${params.classId}/rooms/${params.lectureId}/quiz/${quiz.quizId}/question`);
+  //     const quizData = await res.json();
+  //     return quizData.quizQuestions;
+  //   });
+  //   const results = await Promise.all(promises);
+  //   setQuizArray(results.flat())
+  // }
 
-  const isMobile = window.innerWidth < 768;
-  const innerRadius = isMobile ? 30 : 100; // Adjust the inner radius based on mobile view
-  const outerRadius = isMobile ? 60 : 140;
-  return (
-    <div className=" flex flex-col gap-4">
-    <div className="flex justify-between items-end border-b pb-2">
-				<nav className="font-medium p-2 flex gap-[1.875rem] max-sm:gap-3 max-sm:text-sm">
-					<Link href={`/student/classrooms/${classroomId}/lectures`}
-					      className="">Lectures</Link>
-					<Link href={`/student/classrooms/${classroomId}/quiz`} className="relative text-black | after:content-[''] after:absolute after:-bottom-4 after:left-0 after:w-full after:h-1 after:rounded-full after:bg-[#0A349E]">
-						Quizzes
-					</Link>
-					<Link href={`/student/classrooms/${classroomId}/notes`} className="">Notes</Link>
-				</nav>
-				{/* <button
-					className="hidden | md:block py-[0.625rem] px-5 rounded-full border border-[#CBCBCB]" onClick={()=>setCreate(true)}
-				>
-					+ Create
-				</button> */}
-			</div>
-      <div className="text-zinc-700 font-medium text-4xl max-sm:text-2xl">
-        Quiz Dashboard
-      </div>
-      <p className="mt-2 max-sm:text-xs">Operating System Quiz</p>
-      <p className="max-sm:text-xs">Date Generated: 20/7/2024</p>
-      <div className="flex max-[987px]:flex-col gap-4 my-4">
-        <div className="bg-white border rounded-md shadow-lg p-4 w-6/12 max-[987px]:w-full h-96">
-          <div className="text-black font-medium">Score Graph</div>
-          <div className="w-full h-full py-4">
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={score}>
-                <CartesianGrid strokeDasharray="3 3" />
+  
 
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="marks"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-        <div className="bg-white border rounded-md shadow-lg p-4 w-7/12 max-[987px]:w-full h-96">
-          <div className="text-black font-medium">Overall Attendance</div>
-          <div className="w-full h-full py-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  dataKey="value"
-                  data={[
-                    { name: "Attempted", value: attendance[0].attempted },
-                    {
-                      name: "Not Attempted",
-                      value:
-                        attendance[0].totalStudents - attendance[0].attempted,
-                    },
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={innerRadius}
-                  outerRadius={outerRadius}
-                  fill="#8884d8"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  labelLine={false}
-                  paddingAngle={5}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  {attendance.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-      <div className="Questions p-4">
-        <div className="text-zinc-700 font-medium text-4xl max-sm:text-2xl mt-4">
-          Questions
-        </div>
-        
-        {questions.map((q) => (
-          <Accordion title={q.question} answer={q.answer} key={q.id} />
-        ))}
-        
-
+  return loading?
+  (<Loader/>):
+  (
+    <div className=" flex flex-col">
+    <div className="min-h-[80vh] flex ">
+      <div className=" w-full p-1">
+        <div className="text-3xl font-semibold text-black max-sm:text-2xl">Multiple Choice Questions</div>
+      <QuizCard
+        QuizArray={quizArray}
+        quizId={params.quizId}
+        classId={params.classroomId}
+        attemptId = {attemptId}
+      />
       </div>
     </div>
+    </div>
   );
-};
-
-export default Page;
+}

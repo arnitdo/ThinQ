@@ -1,13 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import useAuthStore from "@/lib/zustand";
-import { getStudentCalender, getTeacherCalender } from "@/util/client/helpers";
-import { Lecture } from "@prisma/client";
-import { GetCalenderResponse } from "@/util/api/api_responses";
-import { BaseCalendar } from "@/components/ui/baseCalender";
+import {getStudentCalender} from "@/util/client/helpers";
+import {BaseCalendar} from "@/components/ui/baseCalender";
 import Lottie from "lottie-react";
 import animationData from "../../../../../public/nolecture.json";
+
 type calenderData = {
   lectureId: string;
   title: string;
@@ -149,7 +148,7 @@ export default function Page() {
               </div>
             )}
             {showData.map((item, index) => (
-              <div>
+              <div key={item.lectureId}>
                 <p className="flex gap-1 text-xs font-medium text-[#7E7E7E] mb-2 mt-10">
                   <span className="lectureStartTime">
                     {formatTime(item.lectureStartTimestamp.toString())}

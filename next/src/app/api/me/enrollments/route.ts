@@ -3,7 +3,7 @@ import { DeleteEnrollmentQueryParams, NoParams } from "@/util/api/api_requests";
 import { authParser, requireAuthenticatedUser, requireAuthorizedUser, requireQueryParams, validateQueryParams } from "@/util/middleware/helpers";
 import { DeleteEnrollmentQueryParamServerValidator } from "@/util/validators/server";
 import db from "@/util/db";
-import { DeletedEnrollmentResponse, GetClassroomsResponse, GetEnrollmentsResponse } from "@/util/api/api_responses";
+import { DeletedEnrollmentResponse, GetClassroomDataResponse, GetClassroomsResponse, GetEnrollmentsResponse } from "@/util/api/api_responses";
 
 export const GET = withMiddlewares<NoParams>(
 	authParser(),
@@ -19,9 +19,26 @@ export const GET = withMiddlewares<NoParams>(
 					}
 				}
 			},
+
+			select: {
+				classroomId: true,
+				classroomName: true,
+				facultyUserId: true,
+				classroomOrgId: true,
+				_count: {
+					select: { classroomEnrollments: true }
+
+				},
+				User: {
+					select: {
+						userId: true,
+						userDisplayName: true,
+					}
+				}
+			}
 		})
 
-		res.status(200).json<GetClassroomsResponse>({
+		res.status(200).json<GetClassroomDataResponse>({
 			responseStatus: "SUCCESS",
 			classrooms: enrollments
 		})

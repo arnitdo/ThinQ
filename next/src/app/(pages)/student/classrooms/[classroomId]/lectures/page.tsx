@@ -127,6 +127,10 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		{
 			href: `/student/classrooms/${classroomId}/notes`,
 			title: "Notes"
+		},
+		{
+			href: `/student/classrooms/${classroomId}/resources`,
+			title: "Resources"
 		}
 	
 	]

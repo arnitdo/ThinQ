@@ -11,8 +11,7 @@ import {AuthLoginUserBodyClientValidator} from "@/util/validators/client";
 import {STRLEN_NZ} from "@/util/validators/utils";
 import {makeAPIRequest} from "@/util/client/helpers";
 import {ResponseJSON} from "@/util/api/api_meta";
-import { toast } from "sonner"
-import { redirect } from "next/dist/server/api-utils";
+import {toast} from "sonner"
 import useAuthStore from "@/lib/zustand";
 
 const Page = () => {
@@ -145,8 +144,8 @@ const Page = () => {
             </form>
           </div>
         </motion.div>
-        <motion.img  initial={{ opacity: 0, x: window.innerWidth - 270 }}
-           animate={{ opacity: 1 , x: window.innerWidth - (270 * 3)}}
+        <motion.img  initial={{ opacity: 0, x: 270 * 6 }}
+           animate={{ opacity: 1 , x: 270 * 3}}
            transition={{ duration: 1, delay: 1, ease: "linear", stiffness: 10 }}
            alt="IPhone"
            src={"/Iphone.png"}  width={269.4} height={583} className="absolute -mt-4 max-md:hidden ml-32 max-sm:ml-6 overflow-x-hidden shadowph"

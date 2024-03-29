@@ -1,7 +1,24 @@
+"use client"
+import { useEffect, useState } from "react" 
 import Link from "next/link"
 import NotesComponent from "./NoteComponent"
+import useAuthStore from "@/lib/zustand"
+import { Notes } from "@prisma/client"
+import { getLectures, getNotes } from "@/util/client/helpers"
+import Loader from "@/components/Loader"
 
 export default function Page({params: {classroomId, noteId}}: {params: {classroomId: string, noteId: string}}) {
+	const {user} = useAuthStore()
+	const [data, setData] = useState<Notes | "">("");
+
+	useEffect(() => {
+		const getData = async () => {
+			if (!user) return;
+			const lectures = await getNotes(user.userOrgId, classroomId, noteId)
+			if (lectures) setData(lectures)
+		}
+		getData()
+	}, [user])
   return (
 	  <>
 		  <div className="flex justify-between items-end border-b pb-2">
@@ -24,7 +41,13 @@ export default function Page({params: {classroomId, noteId}}: {params: {classroo
 				  rel="stylesheet"
 				  href="https://fonts.googleapis.com/css?family=Homemade+Apple|Roboto|Caveat|Liu+Jian+Mao+Cao&display=swap"
 			  />
-			  <NotesComponent classroomId={classroomId} noteId={noteId} />
+			  {data!==""?
+			  <NotesComponent classroomId={classroomId} noteId={noteId} notes={data.notesContent} />
+			:
+			<div className=" w-full min-h-[60vh] flex justify-center items-center">
+			<Loader/>
+			</div>
+			}
 			  <script defer src="https://unpkg.com/jspdf@^1/dist/jspdf.min.js"></script>
 
 		  </div>
