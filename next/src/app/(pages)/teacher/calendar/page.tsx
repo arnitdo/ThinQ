@@ -101,7 +101,7 @@ export default function Page() {
                   </p>
               <div className="lectureCard | grid hover:gap-[0.9375rem] grid-cols-[0_1fr] hover:grid-cols-[0.5rem_1fr] transition-[grid-template-columns]">
                 <div className="lectureCardActiveBar | bg-primary rounded-full"></div>
-                <div className="p-[0.9375rem] border border-[#7C7A7A] rounded-[0.3125rem] bg-[hsl(0,0%,95%,20%)] shadow-[0_8px_15.1px_hsl(0,1%,25%,10%)] flex justify-between items-center">
+                <div className="p-[0.9375rem] border border-[#7C7A7A] rounded-[0.3125rem] bg-[hsl(0,0%,95%,20%)] hover:shadow-[0_8px_15.1px_hsl(0,1%,25%,10%)] flex justify-between items-center">
                   <div>
                     <div className="lectureClass | text-secondary text-[0.5rem] font-bold bg-[hsl(318,93%,55%,14%)] border border-secondary py-[0.3125rem] px-[0.6875rem] rounded-full w-max mb-2">Comp-3</div>
                     <h2 className="text-xl font-medium text-black">{item.title}</h2>
