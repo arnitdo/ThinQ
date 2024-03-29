@@ -39,21 +39,13 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		{
 			href: `/student/classrooms/${classroomId}/notes`,
 			title: "Notes"
-		}
+		},
+    {
+        href: `/student/classrooms/${classroomId}/resources`,
+  title: "Resources"
+    }
+	
 	]
-
-	const QuizCard = ({item}: {item: Quiz}) => {
-		return (
-			<Link href={`/student/classrooms/${classroomId}/quiz/${item.quizId}`} className='quizCard | rounded-[0.625rem] border border-[#A0A0A0] text-center px-6 py-7'>
-        <h1 className='text-xl text-black'>{item.quizName}</h1>
-        <p className='mt-3'>Tap to reveal answers</p>
-        <div className='mt-3 flex gap-3 flex-wrap justify-center'>
-          <p className='text-sm text-[#0039C6] border border-[#5462DF] bg-[#CCE0FF] font-medium py-[0.375rem] px-3 rounded-full'>Questions: 12</p>
-          <p className='text-sm text-[#00802B] border border-[#00B833] bg-[#CCFFE0] font-medium py-[0.375rem] px-3 rounded-full'>Responses: 12</p>
-        </div>
-      </Link>
-		)
-	}
   return (
     <div className=' flex flex-col gap-2'>
 			<NestedNav items={navlinks} button={(<></>)}/>
