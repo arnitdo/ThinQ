@@ -719,6 +719,115 @@ def validate_short_ans_questions():
     finally:
         shutil.rmtree("compute")
 
+@app.route('/generate_mcq_notes_transcript', methods=['POST'])
+def generate_mcq_notes_transcript():
+    try:
+        request_data = request.get_json()
+        organization_id = request_data.get('organization_id')
+        class_id = request_data.get('class_id')
+        lecture_id = request_data.get('lecture_id')
+        no_of_questions = 10
+
+        text_directory = 'compute/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No Transcript files found for the given organization_id and class_id'})
+        if not os.path.exists(text_directory):
+            os.makedirs(text_directory)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'):]:
+                if key.lower().endswith('.txt'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(text_directory, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
+
+        if not os.path.isdir(text_directory):
+            return jsonify({'error': 'Text directory not found'}), 400
+
+        text_files = os.listdir(text_directory)
+        if not text_files:
+            return jsonify({'error': 'No text files found in the directory'}), 400
+        
+        all_text_content = []
+        for text_file in text_files:
+            text_path = os.path.join(text_directory, text_file)
+            with open(text_path, 'r') as file:
+                text_content = file.read()
+                all_text_content.append(text_content)
+
+        combined_text = '\n'.join(all_text_content) 
+        text_chunks = get_text_chunks(combined_text)
+
+        get_vector_store(text_chunks, filepath=f'compute/')
+
+        local_directory = f'compute/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        
+        notes_prompt = '''
+        Generate comprehensive notes based on the provided resources.
+        Consider the following aspects:
+        - Summarize key points covered in the resources.
+        - Include relevant insights and examples.
+        - Ensure clarity and coherence in the generated notes.
+        '''
+        notes_answer = user_input(notes_prompt, filepath=f'compute/')
+        notes_answer = notes_answer["output_text"].replace("**","").replace("`","")
+        notes_answer = {"output_text": notes_answer}
+        save_json_to_s3(notes_answer, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
+        create_notes_prisma(notesContent=notes_answer['output_text'], lectureId=lecture_id)
+        
+
+        mcq_prompt = '''
+        Please provide a JSON with {} generated questions and answers in the following schema:
+
+        {{
+        "questions": [
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 0,
+            }},
+            {{
+            "questionText": "Question text goes here",
+            "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "questionAnswerIndex": 1,
+            }},
+            // Add more questions as needed
+        ]
+        }}
+
+        Ensure the provided JSON adheres to the defined schema.
+        '''.format(no_of_questions)
+        mcq_answer = user_input(mcq_prompt, filepath=f'compute/')
+        cleaned_json_string = mcq_answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
+        data = json.loads(cleaned_json_string)
+        print(data)
+        save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
+        existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
+        quizTitle = existing_lecture.title
+        quiz = db.quiz.create({
+            "quizName" : quizTitle,
+            "lectureId" : lecture_id,
+        })
+        for question in data["questions"]:
+            create_mcq_prisma(
+                quiz.quizId,
+                question["questionText"],
+                question["questionOptions"],
+                question["questionAnswerIndex"]
+            )
+        return jsonify({'Message': "done successfully"}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree(text_directory)
+
 @app.route('/transcript_correct_grammar', methods=['POST'])
 def transcript_correct_grammar():
     request_data = request.get_json()
