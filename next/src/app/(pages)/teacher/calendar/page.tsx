@@ -1,11 +1,9 @@
 "use client"
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import useAuthStore from "@/lib/zustand";
-import { getTeacherCalender } from "@/util/client/helpers";
-import { Lecture } from "@prisma/client";
-import { GetCalenderResponse } from "@/util/api/api_responses";
-import { BaseCalendar } from "@/components/ui/baseCalender";
+import {getTeacherCalender} from "@/util/client/helpers";
+import {BaseCalendar} from "@/components/ui/baseCalender";
 
 type calenderData = {
   lectureId: string,
@@ -93,7 +91,7 @@ export default function Page() {
           <div>
             <div className="lectureCardContainer">{
               showData.map((item, index) => (
-                <div>
+                <div key={item.lectureId}>
                   <p className="flex gap-1 text-xs font-medium text-[#7E7E7E] mb-2">
                     <span className="lectureStartTime">{formatTime(item.lectureStartTimestamp.toString())}</span>
                     -
