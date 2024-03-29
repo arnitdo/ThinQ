@@ -234,7 +234,7 @@ def rag_embed_lectures():
         
         faiss_index_prefix = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'
         faiss_index_exists = any(obj['Key'].startswith(faiss_index_prefix) for obj in objects)
-        
+
         if faiss_index_exists:
             return jsonify({'success': True, 'message': 'FAISS index already exists in S3'})
 
@@ -277,6 +277,68 @@ def rag_embed_lectures():
         return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree(text_directory)
+
+@app.route('/rag_embed_trainyourchatbot', methods=['POST'])
+def rag_embed_trainyourchatbot():
+    try:
+        request_data = request.get_json()
+        unique_id = request_data.get('unique_id')
+        
+        pdf_directory = 'compute/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'chatbot/{unique_id}/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No PDF files found for the given organization_id and class_id'})
+        if not os.path.exists(pdf_directory):
+            os.makedirs(pdf_directory)
+
+        faiss_index_prefix = f'chatbot/{unique_id}/faiss_index/'
+        faiss_index_exists = any(obj['Key'].startswith(faiss_index_prefix) for obj in objects)
+        
+        if faiss_index_exists:
+            return jsonify({'success': True, 'message': 'FAISS index already exists in S3'})
+
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'chatbot/{unique_id}/'):]:
+                if key.lower().endswith('.pdf'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(pdf_directory, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
+
+        if not os.path.isdir(pdf_directory):
+            return jsonify({'error': 'PDF directory not found'}), 400
+
+        pdf_files = os.listdir(pdf_directory)
+        if not pdf_files:
+            return jsonify({'error': 'No PDF files found in the directory'}), 400
+        
+        all_pdf_text = []
+        for pdf_file in pdf_files:
+            pdf_path = os.path.join(pdf_directory, pdf_file)
+            with open(pdf_path, 'rb') as pdf_file:
+                pdf_bytes = pdf_file.read()
+            
+            pdf_text = get_pdf_text_from_bytes(pdf_bytes)
+            all_pdf_text.append(pdf_text)
+
+        combined_text = '\n'.join(all_pdf_text) 
+        text_chunks = get_text_chunks(combined_text)
+
+        get_vector_store(text_chunks, filepath=f'compute/')
+
+        local_directory = f'compute/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'chatbot/{unique_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
+        return jsonify({'success': True, 'message': 'Transcript files downloaded and processed successfully'}), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree(pdf_directory)
 
 @app.route('/question_rag_resources', methods=['POST'])
 def question_rag_resources():
@@ -324,6 +386,33 @@ def question_rag_lectures():
         for obj in objects:
             key = obj['Key']
             if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
+                filename = os.path.basename(key)
+                local_file_path = os.path.join(save_dir, filename)
+                s3.download_file(S3_BUCKET, key, local_file_path)
+        answer = user_input(question, filepath=f'compute/')
+        return jsonify(answer), 200
+    except Exception as e:
+        console.log({'error': str(e)}, log_locals=True) 
+        return jsonify({'error': str(e)}), 500
+    finally:
+        shutil.rmtree("compute")
+
+@app.route('/question_rag_trainyourchatbot', methods=['POST'])
+def question_rag_trainyourchatbot():
+    try:
+        request_data = request.get_json()
+        unique_id = request_data.get('unique_id')
+        question = request_data.get('question')
+        save_dir = 'compute/faiss_index'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'chatbot/{unique_id}/faiss_index/')
+        objects = response.get('Contents')
+        if not objects:
+            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        for obj in objects:
+            key = obj['Key']
+            if '/' not in key[len(f'chatbot/{unique_id}/faiss_index/'):]:
                 filename = os.path.basename(key)
                 local_file_path = os.path.join(save_dir, filename)
                 s3.download_file(S3_BUCKET, key, local_file_path)
