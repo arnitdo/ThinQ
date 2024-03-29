@@ -59,8 +59,8 @@ export default function Page() {
                     <h2 className="text-xl font-medium text-black">Linear Algebra</h2>
                     <h3 className="text-[0.9375rem] text-[#A1A1A1]">Faculty: <span>Prinkal Doshi</span></h3>
                   </div>
-                  <Link href={"/"} className="px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] bg-white text-sm font-medium text-[#6F6F6F]">
-                    <button className="">Join <span className="text-[#9F9F9F]">{">"}</span></button>
+                  <Link href={"/"} className="px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] bg-[linear-gradient(45deg,#38A2F8_50%,white_50%,white_70%)] bg-[100%_100%] text-sm font-medium text-[#6F6F6F]">
+                    <button className="">Join <span className="">{">"}</span></button>
                   </Link>
                 </div>
               </div>

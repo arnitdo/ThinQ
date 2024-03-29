@@ -50,7 +50,7 @@ const Page = () => {
 			getClassData()
 		}, [item.facultyUserId])
 		return (
-			<Link href={`/teacher/classrooms/${item.classroomId}/lectures`} key={item.classroomId} className=' border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
+			<Link href={`/teacher/classrooms/${item.classroomId}/lectures`} key={item.classroomId} className='outline border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
 				<div
 					className='h-fit p-4 bg-gradient-to-b rounded-t-[0.5rem]  from-blue-800 to-blue-950 flex justify-between items-center'>
 					<div className=' px-4 py-3 bg-blue-50 rounded-md'>
