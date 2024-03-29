@@ -787,7 +787,7 @@ def generate_mcq_notes_transcript():
         notes_answer = user_input(notes_prompt, filepath=f'compute/')
         notes_answer = notes_answer["output_text"].replace("**","").replace("`","")
         notes_answer = {"output_text": notes_answer}
-        # print(notes_answer)
+        print(notes_answer)
         return notes_answer
     def mcq():
         mcq_prompt = '''
@@ -805,7 +805,6 @@ def generate_mcq_notes_transcript():
             "questionOptions": ["Option 1", "Option 2", "Option 3", "Option 4"],
             "questionAnswerIndex": 1,
             }},
-            // Add more questions as needed
         ]
         }}
         Dont give answer as Answer is not available in the context if not then also generate the json
@@ -813,10 +812,12 @@ def generate_mcq_notes_transcript():
         '''
         answer = user_input(mcq_prompt, filepath=f'compute/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
+        print(cleaned_json_string)
         data = json.loads(cleaned_json_string)
         return data
     try:
         mcq_res = None
+        notes_res = None
         request_data = request.get_json()
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
@@ -865,7 +866,7 @@ def generate_mcq_notes_transcript():
         try:
             notes_res = notes()
         except Exception as e:
-            notes_res = notes()
+            notes_res = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
         finally:
             if notes_res is not None:
                 save_json_to_s3(notes_res, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
@@ -874,10 +875,21 @@ def generate_mcq_notes_transcript():
         try:
             mcq_res = mcq()
         except Exception as e:
-            mcq_res = mcq()
+            json_data = download_json_from_s3(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
+            existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
+            quizTitle = existing_lecture.title
+            quiz = db.quiz.create({
+                "quizName" : quizTitle,
+                "lectureId" : lecture_id,
+            })
+            for question in json_data["questions"]:
+                create_mcq_prisma(
+                    quiz.quizId,
+                    question["questionText"],
+                    question["questionOptions"],
+                    question["questionAnswerIndex"]
+                )
         finally:
-            print(mcq_res)
-            print(type(mcq_res))
             if mcq_res is not None:
                 save_json_to_s3(mcq_res, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
                 existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
