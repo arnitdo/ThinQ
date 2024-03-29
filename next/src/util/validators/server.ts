@@ -2,6 +2,8 @@ import {
 	AttendanceQueryParams,
 	AuthLoginUserBody,
 	AuthLoginUserParams,
+	ClassQuizAttemptParams,
+	ClassQuizIdParams,
 	ClassroomParams,
 	CreateBulkUserBody,
 	CreateClassroomBody,
@@ -295,6 +297,12 @@ export const QuizParamServerValidator: ServerValidator<QuizParams> = {
 	quizId: quizExists
 }
 
+export const ClassQuizIdParamServerValidator: ServerValidator<ClassQuizIdParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	quizId: quizExists
+}
+
 export const CreateQuizQuestionBodyServerValidator: ServerValidator<CreateQuizQuestionBody> = {
 	questionText: async(text: string) => {
 		return text.length > 0
@@ -325,6 +333,13 @@ export const QuizAttemptParamServerValidator: ServerValidator<QuizAttemptParams>
 	orgId: orgExists,
 	classroomId: classroomExists,
 	lectureId: lectureExists,
+	quizId: quizExists,
+	attemptId: quizAttemptExists
+}
+
+export const ClassQuizAttemptParamServerValidator: ServerValidator<ClassQuizAttemptParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
 	quizId: quizExists,
 	attemptId: quizAttemptExists
 }

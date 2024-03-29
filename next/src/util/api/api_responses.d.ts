@@ -27,9 +27,25 @@ export type GetUserResponse = {
 	isAuthenticated: false,
 	authenticatedUser: null
 }
-
+export type ClassroomData = {
+	classroomId: string,
+	classroomName: string,
+	facultyUserId: string,
+	classroomOrgId: string,
+	_count: {
+		classroomEnrollments: number
+	},
+	User:{
+			userId: string,
+			userDisplayName: string,
+	}
+}
 export type GetClassroomsResponse = {
 	classrooms: Classroom[]
+}
+
+export type GetClassroomDataResponse = {
+	classrooms: ClassroomData[]
 }
 
 export type GetClassroomResponse = {
@@ -120,6 +136,10 @@ export type GetQuizAttemptsResponse = {
 	quizAttempts: QuizAttempt[]
 }
 
+export type CreateQuizAttemptResponse = {
+	createdQuizAttemptId: string
+}
+
 export type GetQuizAttemptResponse = {
 	quizAttempt: QuizAttempt
 }
@@ -134,6 +154,14 @@ export type GetQuizResponseResponse = {
 
 export type GetNotesResponse = {
 	notes: Notes
+}
+
+export type GetAllNotesResponse = {
+	notes: Notes[]
+}
+
+export type GetAllQuizzesResponse = {
+	quizzes: Quiz[]
 }
 
 export type DeletedNotesResponse = {
@@ -166,6 +194,16 @@ export type GetOrgUsersResponse = {
 
 export type GetMeetingTokenResponse = {
 	accessToken: string
+}
+
+export type GetQuizDataResponse = {
+	quizData: {
+		quizId: string,
+		quizName: string,
+		quizQuestions: QuizQuestion[],
+		quizAttempts: QuizAttempt[],
+		quizLecture: Lecture
+	}
 }
 
 export type GetCalenderResponse = {

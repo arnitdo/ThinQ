@@ -1,5 +1,5 @@
-import {withMiddlewares} from "@/util/middleware";
-import {GetOrgUsersParams, OrgIdBaseParams} from "@/util/api/api_requests";
+import { withMiddlewares } from "@/util/middleware";
+import { GetOrgUsersParams, OrgIdBaseParams } from "@/util/api/api_requests";
 import {
 	authParser,
 	requireAuthenticatedUser,
@@ -11,12 +11,12 @@ import {
 	BaseOrgIdParamServerValidator, matchUserOrgWithParamsOrg,
 } from "@/util/validators/server";
 import db from "@/util/db";
-import {GetClassroomsResponse, GetUserResponse, GetUsersResponse} from "@/util/api/api_responses";
+import { GetClassroomDataResponse, GetClassroomsResponse, GetUserResponse, GetUsersResponse } from "@/util/api/api_responses";
 
 export const GET = withMiddlewares<OrgIdBaseParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg}),
+	requireAuthorizedUser({ matchUserTypes: ["Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId"]),
 	validateURLParams(BaseOrgIdParamServerValidator),
 	async (req, res) => {
@@ -24,9 +24,26 @@ export const GET = withMiddlewares<OrgIdBaseParams>(
 			where: {
 				classroomOrgId: req.params.orgId,
 				facultyUserId: req.user!.userId
+			},
+
+			select: {
+				classroomId: true,
+				classroomName: true,
+				facultyUserId: true,
+				classroomOrgId: true,
+				_count: {
+					select: { classroomEnrollments: true }
+
+				},
+				User: {
+					select: {
+						userId: true,
+						userDisplayName: true,
+					}
+				}
 			}
 		})
-		res.status(200).json<GetClassroomsResponse>({
+		res.status(200).json<GetClassroomDataResponse>({
 			responseStatus: "SUCCESS",
 			classrooms: classrooms
 		})

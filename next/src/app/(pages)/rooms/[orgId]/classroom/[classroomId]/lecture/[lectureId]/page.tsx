@@ -16,6 +16,10 @@ import {GetMeetingTokenParams} from "@/util/api/api_requests";
 import {useAPIRequest} from "@/util/client/hooks/useApi";
 import Draw from "@/components/Draw";
 import useAuthStore from "@/lib/zustand";
+import { UserType } from '@prisma/client';
+import Dictaphone from '@/components/Dictaphone';
+import { createTranscript, getLectures } from '@/util/client/helpers';
+import { toast } from 'sonner';
 
 type PageParams = {
 	orgId: string,
@@ -28,6 +32,7 @@ export default function Page({params}: {params: PageParams}) {
 	const [liveTranscript, setLiveTranscript] = useState<string>("")
 
 	const {lectureId, orgId, classroomId} = params
+	const flaskUrl = process.env.NEXT_PUBLIC_FLASK_API_URL
 
 	const {user} = useAuthStore()
 
@@ -57,19 +62,59 @@ export default function Page({params}: {params: PageParams}) {
 	}
 
 	return (
-
+		<div>
 		<LiveKitRoom
 			video={true}
 			audio={true}
 			token={accessToken}
 			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+			onDisconnected={async() => {
+				const response = await createTranscript(params.orgId, params.classroomId, params.lectureId, liveTranscript)
+				if(!response)return
+				toast("Transcript saved successfully")
+				console.log(flaskUrl)
+				// const blankRequest1 = fetch(`${flaskUrl}/rag_embed_lectures`,{
+				// 	method:"POST",
+				// 	headers: {
+				// 		"Content-Type": "application/json"
+				// 	},
+				// 	body: JSON.stringify({
+				// 		organization_id: orgId,
+				// 		class_id: classroomId,
+				// 		lecture_id: lectureId
+				// 	})
+				// })
+				const blankRequest2 = fetch(`${flaskUrl}/generate_mcq_notes_transcript`,{
+					method:"POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						organization_id: orgId,
+						class_id: classroomId,
+						lecture_id: lectureId
+					})
+				})
+				// const blankRequest3 = fetch(`${flaskUrl}/get_notes_lectures`,{
+				// 	method:"POST",
+				// 	headers: {
+				// 		"Content-Type": "application/json"
+				// 	},
+				// 	body: JSON.stringify({
+				// 		organization_id: orgId,
+				// 		class_id: classroomId,
+				// 		lecture_id: lectureId
+				// 	})
+				// })
+			}}
+			
 			// Use the default LiveKit theme for nice styles.
 			data-lk-theme="default"
 			style={{ minHeight: '100dvh' }}
 		>
 			<div className=' flex w-full px-6 py-8 rounded-lg h-fit'>
 				<div className={` h-[70vh] rounded-xl w-full flex`}>
-					<Draw room={lectureId} name={user?.userDisplayName || "Guest User"}/>
+					<Draw room={lectureId} name={user?.userDisplayName || "Guest User"} />
 				</div>
 			</div>
 			{/* Your custom component with basic video conferencing functionality. */}
@@ -83,9 +128,10 @@ export default function Page({params}: {params: PageParams}) {
       share tracks and to leave the room. */}
 			<div className=' flex flex-row gap-2 justify-center w-full items-center'>
 				<ControlBar controls={{camera: false}} />
-				{/*<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>*/}
+				<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>
 			</div>
 		</LiveKitRoom>
+		</div>
 	);
 }
 

@@ -48,6 +48,13 @@ export type ClassroomParams = {
 	classroomId: string
 }
 
+export type ClassroomQuizParams = {
+	orgId: string,
+	classroomId: string,
+	quizId: string
+}
+
+
 export type EditClassroomBody = CreateClassroomBody
 
 export type CreateLectureBody = {
@@ -109,6 +116,13 @@ export type QuizParams = {
 	quizId: string
 }
 
+export type ClassQuizIdParams = {
+	orgId: string,
+	classroomId: string,
+	quizId: string
+}
+
+
 export type CreateQuizQuestionBody = {
 	questionText: string
 	questionOptions: string[]
@@ -131,6 +145,14 @@ export type QuizAttemptParams = {
 	orgId: string,
 	classroomId: string,
 	lectureId: string,
+	quizId: string,
+	attemptId: string
+}
+
+
+export type ClassQuizAttemptParams = {
+	orgId: string,
+	classroomId: string,
 	quizId: string,
 	attemptId: string
 }

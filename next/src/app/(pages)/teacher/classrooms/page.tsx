@@ -10,13 +10,14 @@ import Link from 'next/link'
 import {useEffect, useRef, useState} from 'react'
 import { toast } from 'sonner'
 import {motion} from 'framer-motion'
+import { ClassroomData } from '@/util/api/api_responses'
 type ClassCardProps = {
-	item: Classroom
+	item: ClassroomData
 }
 
 const Page = () => {
 	const {user} = useAuthStore()
-	const [data, setData] = useState<Classroom[]>([]);
+	const [data, setData] = useState<ClassroomData[]>([]);
 	const [clickedCardId, setClickedCardId] = useState<string | null>(null)
 	const [create, setCreate] = useState<boolean>(false)
 
@@ -32,22 +33,11 @@ const Page = () => {
 	}, [user, create])
 
 	const ClassCard = ({item}: ClassCardProps) => {
-		const [faculty, setFaculty] = useState<AuthUser | null>(null)
-		const [enrollments, setEnrollments] = useState<ClassroomEnrollment[] | null>(null)
 	  const [able, setAble] = useState(false)
 	  const handleClick = ()=>{
 		setAble(!able)
 	  }
-	
-		useEffect(() => {
-			const getClassData = async () => {
-				const faculty = await getFaculty(item.classroomOrgId, item.facultyUserId)
-				if (faculty) setFaculty(faculty)
-				const enrollments = await getEnrollments(item.classroomOrgId, item.classroomId)
-				if (enrollments) setEnrollments(enrollments)
-			}
-			getClassData()
-		}, [item.facultyUserId])
+
 		return (
 			<Link href={`/teacher/classrooms/${item.classroomId}/lectures`} key={item.classroomId} className='border rounded-[0.5rem] min-h-64 hover:shadow-xl transition-all'>
 				<div
@@ -70,12 +60,11 @@ const Page = () => {
 					// )
 					}
 					<h1 className='text-[#6C6C6C] flex flex-row justify-start items-center'>Class
-						Incharge: {faculty ? faculty.userDisplayName : <span><SmallLoader/></span>}</h1>
+						Incharge: {item.User.userDisplayName}</h1>
 					<h1 className='text-[#6C6C6C] mt-20 flex justify-start'>
 						Attendee:
 						<img src="/attendee.svg" alt=""
-							 className='ml-2'/> +{enrollments ? (enrollments.length) :
-						<span><SmallLoader/></span>}
+							 className='ml-2'/> +{item._count.classroomEnrollments}
 					</h1>
 				</div>
 	
