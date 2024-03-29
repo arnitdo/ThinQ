@@ -167,6 +167,13 @@ def rag_embed_resources():
             return jsonify({'error': 'No PDF files found for the given organization_id and class_id'})
         if not os.path.exists(pdf_directory):
             os.makedirs(pdf_directory)
+
+        faiss_index_prefix = f'orgs/{organization_id}/classrooms/{class_id}/resources/faiss_index/'
+        faiss_index_exists = any(obj['Key'].startswith(faiss_index_prefix) for obj in objects)
+        
+        if faiss_index_exists:
+            return jsonify({'success': True, 'message': 'FAISS index already exists in S3'})
+
         for obj in objects:
             key = obj['Key']
             if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/resources/'):]:
@@ -224,6 +231,13 @@ def rag_embed_lectures():
             return jsonify({'error': 'No Transcript files found for the given organization_id and class_id'})
         if not os.path.exists(text_directory):
             os.makedirs(text_directory)
+        
+        faiss_index_prefix = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'
+        faiss_index_exists = any(obj['Key'].startswith(faiss_index_prefix) for obj in objects)
+        
+        if faiss_index_exists:
+            return jsonify({'success': True, 'message': 'FAISS index already exists in S3'})
+
         for obj in objects:
             key = obj['Key']
             if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'):]:
