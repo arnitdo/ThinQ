@@ -105,7 +105,7 @@ const Sidebar = ({
               </Link>
             ) : (
               <Link
-                href={`${user ? roleRoute[user.userType] + "/calender" : "/"}`}
+                href={`${user ? roleRoute[user.userType] + "/calendar" : "/"}`}
                 className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
               >
                 <img
@@ -116,9 +116,9 @@ const Sidebar = ({
                 {sidebarActive && <p className="hidden | md:block">{item2}</p>}
               </Link>
             )}
-            {user.userType === "Teacher" && (
+            {user.userType === "Teacher" && item3 !== null && (
               <Link
-                href={`${user ? roleRoute[user.userType] + "/calender" : "/"}`}
+                href={`${user ? roleRoute[user.userType] + "/calendar" : "/"}`}
                 className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
               >
                 <img
@@ -135,10 +135,10 @@ const Sidebar = ({
             onClick={() => {
               handleSignout();
             }}
-            className="p-[0.625rem] items-center rounded-[0.3125rem] border border-[#646464] hover:bg-[#ECECEc] shadow-[0_4px_33.3px_hsl(0,0%,0%,16%)] flex gap-3 cursor-pointer"
+            className="p-[0.625rem] items-center rounded-[0.3125rem] border border-[#646464] hover:bg-red-100 shadow-[0_4px_33.3px_hsl(0,0%,0%,16%)] flex gap-3 cursor-pointer hover:text-red-900"
           >
             <img src="/logout.svg" alt="" className="opacity-55" />
-            {sidebarActive && <p className="hidden | md:block">Logout</p>}
+            {sidebarActive && <p className="hidden | md:block font-medium ">Logout</p>}
           </button>
         </nav>
       </div>

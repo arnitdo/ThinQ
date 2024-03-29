@@ -1,3 +1,9 @@
+@property --gradientColorStopPercent {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -222,4 +228,12 @@ body {
 }
 .animationOpacityOne {
   animation: opacityZeroToOne 500ms ease-in-out forwards;
+}
+
+.calendarJoinButton {
+  background: linear-gradient(45deg,#38A2F8 var(--gradientColorStopPercent),white 0%);
+  transition: --gradientColorStopPercent 0.1s linear;
+}
+.calendarJoinButton:hover {
+  --gradientColorStopPercent: 100%;
 }

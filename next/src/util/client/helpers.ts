@@ -11,6 +11,7 @@ import {
 } from "../api/api_requests";
 import {
 	DeletedLectureResponse,
+	GetCalenderResponse,
 	GetClassroomResponse,
 	GetClassroomsResponse,
 	GetEnrollmentsResponse,
@@ -377,7 +378,7 @@ export async function deleteLecture(orgId:string, classroomId:string, lectureId:
 }
 
 export async function getTeacherCalender(orgId:string) {
-	const response = await makeAPIRequest<GetLecturesResponse, OrgIdBaseParams, NoParams, NoParams>({
+	const response = await makeAPIRequest<GetCalenderResponse, OrgIdBaseParams, NoParams, NoParams>({
 		requestUrl: "/api/orgs/:orgId/teachers/calender",
 		urlParams: {
 			orgId
