@@ -386,20 +386,47 @@ def get_mcq_lectures():
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
         lecture_id = request_data.get('lecture_id')
-        no_of_questions = request_data.get('no_of_questions')
-        save_dir = 'compute/faiss_index'
-        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/')
+        no_of_questions = 5
+        text_directory = 'compute_mcq/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/')
         objects = response.get('Contents')
         if not objects:
-            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+            return jsonify({'error': 'No Transcript files found for the given organization_id and class_id'})
+        if not os.path.exists(text_directory):
+            os.makedirs(text_directory)
         for obj in objects:
             key = obj['Key']
-            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
-                filename = os.path.basename(key)
-                local_file_path = os.path.join(save_dir, filename)
-                s3.download_file(S3_BUCKET, key, local_file_path)
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'):]:
+                if key.lower().endswith('.txt'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(text_directory, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
+
+        if not os.path.isdir(text_directory):
+            return jsonify({'error': 'Text directory not found'}), 400
+
+        text_files = os.listdir(text_directory)
+        if not text_files:
+            return jsonify({'error': 'No text files found in the directory'}), 400
+        
+        all_text_content = []
+        for text_file in text_files:
+            text_path = os.path.join(text_directory, text_file)
+            with open(text_path, 'r') as file:
+                text_content = file.read()
+                all_text_content.append(text_content)
+
+        combined_text = '\n'.join(all_text_content) 
+        text_chunks = get_text_chunks(combined_text)
+
+        get_vector_store(text_chunks, filepath=f'compute_mcq/')
+
+        local_directory = f'compute_mcq/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
         prompt = '''
         Please provide a JSON with {} generated questions and answers in the following schema:
 
@@ -421,12 +448,13 @@ def get_mcq_lectures():
 
         Ensure the provided JSON adheres to the defined schema.
         '''.format(no_of_questions)
-        answer = user_input(prompt, filepath=f'compute/')
+        answer = user_input(prompt, filepath=f'compute_mcq/')
         cleaned_json_string = answer['output_text'].replace('\\n', '').replace('\\', '').replace('`', '').replace('json', '')
         data = json.loads(cleaned_json_string)
         save_json_to_s3(data, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', 'mcq.json')
         existing_lecture = db.lecture.find_unique(where={"lectureId": lecture_id})
         quizTitle = existing_lecture.title
+        db.quiz.delete_many(where = {"lectureId": lecture_id})
         quiz = db.quiz.create({
             "quizName" : quizTitle,
             "lectureId" : lecture_id,
@@ -461,7 +489,7 @@ def get_mcq_lectures():
             console.log({'error': str(e)}, log_locals=True) 
             return jsonify({'error': str(e)}), 500
     finally:
-        shutil.rmtree("compute")
+        shutil.rmtree("compute_mcq")
 
 @app.route('/get_notes_resources', methods=['POST'])
 def get_notes_resources():
@@ -515,19 +543,46 @@ def get_notes_lectures():
         organization_id = request_data.get('organization_id')
         class_id = request_data.get('class_id')
         lecture_id = request_data.get('lecture_id')
-        save_dir = 'compute/faiss_index'
-        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/')
+        text_directory = 'compute_lec/'
+        response = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/')
         objects = response.get('Contents')
         if not objects:
-            return jsonify({'error': 'No RAG Embeddings found for the given organization_id and class_id'})
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
+            return jsonify({'error': 'No Transcript files found for the given organization_id and class_id'})
+        if not os.path.exists(text_directory):
+            os.makedirs(text_directory)
         for obj in objects:
             key = obj['Key']
-            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/'):]:
-                filename = os.path.basename(key)
-                local_file_path = os.path.join(save_dir, filename)
-                s3.download_file(S3_BUCKET, key, local_file_path)
+            if '/' not in key[len(f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/'):]:
+                if key.lower().endswith('.txt'):
+                    filename = os.path.basename(key)
+                    local_file_path = os.path.join(text_directory, filename)
+                    s3.download_file(S3_BUCKET, key, local_file_path)
+
+        if not os.path.isdir(text_directory):
+            return jsonify({'error': 'Text directory not found'}), 400
+
+        text_files = os.listdir(text_directory)
+        if not text_files:
+            return jsonify({'error': 'No text files found in the directory'}), 400
+        
+        all_text_content = []
+        for text_file in text_files:
+            text_path = os.path.join(text_directory, text_file)
+            with open(text_path, 'r') as file:
+                text_content = file.read()
+                all_text_content.append(text_content)
+
+        combined_text = '\n'.join(all_text_content) 
+        text_chunks = get_text_chunks(combined_text)
+
+        get_vector_store(text_chunks, filepath=f'compute_lec/')
+
+        local_directory = f'compute_lec/faiss_index/'
+        for filename in os.listdir(local_directory):
+            if os.path.isfile(os.path.join(local_directory, filename)):
+                s3_key = f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}/faiss_index/{filename}'
+                with open(os.path.join(local_directory, filename), 'rb') as file:
+                    s3.upload_fileobj(file, S3_BUCKET, s3_key)
         prompt = '''
         Generate comprehensive notes based on the provided resources.
         Consider the following aspects:
@@ -535,7 +590,7 @@ def get_notes_lectures():
         - Include relevant insights and examples.
         - Ensure clarity and coherence in the generated notes.
         '''
-        answer = user_input(prompt, filepath=f'compute/')
+        answer = user_input(prompt, filepath=f'compute_lec/')
         answer = answer["output_text"].replace("**","").replace("`","")
         answer = {"output_text": answer}
         save_json_to_s3(answer, f'orgs/{organization_id}/classrooms/{class_id}/lectures/{lecture_id}', f'notes.json')
@@ -553,8 +608,8 @@ def get_notes_lectures():
             console.log({'error': str(e)}, log_locals=True) 
             return jsonify({'error': str(e)}), 500
     finally:
-        shutil.rmtree("compute")
-
+        shutil.rmtree("compute_lec")
+    
 @app.route('/get_short_ans_questions_resources', methods=['POST'])
 def get_short_ans_questions_resources():
     try:
