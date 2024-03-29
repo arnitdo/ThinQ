@@ -67,7 +67,7 @@ export default function NotesComponent({ noteId, classroomId }) {
             doc.addPage();
           }
         }
-        doc.save("nomework.pdf");
+        doc.save("thinq.pdf");
       }
 
       function formatText(event) {
