@@ -237,3 +237,22 @@ body {
 .calendarJoinButton:hover {
   --gradientColorStopPercent: 100%;
 }
+
+/* @keyframes chatbotShrink {
+  to {
+    scale: 0.3;
+  }
+}
+@keyframes chatbotUp {
+  to {
+    transform: translateY(0);
+  }
+}
+.chatbotGradientText {
+  --shrinkTime: 0.75s;
+  --shrinkDelay: 2s;
+  --upTime: 0.75s;
+  animation: chatbotShrink var(--shrinkTime) ease-out var(--shrinkDelay) forwards,
+             chatbotUp var(--upTime) ease-out calc(var(--shrinkDelay) + var(--shrinkTime) + 0.2s) forwards;
+  transform-origin: bottom;
+} */
