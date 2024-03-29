@@ -20,6 +20,8 @@ import { UserType } from '@prisma/client';
 import Dictaphone from '@/components/Dictaphone';
 import { createTranscript, getLectures } from '@/util/client/helpers';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { roleRoute } from '@/components/AuthChecker';
 
 type PageParams = {
 	orgId: string,
@@ -61,29 +63,13 @@ export default function Page({params}: {params: PageParams}) {
 		return <div>Loading the ThinQ Web Platform</div>
 	}
 
-	return (
-		<div>
-		<LiveKitRoom
-			video={true}
-			audio={true}
-			token={accessToken}
-			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-			onDisconnected={async() => {
+	const handleTranscript=async()=>{
+		if(!user) return
+				if(user.userType==="Student") return 
 				const response = await createTranscript(params.orgId, params.classroomId, params.lectureId, liveTranscript)
 				if(!response)return
 				toast("Transcript saved successfully")
 				console.log(flaskUrl)
-				// const blankRequest1 = fetch(`${flaskUrl}/rag_embed_lectures`,{
-				// 	method:"POST",
-				// 	headers: {
-				// 		"Content-Type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		organization_id: orgId,
-				// 		class_id: classroomId,
-				// 		lecture_id: lectureId
-				// 	})
-				// })
 				const blankRequest2 = fetch(`${flaskUrl}/generate_mcq_notes_transcript`,{
 					method:"POST",
 					headers: {
@@ -95,17 +81,21 @@ export default function Page({params}: {params: PageParams}) {
 						lecture_id: lectureId
 					})
 				})
-				// const blankRequest3 = fetch(`${flaskUrl}/get_notes_lectures`,{
-				// 	method:"POST",
-				// 	headers: {
-				// 		"Content-Type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		organization_id: orgId,
-				// 		class_id: classroomId,
-				// 		lecture_id: lectureId
-				// 	})
-				// })
+	}
+
+	const router = useRouter()
+
+	return (
+		<div>
+		<LiveKitRoom
+			video={true}
+			audio={true}
+			token={accessToken}
+			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+			onDisconnected={async() => {
+				handleTranscript()
+				if(!user)return
+				router.push(`${roleRoute[user.userType]}/classrooms`)
 			}}
 			
 			// Use the default LiveKit theme for nice styles.
@@ -128,7 +118,7 @@ export default function Page({params}: {params: PageParams}) {
       share tracks and to leave the room. */}
 			<div className=' flex flex-row gap-2 justify-center w-full items-center'>
 				<ControlBar controls={{camera: false}} />
-				<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>
+				{user?.userType==="Teacher"&&<Dictaphone desc={liveTranscript} setDesc={setLiveTranscript} setLang={()=>{}}/>}
 			</div>
 		</LiveKitRoom>
 		</div>

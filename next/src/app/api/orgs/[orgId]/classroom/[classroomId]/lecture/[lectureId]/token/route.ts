@@ -11,6 +11,7 @@ import {UserType} from "@prisma/client";
 import {GetLectureTokenValidator} from "@/util/validators/server";
 import {AccessToken} from "livekit-server-sdk"
 import {GetMeetingTokenResponse} from "@/util/api/api_responses";
+import db from "@/util/db";
 
 export const GET = withMiddlewares<GetMeetingTokenParams>(
 	authParser(),
@@ -22,6 +23,23 @@ export const GET = withMiddlewares<GetMeetingTokenParams>(
 	validateURLParams(GetLectureTokenValidator),
 	async (req, res) => {
 		const {lectureId, classroomId, orgId} = req.params
+
+		if(req.user!.userType === UserType.Student){
+			const attendance = await db.lectureAttendance.findFirst({
+				where:{
+					lectureId: lectureId,
+					userId: req.user!.userId
+				}
+			})
+			if(!attendance){
+				const attendance = await db.lectureAttendance.create({
+					data:{
+						lectureId: lectureId,
+						userId: req.user!.userId
+					}
+				})
+			}
+		}
 
 		const accessToken = new AccessToken(
 			process.env.LIVEKIT_API_KEY,
