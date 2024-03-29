@@ -105,7 +105,7 @@ const Sidebar = ({
               </Link>
             ) : (
               <Link
-                href={`${user ? roleRoute[user.userType] + "/calender" : "/"}`}
+                href={`${user ? roleRoute[user.userType] + "/calendar" : "/"}`}
                 className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
               >
                 <img
@@ -118,7 +118,7 @@ const Sidebar = ({
             )}
             {user.userType === "Teacher" && item3 !== null && (
               <Link
-                href={`${user ? roleRoute[user.userType] + "/calender" : "/"}`}
+                href={`${user ? roleRoute[user.userType] + "/calendar" : "/"}`}
                 className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
               >
                 <img

@@ -11,7 +11,7 @@ import {
 	BaseOrgIdParamServerValidator, matchUserOrgWithParamsOrg,
 } from "@/util/validators/server";
 import db from "@/util/db";
-import {GetClassroomsResponse, GetLecturesResponse, GetUserResponse, GetUsersResponse} from "@/util/api/api_responses";
+import {GetCalenderResponse, GetClassroomsResponse, GetLecturesResponse, GetUserResponse, GetUsersResponse} from "@/util/api/api_responses";
 
 export const GET = withMiddlewares<OrgIdBaseParams>(
 	authParser(),
@@ -24,14 +24,38 @@ export const GET = withMiddlewares<OrgIdBaseParams>(
 			where: {
 				lectureClassroom : {
                     facultyUserId: req.user!.userId,
-                    classroomOrgId: req.params.orgId
+                    classroomOrgId: req.params.orgId,
                 }
 			},
             orderBy:{
                 lectureStartTimestamp: 'asc'
-            }
+            },
+			select: {
+				lectureId: true,
+				title: true,
+				lectureStartTimestamp: true,
+				lectureEndTimestamp: true,
+				lectureClassroom: {
+					select: {
+						classroomId: true,
+						classroomName: true,
+						facultyUserId: true,
+						User:{
+							select:{
+								userDisplayName: true
+							}
+						},
+						_count: {
+							select:{
+								classroomEnrollments: true
+							}
+						}
+					}
+			
+			}
+			}
 		})
-		res.status(200).json<GetLecturesResponse>({
+		res.status(200).json<GetCalenderResponse>({
 			responseStatus: "SUCCESS",
 			lectures: lectures
 		})

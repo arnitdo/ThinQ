@@ -167,3 +167,24 @@ export type GetOrgUsersResponse = {
 export type GetMeetingTokenResponse = {
 	accessToken: string
 }
+
+export type GetCalenderResponse = {
+	lectures: {
+		lectureId: string,
+		title:	string,
+		lectureStartTimestamp: Date,
+		lectureEndTimestamp: Date,
+		lectureClassroom: {
+			classroomId: string,
+			classroomName: string,
+			facultyUserId: string,
+			User: {
+				userDisplayName: string
+			},
+			_count: {
+				classroomEnrollments: number
+			}
+
+		}
+	}[]
+}
