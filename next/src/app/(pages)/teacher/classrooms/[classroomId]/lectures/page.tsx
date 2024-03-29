@@ -155,13 +155,14 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 						) : (
 							data.map((item,index) => {
                                 return (
-									<motion.div initial={{ opacity: 0, x: 0 }}
-									animate={{ opacity: 1 , x:0}}
-									transition={{ duration: 0.5, delay: index*0.5 }}>
+									// <motion.div initial={{ opacity: 0, x: 0 }}
+									// animate={{ opacity: 1 , x:0}}
+									// transition={{ duration: 0.5, delay: index*0.5 }}>
                                     <ClassCard
                                         key={item.lectureId}
                                         item={item}
-                                    /></motion.div>
+                                    />
+									// </motion.div>
                                 )
 						}))}
 				</div>

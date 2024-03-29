@@ -121,13 +121,11 @@ const Page = () => {
 						) : (
 							data.map((item,index) => {
 								return (
-									<motion.div initial={{ opacity: 0, x: 0 }}
-									animate={{ opacity: 1 , x:0}}
-									transition={{ duration: 0.5, delay: index*0.5 }}>
+									
 									<ClassCard
 										key={item.classroomId}
 										item={item}
-									/></motion.div>
+									/>
 								)
 							}))}
 				</div>

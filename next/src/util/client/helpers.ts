@@ -398,7 +398,7 @@ export async function getTeacherCalender(orgId:string) {
 }
 
 export async function getStudentCalender(orgId:string) {
-	const response = await makeAPIRequest<GetLecturesResponse, OrgIdBaseParams, NoParams, NoParams>({
+	const response = await makeAPIRequest<GetCalenderResponse, OrgIdBaseParams, NoParams, NoParams>({
 		requestUrl: "/api/orgs/:orgId/students/calender",
 		urlParams: {
 			orgId
