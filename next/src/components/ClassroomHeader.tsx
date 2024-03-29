@@ -25,7 +25,7 @@ export default function ClassroomHeader({classroomId} : {classroomId: string}) {
     <header
         className='font-medium p-[1.125rem] max-sm:p-2 border border-[#8C8C8C] rounded-[0.5rem] flex items-center justify-start gap-4 mb-4 bg-white'>
             <Link href={`${user?roleRoute[user.userType]:""}/classrooms`}><ArrowLeftCircle/></Link>
-        <h1 className='text-xl  max-sm:text-lg underline decoration-slate-950'>{classroom?.classroomName}</h1>
+        <h1 className='text-xl  max-sm:text-lg decoration-slate-950'>{classroom?.classroomName}</h1>
     </header>
   ):(<></>)
 }
