@@ -91,7 +91,11 @@ export default function Page() {
           <div>
             <div className="lectureCardContainer">{
               showData.map((item, index) => (
+<<<<<<< HEAD
                 <div key={item.lectureId}>
+=======
+                <div key={index}>
+>>>>>>> 1ac7e1a (Prod Fix)
                   <p className="flex gap-1 text-xs font-medium text-[#7E7E7E] mb-2">
                     <span className="lectureStartTime">{formatTime(item.lectureStartTimestamp.toString())}</span>
                     -
