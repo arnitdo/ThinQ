@@ -14,6 +14,7 @@ import {
 	LectureParams,
 	NoParams,
 	OrgIdBaseParams,
+	QuizIdBaseParams,
 	QuizResponseQueryParams
 } from "../api/api_requests";
 import {
@@ -28,6 +29,7 @@ import {
 	GetEnrollmentsResponse,
 	GetLecturesResponse,
 	GetNotesResponse,
+	GetQuizAnalyticsResponse,
 	GetQuizDataResponse,
 	GetUserByIdResponse,
 	GetUsersResponse
@@ -540,12 +542,11 @@ export async function getAllQuizzes(orgId:string, classroomId:string) {
 	}
 }
 
-export async function getQuizData(orgId:string, classroomId:string, quizId:string) {
-	const response = await makeAPIRequest<GetQuizDataResponse, ClassroomQuizParams, NoParams, NoParams>({
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/quiz/:quizId",
+export async function getQuizData(orgId:string, quizId:string) {
+	const response = await makeAPIRequest<GetQuizAnalyticsResponse, QuizIdBaseParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/teachers/quizAnalytics/:quizId",
 		urlParams: {
 			orgId,
-			classroomId,
 			quizId
 		},
 		bodyParams: {},
@@ -558,7 +559,7 @@ export async function getQuizData(orgId:string, classroomId:string, quizId:strin
 	}
 	if(response.responseData.responseStatus==="SUCCESS"){
 		// toast.success("Signed out successfully!")
-		return response.responseData.quizData;
+		return response.responseData.quizAnalytics;
 	}
 }
 

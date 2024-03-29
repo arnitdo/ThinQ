@@ -31,6 +31,7 @@ import {
 	NotesParams,
 	OrgIdBaseParams,
 	QuizAttemptParams,
+	QuizIdBaseParams,
 	QuizParams,
 	QuizQuestionParams,
 	QuizResponseQueryParams,
@@ -167,6 +168,11 @@ export const CreateOrgBodyServerValidator: ServerValidator<CreateOrganizationBod
 
 export const BaseOrgIdParamServerValidator: ServerValidator<OrgIdBaseParams> = {
 	orgId: orgExists
+}
+
+export const BaseQuizIdParamServerValidator: ServerValidator<QuizIdBaseParams> = {
+	orgId: orgExists,
+	quizId: quizExists
 }
 
 export const AuthLoginUserParamsServerValidator = BaseOrgIdParamServerValidator

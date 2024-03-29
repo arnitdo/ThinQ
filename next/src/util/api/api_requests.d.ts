@@ -10,6 +10,12 @@ export type OrgIdBaseParams = {
 	orgId: string
 }
 
+export type QuizIdBaseParams = {
+	orgId: string,
+	quizId: string
+}
+
+
 export type UserIdBaseParams = {
 	userId: string
 }

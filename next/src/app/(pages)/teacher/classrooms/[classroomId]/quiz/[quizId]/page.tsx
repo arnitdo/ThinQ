@@ -24,7 +24,7 @@ import {
   Cell,
 } from "recharts";
 import useAuthStore from "@/lib/zustand";
-import { GetQuizDataResponse } from "@/util/api/api_responses";
+import { GetQuizDataResponse, QuizAnalytics } from "@/util/api/api_responses";
 import { Lecture, QuizAttempt, QuizQuestion } from "@prisma/client";
 import { getQuizData } from "@/util/client/helpers";
 import Loader from "@/components/Loader";
@@ -79,34 +79,6 @@ const score = [
     marks: 100,
   },
 ];
-const questions = [
-  {
-    id: 1,
-    question: "What is the capital of India?",
-    answer: "New Delhi",
-  },
-  {
-    id: 2,
-    question: "What is the capital of USA?",
-    answer: "Washington DC",
-  },
-  {
-    id: 3,
-    question: "What is the capital of UK?",
-    answer: "London",
-  },
-  {
-    id: 4,
-    question: "What is the capital of Australia?",
-    answer: "Canberra",
-  },
-  {
-    id: 5,
-    question: "What is the capital of Japan?",
-    answer: "Tokyo",
-  }
-  
-]
 const Page = ({params: {classroomId, quizId}}:{params: {classroomId:string, quizId: string}}) => {
 
   const [isClient, setIsClient] = useState(false);
@@ -115,19 +87,17 @@ const Page = ({params: {classroomId, quizId}}:{params: {classroomId:string, quiz
   }, []);
 
   const {user} = useAuthStore()
-	const [data, setData] = useState<{
-		quizId: string,
-		quizName: string,
-		quizQuestions: QuizQuestion[],
-		quizAttempts: QuizAttempt[],
-		quizLecture: Lecture
-	}| null>(null);
+	const [data, setData] = useState<QuizAnalytics | null>(null);
+
+  const [attemptData, setAttemptData] = useState(null)
 
 	useEffect(() => {
 		const getData = async () => {
 			if (!user) return;
-			const quizzes = await getQuizData(user.userOrgId, classroomId, quizId)
-			if (quizzes) setData(quizzes)
+			const quizzes = await getQuizData(user.userOrgId, quizId)
+			if (!quizzes) return
+      setData(quizzes)
+
 		}
 		getData()
 	}, [user])
@@ -137,6 +107,19 @@ const Page = ({params: {classroomId, quizId}}:{params: {classroomId:string, quiz
   const isMobile = window.innerWidth < 768;
   const innerRadius = isMobile ? 30 : 100; // Adjust the inner radius based on mobile view
   const outerRadius = isMobile ? 60 : 140;
+
+  function getScore(quizAttempts: { attemptTimestamp: Date; attemptUser: { userDisplayName: string; userId: string; }; attemptResponses: { responseId: string; attemptId: string; questionId: string; responseContent: string; responseAccuracy: number; }[]; }[]): any[] | undefined {
+    if(!quizAttempts) return score
+    let temp: {name:string, marks:number}[] = []
+    quizAttempts.forEach(attempt => {
+      let marks = 0
+      attempt.attemptResponses.forEach(response => {
+        marks += response.responseAccuracy
+      })
+      temp.push({name: attempt.attemptUser.userDisplayName, marks: marks*20})
+    })
+    return temp
+  }
 
   // {
   //   id: 1,
@@ -158,7 +141,7 @@ const Page = ({params: {classroomId, quizId}}:{params: {classroomId:string, quiz
           <div className="text-black font-medium">Score Graph</div>
           <div className="w-full h-full py-4">
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={score}>
+              <AreaChart data={getScore(data.quizAttempts)}>
                 <CartesianGrid strokeDasharray="3 3" />
 
                 <YAxis />
@@ -182,11 +165,11 @@ const Page = ({params: {classroomId, quizId}}:{params: {classroomId:string, quiz
                 <Pie
                   dataKey="value"
                   data={[
-                    { name: "Attempted", value: attendance[0].attempted },
+                    { name: "Attempted", value: data?data._count.quizAttempts:0 },
                     {
                       name: "Not Attempted",
                       value:
-                        attendance[0].totalStudents - attendance[0].attempted,
+                        data?(data.quizLecture._count.lectureAttendance+10 - data._count.quizAttempts):0,
                     },
                   ]}
                   cx="50%"

@@ -21,7 +21,7 @@ import {CreateQuizAttemptResponse, GetQuizAttemptsResponse} from "@/util/api/api
 export const POST = withMiddlewares<ClassQuizIdParams, CreateQuizAttemptBody>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher", "Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),
+	requireAuthorizedUser({ matchUserTypes: ["Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),
 	requireURLParams(["orgId","classroomId", "quizId"]),
 	validateURLParams(ClassQuizIdParamServerValidator),
 	requireBodyParams(["attemptTimestamp"]),
@@ -29,6 +29,20 @@ export const POST = withMiddlewares<ClassQuizIdParams, CreateQuizAttemptBody>(
 	async (req, res) => {
 		const { attemptTimestamp } = req.body
 		const { orgId, classroomId, quizId } = req.params
+
+		const oldQuizAttempt = await db.quizAttempt.findFirst({
+			where:{
+				quizId: quizId,
+				userId: req.user!.userId
+			}
+		})
+
+		if(oldQuizAttempt){
+			return res.status(200).json({
+				responseStatus: "SUCCESS",
+				createdQuizAttemptId: oldQuizAttempt.attemptId
+			})
+		}
 
 		const createdQuizAttempt = await db.quizAttempt.create({
 			data: {

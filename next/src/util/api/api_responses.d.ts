@@ -60,6 +60,34 @@ export type GetUsersResponse = {
 	users: AuthUser[]
 }
 
+export type QuizAnalytics = {
+	lectureId: string;
+    quizId: string;
+    quizName: string;
+    quizLecture: {
+        _count: {
+            lectureAttendance: number;
+        };
+    };
+    quizAttempts: {
+        attemptTimestamp: Date;
+        attemptUser: {
+			userDisplayName: string;
+			userId: string;
+		};
+        attemptResponses: QuizResponse[];
+    }[];
+    quizQuestions: QuizQuestion[];
+    _count: {
+        quizAttempts:number;
+    };
+
+}
+
+export type GetQuizAnalyticsResponse = {
+	quizAnalytics: QuizAnalytics
+}
+
 export type DeletedClassroomResponse = {
 	deletedClassroom: Classroom
 }
