@@ -1,6 +1,6 @@
 // Write your API Request Types Here
 
-import type {S3Object, User, UserType} from "@prisma/client";
+import type {ClassroomResource, S3Object, User, UserType} from "@prisma/client";
 import {S3ObjectMethod} from "@/util/s3/types";
 
 // Use this in place of {}
@@ -218,3 +218,45 @@ export type GetTeacherByNameParams = {
 }
 
 export type GetMeetingTokenParams = LectureParams
+
+export type CreateClassroomResourcesParams = ClassroomParams
+
+export type CreateClassroomResourcesBody = Omit<ClassroomResource, "resourceId" | "classroomId">
+
+export type GetClassroomResourcesParams = ClassroomParams
+
+export type DeleteClassroomResourcesParams = ClassroomParam & {
+	resourceId: string
+}
+
+export type CreateAssessmentParams = ClassroomParams
+
+export type CreateAssessmentBody = {
+	assessmentTitle: string,
+	assessmentQuestions: {
+		questionText: string,
+		questionMarks: number
+	}[]
+}
+
+export type AssessmentParams = ClassroomParams & {
+	assessmentId: string
+}
+
+export type GetClassAssessmentParams = ClassroomParams
+
+export type GetAssessmentParams = AssessmentParams
+
+export type CreateAssessmentQuestionResponse = AssessmentParams
+
+export type CreateAssignmentParams = ClassroomParams
+
+export type CreateAssignmentBody = {
+	assignmentName: string
+}
+
+export type SubmitAssignmentParams = ClassroomParams & {
+	assignmentId
+}
+
+export type GetAssignmentParams = ClassroomParams

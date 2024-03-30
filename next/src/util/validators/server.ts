@@ -5,8 +5,14 @@ import {
 	ClassQuizAttemptParams,
 	ClassQuizIdParams,
 	ClassroomParams,
+	CreateAssessmentBody,
+	CreateAssessmentParams,
+	CreateAssignmentBody,
+	CreateAssignmentParams,
 	CreateBulkUserBody,
 	CreateClassroomBody,
+	CreateClassroomResourcesBody,
+	CreateClassroomResourcesParams,
 	CreateLectureBody,
 	CreateNotesBody,
 	CreateOrganizationBody,
@@ -24,6 +30,8 @@ import {
 	DeleteUserParams,
 	EditClassroomBody,
 	EditLectureBody,
+	GetAssignmentParams,
+	GetClassAssessmentParams,
 	GetMeetingTokenParams,
 	GetUserParams,
 	LectureParams,
@@ -557,4 +565,68 @@ export const GetLectureTokenValidator: ServerValidator<GetMeetingTokenParams, Ge
 
 		return lectureData !== null
 	}
+}
+
+export const CreateClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const GetClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const DeleteClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateClassroomResourcesBodyValidator: ServerValidator<CreateClassroomResourcesBody> = {
+	resourceName: STRLEN_NZ,
+	resourceObjectKey: async (objectKey: string) => {
+		const objectData = await db.classroomResource.findFirst({
+			where: {
+				resourceObjectKey: objectKey
+			}
+		})
+
+		return objectData === null
+	}
+}
+
+export const CreateAssessmentParamsValidator: ServerValidator<CreateAssessmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateAssessmentBodyValidator: ServerValidator<CreateAssessmentBody> = {
+	assessmentTitle: STRLEN_NZ,
+	assessmentQuestions: (assessmentQuestions: CreateAssessmentBody["assessmentQuestions"]) => {
+		return assessmentQuestions.every((questionObj) => {
+			return (
+				STRLEN_NZ(questionObj.questionText) && NON_ZERO_NON_NEGATIVE(questionObj.questionMarks)
+			)
+		})
+	}
+}
+
+export const GetAssessmentParamsValidator: ServerValidator<GetClassAssessmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateAssignmentParamsValidator: ServerValidator<CreateAssignmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const GetClassroomAssignmentsParamsValidator: ServerValidator<GetAssignmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+
+export const CreateAssignmentBodyValidator: ServerValidator<CreateAssignmentBody> = {
+	assignmentName: STRLEN_NZ
 }

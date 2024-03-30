@@ -1,7 +1,10 @@
 // Write your API Responses here
 import type {
+	Assessment,
+	Assignment,
 	Classroom,
 	ClassroomEnrollment,
+	ClassroomResource,
 	Lecture,
 	LectureAttendance,
 	LectureTranscript,
@@ -253,4 +256,30 @@ export type GetCalenderResponse = {
 
 		}
 	}[]
+}
+
+export type CreateClassroomResourceResponse = {
+	resourceId: string
+}
+
+export type GetClassroomResourcesResponse = {
+	classroomResources: (Omit<ClassroomResource, "resourceObjectKey"> & {
+		resourceUrl: string
+	})[]
+}
+
+export type CreateClassroomAssessmentResponse = {
+	assessmentId: string
+}
+
+export type GetClassroomAssessmentsResponse = {
+	classroomAssessments: Assessment[]
+}
+
+export type CreateAssignmentResponse = {
+	assignmentId: string
+}
+
+export type GetClassroomAssignmentResponse = {
+	classroomAssignments: Assignment[]
 }

@@ -16,19 +16,21 @@ model Organization {
 }
 
 model User {
-  userId            String                @id @default(uuid())
-  userOrgId         String
-  userName          String               @unique 
-  userType          UserType
-  userPassword      String
-  userDisplayName   String
-  Classroom         Classroom[]
-  userClassrooms    ClassroomEnrollment[]
-  attendedLectures  LectureAttendance[]
-  quizAttempts      QuizAttempt[]
-  userReportTargets ReportTarget[]
-  s3Requests        S3Request[]
-  userOrg           Organization          @relation(fields: [userOrgId], references: [orgId], onDelete: Cascade)
+  userId                String                 @id @default(uuid())
+  userOrgId             String
+  userName              String
+  userType              UserType
+  userPassword          String
+  userDisplayName       String
+  Classroom             Classroom[]
+  userClassrooms        ClassroomEnrollment[]
+  attendedLectures      LectureAttendance[]
+  quizAttempts          QuizAttempt[]
+  userReportTargets     ReportTarget[]
+  s3Requests            S3Request[]
+  userOrg               Organization           @relation(fields: [userOrgId], references: [orgId], onDelete: Cascade)
+  assessmentAttempts    AssessmentAttempt[]
+  sssignmentSubmissions AssignmentSubmission[]
 }
 
 model ReportTarget {
@@ -49,6 +51,15 @@ model Classroom {
   User                 User                  @relation(fields: [facultyUserId], references: [userId], onDelete: Cascade)
   classroomEnrollments ClassroomEnrollment[]
   classroomLectures    Lecture[]
+  classroomAssessments Assessment[]
+  classroomAssignments Assignment[]
+}
+
+model ClassroomResource {
+  resourceId        String @id @default(uuid())
+  resourceName      String
+  resourceObjectKey String @unique
+  classroomId       String
 }
 
 model ClassroomEnrollment {
@@ -143,6 +154,55 @@ model Notes {
   notesTitle   String
   lectureId    String
   notesLecture Lecture @relation(fields: [lectureId], references: [lectureId], onDelete: Cascade)
+}
+
+model Assignment {
+  assignmentId          String    @id @default(uuid())
+  assignmentName        String
+  assignmentClassroomId String
+  assignmentClassroom   Classroom @relation(fields: [assignmentClassroomId], references: [classroomId], onDelete: Cascade)
+}
+
+model AssignmentSubmission {
+  submissionId        String   @id @default(uuid())
+  submissionTimestamp DateTime
+  submissionObjectKey String
+  submissionUserId    String
+  submissionUser      User     @relation(fields: [submissionUserId], references: [userId], onDelete: Cascade)
+}
+
+model Assessment {
+  assessmentId        String               @id @default(uuid())
+  assessmentTitle     String
+  classroomId         String
+  assessmentClassroom Classroom            @relation(fields: [classroomId], references: [classroomId], onDelete: Cascade)
+  assessmentQuestions AssessmentQuestion[]
+}
+
+model AssessmentQuestion {
+  questionId          String               @id @default(uuid())
+  questionText        String
+  questionMarks       Int
+  questionAssesmentId String
+  questionAssesment   Assessment           @relation(fields: [questionAssesmentId], references: [assessmentId], onDelete: Cascade)
+  questionResponses   AssessmentResponse[]
+}
+
+model AssessmentAttempt {
+  attemptId           String               @id @default(uuid())
+  userId              String
+  attemptUser         User                 @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  assessmentResponses AssessmentResponse[]
+}
+
+model AssessmentResponse {
+  responseId            String             @id @default(uuid())
+  attemptId             String
+  responseAttempt       AssessmentAttempt  @relation(fields: [attemptId], references: [attemptId], onDelete: Cascade)
+  responseText          String
+  responseObtainedMarks Int
+  responseQuestionId    String
+  responseQuestion      AssessmentQuestion @relation(fields: [responseQuestionId], references: [questionId], onDelete: Cascade)
 }
 
 model S3Object {
