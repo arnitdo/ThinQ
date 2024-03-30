@@ -392,7 +392,6 @@ export const QuizAttemptParamServerValidator: ServerValidator<QuizAttemptParams>
 	attemptId: quizAttemptExists
 }
 
-
 export const AssessmentAttemptParamServerValidator: ServerValidator<CreateAssessmentResponseParams> = {
 	orgId: orgExists,
 	classroomId: classroomExists,
@@ -630,7 +629,13 @@ export const GetLectureTokenValidator: ServerValidator<GetMeetingTokenParams, Ge
 		const lectureData = await db.lecture.findFirst({
 			where: {
 				lectureClassroomId: req.params.classroomId,
-				lectureId: lectureId
+				lectureId: lectureId,
+				// lectureStartTimestamp: {
+				// 	gte: nowTimestamp
+				// },
+				// lectureEndTimestamp: {
+				// 	lte: nowTimestamp
+				// }
 			}
 		})
 

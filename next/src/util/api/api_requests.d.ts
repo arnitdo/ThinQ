@@ -155,13 +155,6 @@ export type QuizAttemptParams = {
 	attemptId: string
 }
 
-export type QuizAttemptParams = {
-	orgId: string,
-	classroomId: string,
-	lectureId: string,
-	quizId: string,
-	attemptId: string
-}
 export type ClassQuizAttemptParams = {
 	orgId: string,
 	classroomId: string,

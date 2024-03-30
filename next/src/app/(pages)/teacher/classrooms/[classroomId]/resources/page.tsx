@@ -35,7 +35,7 @@ const ResourceCard = ({item, orgId, onDelete}: { orgId: string, item: ResourceDa
 
 		if (response.hasResponse && response.responseData.responseStatus === "SUCCESS"){
 			toast.success("Resource deleted successfully!")
-			return
+			return onDelete()
 		}
 
 		toast.error("Something went wrong")
@@ -52,10 +52,10 @@ const ResourceCard = ({item, orgId, onDelete}: { orgId: string, item: ResourceDa
 					   navigator.clipboard.writeText(item.resourceUrl)
 					   toast.success("Link copied to clipboard!")
 				   }}>Share</p>
-				<p className='cursor-pointer text-sm text-[#00802B] border border-[#FF5050] bg-[#FFA0A0] font-medium py-[0.375rem] px-3 rounded-full'
+				<p className='cursor-pointer text-sm text-[#FF5050] border border-[#FF5050] bg-[#FFBABA] font-medium py-[0.375rem] px-3 rounded-full'
 				   onClick={() => {
 					   deleteResource()
-				   }}>Share</p>
+				   }}>Delete</p>
 
 			</div>
 		</div>
@@ -118,7 +118,7 @@ function UploadResourceForm(props: UploadResourceFormProps) {
 				{({ getRootProps, getInputProps }) => (
 					<div {...getRootProps()}>
 						<input {...getInputProps()} />
-						<div className=" flex flex-col gap-1 py-4 border border-black border-dashed w-full rounded-xl overflow-clip justify-center items-center">
+						<div className=" flex flex-col gap-1 h-full py-6 border border-black border-dashed w-full rounded-xl overflow-clip justify-center items-center">
 							<p className=" text-xl font-semibold text-zinc-700">Choose a File</p>
 							<p className=" text-xl font-medium text-zinc-500">or</p>
 							<p className=" text-xl font-semibold text-zinc-700">Drag to Upload</p>
@@ -178,11 +178,13 @@ const Page = ({params: {classroomId}}: { params: { classroomId: string } }) => {
 			<div>
 				<h1 className='text-4xl text-black font-medium'>Resources</h1>
 				<div className='quizCardWrapper | mt-3 grid gap-10 grid-cols-[repeat(auto-fill,minmax(350px,1fr))]'>
-					<UploadResourceForm orgId={user!.userOrgId} classId={classroomId} onUpload={(resData) => {
-						setData((prevState) => {
-							return [...prevState, resData]
-						})
-					}} />
+					{user && (
+						<UploadResourceForm orgId={user!.userOrgId} classId={classroomId} onUpload={(resData) => {
+							setData((prevState) => {
+								return [...prevState, resData]
+							})
+						}} />
+					)}
 					{data.map((item) => (
 						<ResourceCard
 							orgId={user!.userOrgId}

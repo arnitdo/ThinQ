@@ -45,6 +45,7 @@
     "react-drag-drop-files": "^2.3.10",
     "react-dropzone": "^14.2.3",
     "react-fast-marquee": "^1.6.4",
+    "react-joyride": "^2.8.0",
     "react-speech-recognition": "^3.10.0",
     "recharts": "^2.12.3",
     "sonner": "^1.4.41",
