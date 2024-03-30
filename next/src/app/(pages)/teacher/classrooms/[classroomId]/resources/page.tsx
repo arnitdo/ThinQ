@@ -7,15 +7,39 @@ import {useEffect, useState} from 'react'
 import {toast} from "sonner";
 import {manageMedia} from "@/util/s3/client";
 import {CreateClassroomResourceResponse} from "@/util/api/api_responses";
-import {CreateClassroomResourcesBody, CreateClassroomResourcesParams} from "@/util/api/api_requests";
+import {
+	CreateClassroomResourcesBody,
+	CreateClassroomResourcesParams,
+	DeleteClassroomResourcesParams
+} from "@/util/api/api_requests";
 import Dropzone from "react-dropzone";
+import {ResponseJSON} from "@/util/api/api_meta";
 
 type ResourceData = Omit<ClassroomResource, "resourceObjectKey"> & {
 	resourceUrl: string
 }
 
-const ResourceCard = ({item}: { item: ResourceData }) => {
+const ResourceCard = ({item, orgId, onDelete}: { orgId: string, item: ResourceData, onDelete: () => void }) => {
+	const deleteResource = async () => {
+		const response = await makeAPIRequest<ResponseJSON, DeleteClassroomResourcesParams>({
+			requestUrl: "/api/orgs/:orgId/classroom/:classroomId/resource/:resourceId",
+			requestMethod: "DELETE",
+			urlParams: {
+				resourceId: item.resourceId,
+				orgId: orgId,
+				classroomId: item.classroomId
+			},
+			bodyParams: {},
+			queryParams: {},
+		})
 
+		if (response.hasResponse && response.responseData.responseStatus === "SUCCESS"){
+			toast.success("Resource deleted successfully!")
+			return
+		}
+
+		toast.error("Something went wrong")
+	}
 
 	return (
 		<div className='quizCard | rounded-[0.625rem] border border-[#A0A0A0] text-center px-6 py-7'>
@@ -28,6 +52,11 @@ const ResourceCard = ({item}: { item: ResourceData }) => {
 					   navigator.clipboard.writeText(item.resourceUrl)
 					   toast.success("Link copied to clipboard!")
 				   }}>Share</p>
+				<p className='cursor-pointer text-sm text-[#00802B] border border-[#FF5050] bg-[#FFA0A0] font-medium py-[0.375rem] px-3 rounded-full'
+				   onClick={() => {
+					   deleteResource()
+				   }}>Share</p>
+
 			</div>
 		</div>
 	)
@@ -154,7 +183,20 @@ const Page = ({params: {classroomId}}: { params: { classroomId: string } }) => {
 							return [...prevState, resData]
 						})
 					}} />
-					{data.map((item) => (<ResourceCard item={item} key={item.resourceId}/>))}
+					{data.map((item) => (
+						<ResourceCard
+							orgId={user!.userOrgId}
+							item={item}
+							onDelete={() => {
+								setData((prevData) => {
+									return prevData.filter((prevItem) => {
+										return prevItem.resourceId !== item.resourceId
+									})
+								})
+							}}
+							key={item.resourceId}
+						/>
+					))}
 				</div>
 			</div>
 		</div>
