@@ -2,11 +2,21 @@ import {
 	AttendanceQueryParams,
 	AuthLoginUserBody,
 	AuthLoginUserParams,
+	ClassAssesmentAttemptParams,
+	ClassAssesmentParams,
 	ClassQuizAttemptParams,
 	ClassQuizIdParams,
 	ClassroomParams,
+	CreateAssessmentBody,
+	CreateAssessmentParams,
+	CreateAssessmentResponseBody,
+	CreateAssessmentResponseParams,
+	CreateAssignmentBody,
+	CreateAssignmentParams,
 	CreateBulkUserBody,
 	CreateClassroomBody,
+	CreateClassroomResourcesBody,
+	CreateClassroomResourcesParams,
 	CreateLectureBody,
 	CreateNotesBody,
 	CreateOrganizationBody,
@@ -24,6 +34,8 @@ import {
 	DeleteUserParams,
 	EditClassroomBody,
 	EditLectureBody,
+	GetAssignmentParams,
+	GetClassAssessmentParams,
 	GetMeetingTokenParams,
 	GetUserParams,
 	LectureParams,
@@ -100,6 +112,16 @@ export async function quizExists(quizId: string){
 	return quizExists !== null
 }
 
+export async function asessmentExists(text: string){
+	const asessmentExists = await db.assessment.findFirst({
+		where: {
+			assessmentId: text
+		}
+	})
+
+	return asessmentExists !== null
+}
+
 export async function userExists(userId: string){
 	console.log(userId)
 	const userExists = await db.user.findFirst({
@@ -123,6 +145,16 @@ export async function quizQuestionExists(questionId: string) {
 
 export async function quizAttemptExists(id: string) {
 	const attemptExists = await db.quizAttempt.findFirst({
+		where: {
+			attemptId: id
+		}
+	})
+
+	return attemptExists !== null
+}
+
+export async function assessmentAttemptExists(id: string) {
+	const attemptExists = await db.assessmentAttempt.findFirst({
 		where: {
 			attemptId: id
 		}
@@ -309,6 +341,12 @@ export const ClassQuizIdParamServerValidator: ServerValidator<ClassQuizIdParams>
 	quizId: quizExists
 }
 
+export const ClassAssessmentParamServerValidator: ServerValidator<ClassAssesmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	assesmentId: asessmentExists
+}
+
 export const CreateQuizQuestionBodyServerValidator: ServerValidator<CreateQuizQuestionBody> = {
 	questionText: async(text: string) => {
 		return text.length > 0
@@ -343,6 +381,13 @@ export const QuizAttemptParamServerValidator: ServerValidator<QuizAttemptParams>
 	attemptId: quizAttemptExists
 }
 
+
+export const AssessmentAttemptParamServerValidator: ServerValidator<CreateAssessmentResponseParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	assessmentId: asessmentExists
+}
+
 export const ClassQuizAttemptParamServerValidator: ServerValidator<ClassQuizAttemptParams> = {
 	orgId: orgExists,
 	classroomId: classroomExists,
@@ -350,11 +395,34 @@ export const ClassQuizAttemptParamServerValidator: ServerValidator<ClassQuizAtte
 	attemptId: quizAttemptExists
 }
 
+export const ClassAssessmentAttemptParamServerValidator: ServerValidator<ClassAssesmentAttemptParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	assesmentId: asessmentExists,
+	attemptId: quizAttemptExists
+}
+
+
+export const ClassAssesmentAttemptParamServerValidator: ServerValidator<ClassAssesmentAttemptParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists,
+	assesmentId: asessmentExists,
+	attemptId: assessmentAttemptExists
+}
+
 export const CreateQuizResponseBodyServerValidator: ServerValidator<CreateQuizResponseBody> = {
 	responseAccuracy: async(accuracy: number) => {
 		return accuracy >= 0 && accuracy <= 1
 	}
 }
+
+export const CreateAssessmentResponseBodyServerValidator: ServerValidator<CreateAssessmentResponseBody> = {
+	responseObtainedMarks: async(accuracy: number) => {
+		return accuracy >= 0 && accuracy <= 100
+	},
+	responseText: STRLEN_NZ
+}
+
 
 export const QuizResponseQueryServerValidator: ServerValidator<QuizResponseQueryParams> = {
 	questionId: quizQuestionExists
@@ -557,4 +625,68 @@ export const GetLectureTokenValidator: ServerValidator<GetMeetingTokenParams, Ge
 
 		return lectureData !== null
 	}
+}
+
+export const CreateClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const GetClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const DeleteClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateClassroomResourcesBodyValidator: ServerValidator<CreateClassroomResourcesBody> = {
+	resourceName: STRLEN_NZ,
+	resourceObjectKey: async (objectKey: string) => {
+		const objectData = await db.classroomResource.findFirst({
+			where: {
+				resourceObjectKey: objectKey
+			}
+		})
+
+		return objectData === null
+	}
+}
+
+export const CreateAssessmentParamsValidator: ServerValidator<CreateAssessmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateAssessmentBodyValidator: ServerValidator<CreateAssessmentBody> = {
+	assessmentTitle: STRLEN_NZ,
+	assessmentQuestions: (assessmentQuestions: CreateAssessmentBody["assessmentQuestions"]) => {
+		return assessmentQuestions.every((questionObj) => {
+			return (
+				STRLEN_NZ(questionObj.questionText) && NON_ZERO_NON_NEGATIVE(questionObj.questionMarks)
+			)
+		})
+	}
+}
+
+export const GetAssessmentParamsValidator: ServerValidator<GetClassAssessmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const CreateAssignmentParamsValidator: ServerValidator<CreateAssignmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+export const GetClassroomAssignmentsParamsValidator: ServerValidator<GetAssignmentParams> = {
+	orgId: orgExists,
+	classroomId: classroomExists
+}
+
+
+export const CreateAssignmentBodyValidator: ServerValidator<CreateAssignmentBody> = {
+	assignmentName: STRLEN_NZ
 }
