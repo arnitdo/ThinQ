@@ -5,7 +5,6 @@ import {
 	Chat,
 	ControlBar,
 	GridLayout,
-	LayoutContext,
 	LayoutContextProvider,
 	LiveKitRoom,
 	ParticipantTile,
@@ -20,16 +19,15 @@ import {useAPIRequest} from "@/util/client/hooks/useApi";
 import Draw from "@/components/Draw";
 import useAuthStore from "@/lib/zustand";
 import FaceLandmarkManager from "@/class/FaceLandmarkManager";
+import Dictaphone from '@/components/Dictaphone';
+import {createTranscript} from '@/util/client/helpers';
+import {toast} from 'sonner';
+import {useRouter} from 'next/navigation';
+import {roleRoute} from '@/components/AuthChecker';
 
 type LKVideoElement = HTMLVideoElement & {
 	dataset: DOMStringMap
 }
-import { UserType } from '@prisma/client';
-import Dictaphone from '@/components/Dictaphone';
-import { createTranscript, getLectures } from '@/util/client/helpers';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { roleRoute } from '@/components/AuthChecker';
 
 type PageParams = {
 	orgId: string,
@@ -56,6 +54,8 @@ export default function Page({params}: {params: PageParams}) {
 		bodyParams: {}
 	})
 
+	const router = useRouter()
+
 	useEffect(() => {
 		if (!isLoading){
 			if (hasResponse){
@@ -66,19 +66,18 @@ export default function Page({params}: {params: PageParams}) {
 			}
 		}
 	}, [isLoading]);
-
 	if (isLoading || accessToken === null){
 		return <div>Loading the ThinQ Web Platform</div>
-	}
 
+	}
 	const handleTranscript=async()=>{
 		if(!user) return
-				if(user.userType==="Student") return
-				const response = await createTranscript(params.orgId, params.classroomId, params.lectureId, liveTranscript)
-				if(!response)return
-				toast("Transcript saved successfully")
-				console.log(flaskUrl)
-				const blankRequest2 = fetch(`${flaskUrl}/generate_mcq_notes_transcript`,{
+		if(user.userType==="Student") return
+		const response = await createTranscript(params.orgId, params.classroomId, params.lectureId, liveTranscript)
+		if(!response)return
+		toast("Transcript saved successfully")
+		console.log(flaskUrl)
+		const blankRequest2 = fetch(`${flaskUrl}/generate_mcq_notes_transcript`,{
 					method:"POST",
 					headers: {
 						"Content-Type": "application/json"
@@ -89,9 +88,8 @@ export default function Page({params}: {params: PageParams}) {
 						lecture_id: lectureId
 					})
 				})
-	}
 
-	const router = useRouter()
+	}
 
 	return (
 		<div>
