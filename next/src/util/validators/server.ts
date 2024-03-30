@@ -30,6 +30,7 @@ import {
 	CreateTranscriptBody,
 	CreateUserBody,
 	CreateUserParams,
+	DeleteClassroomResourcesParams,
 	DeleteEnrollmentQueryParams,
 	DeleteUserParams,
 	EditClassroomBody,
@@ -161,6 +162,16 @@ export async function assessmentAttemptExists(id: string) {
 	})
 
 	return attemptExists !== null
+}
+
+export async function resourceExists(id: string){
+	const resExists = await db.classroomResource.findFirst({
+		where: {
+			resourceId: id
+		}
+	})
+
+	return resExists !== null
 }
 
 export async function notesExists(notesId: string) {
@@ -637,9 +648,11 @@ export const GetClassroomResourcesParamsValidator: ServerValidator<CreateClassro
 	classroomId: classroomExists
 }
 
-export const DeleteClassroomResourcesParamsValidator: ServerValidator<CreateClassroomResourcesParams> = {
+export const DeleteClassroomResourcesParamsValidator: ServerValidator<DeleteClassroomResourcesParams> = {
 	orgId: orgExists,
-	classroomId: classroomExists
+	classroomId: classroomExists,
+	resourceId: resourceExists
+
 }
 
 export const CreateClassroomResourcesBodyValidator: ServerValidator<CreateClassroomResourcesBody> = {

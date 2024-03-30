@@ -1,9 +1,9 @@
-import { withMiddlewares } from "@/util/middleware";
-import { CreateAssessmentResponseParams } from "@/util/api/api_requests";
-import { requireURLParams, validateURLParams } from "@/util/middleware/helpers";
-import { AssessmentAttemptParamServerValidator, QuizAttemptParamServerValidator } from "@/util/validators/server";
+import {withMiddlewares} from "@/util/middleware";
+import {CreateAssessmentResponseParams} from "@/util/api/api_requests";
+import {requireURLParams, validateURLParams} from "@/util/middleware/helpers";
+import {AssessmentAttemptParamServerValidator} from "@/util/validators/server";
 import db from "@/util/db";
-import { GetClassroomAssessmentResponse, GetQuizAttemptResponse } from "@/util/api/api_responses";
+import {GetClassroomAssessmentResponse} from "@/util/api/api_responses";
 
 export const GET = withMiddlewares<CreateAssessmentResponseParams>(
 	requireURLParams(["orgId", "classroomId", "assessmentId"]),
@@ -18,7 +18,7 @@ export const GET = withMiddlewares<CreateAssessmentResponseParams>(
 			}
 		})
 
-		if(!assessmentAttempt)return res.status(404).json({responseStatus:"ERR_INTERNAL_ERROR"})
+		if(!assessmentAttempt)return res.status(500).json({responseStatus:"ERR_INTERNAL_ERROR"})
 
 		res.status(200).json<GetClassroomAssessmentResponse>({
 			responseStatus: "SUCCESS",

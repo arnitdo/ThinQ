@@ -2,6 +2,7 @@
 import type {
 	Assessment,
 	AssessmentAttempt,
+	AssessmentQuestion,
 	AssessmentResponse,
 	Assignment,
 	Classroom,
@@ -19,7 +20,7 @@ import type {
 	ReportTarget,
 	User
 } from "@prisma/client";
-import {AuthUser} from "@/util/middleware/auth";
+import { AuthUser } from "@/util/middleware/auth";
 
 export type GetOrgsResponse = {
 	allOrgs: Organization[]
@@ -40,9 +41,9 @@ export type ClassroomData = {
 	_count: {
 		classroomEnrollments: number
 	},
-	User:{
-			userId: string,
-			userDisplayName: string,
+	User: {
+		userId: string,
+		userDisplayName: string,
 	}
 }
 export type GetClassroomsResponse = {
@@ -67,25 +68,25 @@ export type GetUsersResponse = {
 
 export type QuizAnalytics = {
 	lectureId: string;
-    quizId: string;
-    quizName: string;
-    quizLecture: {
-        _count: {
-            lectureAttendance: number;
-        };
-    };
-    quizAttempts: {
-        attemptTimestamp: Date;
-        attemptUser: {
+	quizId: string;
+	quizName: string;
+	quizLecture: {
+		_count: {
+			lectureAttendance: number;
+		};
+	};
+	quizAttempts: {
+		attemptTimestamp: Date;
+		attemptUser: {
 			userDisplayName: string;
 			userId: string;
 		};
-        attemptResponses: QuizResponse[];
-    }[];
-    quizQuestions: QuizQuestion[];
-    _count: {
-        quizAttempts:number;
-    };
+		attemptResponses: QuizResponse[];
+	}[];
+	quizQuestions: QuizQuestion[];
+	_count: {
+		quizAttempts: number;
+	};
 
 }
 
@@ -260,7 +261,7 @@ export type GetQuizDataResponse = {
 export type GetCalenderResponse = {
 	lectures: {
 		lectureId: string,
-		title:	string,
+		title: string,
 		lectureStartTimestamp: Date,
 		lectureEndTimestamp: Date,
 		lectureClassroom: {
@@ -304,8 +305,15 @@ export type GetClassroomAssessmentResponse = {
 	classroomAssessment: Assessment
 }
 
+export type ClassroomAssessmentWithQuestions = {
+	assessmentId: string;
+	assessmentTitle: string;
+	classroomId: string;
+	assessmentQuestions: AssessmentQuestion[]
+}
+
 export type GetClassroomAssessmentsResponse = {
-	classroomAssessment: Assessment[]
+	classroomAssessment: ClassroomAssessmentWithQuestions[]
 }
 
 export type GetAssessmentAttemptResponse = {

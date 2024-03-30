@@ -63,12 +63,18 @@ export const GET = withMiddlewares<GetClassAssessmentParams>(
 		const classAssessments = await db.assessment.findMany({
 			where: {
 				classroomId: classroomId
+			},
+			select: {
+				assessmentId: true,
+				assessmentTitle: true,
+				classroomId: true,
+				assessmentQuestions: true
 			}
 		})
 
 		return res.status(200).json<GetClassroomAssessmentsResponse>({
 			responseStatus: "SUCCESS",
-			classroomAssessments: classAssessments
+			classroomAssessment: classAssessments
 		})
 	}
 ) 
