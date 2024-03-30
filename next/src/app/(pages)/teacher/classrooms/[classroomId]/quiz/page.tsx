@@ -7,12 +7,12 @@
 * Time Generated
 * */
 
-import NestedNav, { NavLink } from '@/components/NestedNav'
+import NestedNav, {NavLink} from '@/components/NestedNav'
 import useAuthStore from '@/lib/zustand'
-import { getAllQuizzes } from '@/util/client/helpers'
-import { Quiz } from '@prisma/client'
+import {getAllQuizzes} from '@/util/client/helpers'
+import {Quiz} from '@prisma/client'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
 const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 	const {user} = useAuthStore()
@@ -44,7 +44,10 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 			href: `/teacher/classrooms/${classroomId}/assessments`,
 			title: "Assessments"
 		},
-
+		{
+			href: `/teacher/classrooms/${classroomId}/resources`,
+			title: "Resources"
+		}
 	]
 
 	const QuizCard = ({item}: {item: Quiz}) => {

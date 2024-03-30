@@ -1,10 +1,9 @@
 "use client"
 import Loader from '@/components/Loader'
-import NestedNav, { NavLink } from '@/components/NestedNav'
-import SmallLoader from '@/components/SmallLoader'
+import NestedNav, {NavLink} from '@/components/NestedNav'
 import useAuthStore from '@/lib/zustand'
-import { getAllNotes, getLectures} from '@/util/client/helpers'
-import { Lecture, Notes} from '@prisma/client'
+import {getAllNotes} from '@/util/client/helpers'
+import {Notes} from '@prisma/client'
 import Link from 'next/link'
 import {useEffect, useState} from 'react'
 
@@ -64,6 +63,10 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 			href: `/teacher/classrooms/${classroomId}/assessments`,
 			title: "Assessments"
 		},
+		{
+			href: `/teacher/classrooms/${classroomId}/resources`,
+			title: "Resources"
+		}
 	]
 
 
