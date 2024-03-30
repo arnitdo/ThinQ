@@ -85,15 +85,15 @@ def process_frame(frame):
             frame = frame_det
 
         if ear is not None:
-            cv2.putText(frame, "EAR:" + str(round(ear, 3)), (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 1,
+            cv2.putText(frame, "EAR:" + str(round(ear, 3)), (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 1,
                         cv2.LINE_AA)
 
         if gaze is not None:
             cv2.putText(frame, "Gaze Score:" + str(round(gaze, 3)), (10, 80), cv2.FONT_HERSHEY_PLAIN, 2,
-                        (255, 255, 255), 1, cv2.LINE_AA)
+                        (0, 0, 255), 1, cv2.LINE_AA)
 
         cv2.putText(frame, "PERCLOS:" + str(round(perclos_score, 3)), (10, 110),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 1, cv2.LINE_AA)
+                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 1, cv2.LINE_AA)
 
         if roll is not None:
             cv2.putText(frame, "roll:" + str(roll.round(1)[0]), (450, 40), cv2.FONT_HERSHEY_PLAIN, 1.5,
@@ -113,7 +113,18 @@ def process_frame(frame):
         if looking_away:
             cv2.putText(frame, "LOOKING AWAY!", (10, 320), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
         if distracted:
-            cv2.putText(frame, "DISTRACTED!", (10, 340), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1, cv2.LINE_AA)
+            text = "DISTRACTED!"
+            org = (10, 340)
+            font = cv2.FONT_HERSHEY_PLAIN
+            font_scale = 2
+            font_thickness = 1
+            line_type = cv2.LINE_AA
+            (text_width, text_height), baseline = cv2.getTextSize(text, font, font_scale, font_thickness)
+            background_position = (org[0], org[1] - text_height)
+            background_size = (text_width, text_height + baseline)
+            cv2.rectangle(frame, background_position, (background_position[0] + background_size[0], background_position[1] + background_size[1]), (255, 255, 255), -1)
+            text_position = (background_position[0] + (background_size[0] - text_width) // 2, org[1]+8)
+            cv2.putText(frame, text, text_position, font, font_scale, (0, 0, 255), font_thickness, line_type)
 
     return frame
 
@@ -171,5 +182,10 @@ def attention_detect():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/', methods=['GET']) 
+def helloworld(): 
+    if request.method == 'GET': 
+        data = {"data": "PICT Hackathon Attention Detection App Backend"}
+        return jsonify(data), 200
 if __name__ == '__main__': 
 	app.run(debug=True,port=8000)

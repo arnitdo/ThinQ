@@ -416,10 +416,12 @@ def question_rag_trainyourchatbot():
                 filename = os.path.basename(key)
                 local_file_path = os.path.join(save_dir, filename)
                 s3.download_file(S3_BUCKET, key, local_file_path)
+        print(question)
         answer = user_input(question, filepath=f'compute/')
+        print(answer)
         return jsonify(answer), 200
     except Exception as e:
-        console.log({'error': str(e)}, log_locals=True) 
+        # console.log({'error': str(e)}, log_locals=True) 
         return jsonify({'error': str(e)}), 500
     finally:
         shutil.rmtree("compute")
