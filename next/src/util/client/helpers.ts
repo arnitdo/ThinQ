@@ -23,6 +23,7 @@ import {
 	GetAllNotesResponse,
 	GetAllQuizzesResponse,
 	GetCalenderResponse,
+	GetClassroomAssessmentsResponse,
 	GetClassroomDataResponse,
 	GetClassroomResourcesResponse,
 	GetClassroomResponse,
@@ -637,4 +638,25 @@ export async function getAllResources(orgId: string, classId: string){
 
 	toast.error("An error occurred!")
 	return null
+}
+
+export async function getAssessments(orgId:string, classroomId:string) {
+	const response = await makeAPIRequest<GetClassroomAssessmentsResponse, ClassroomParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/assessment",
+		urlParams: {
+			orgId,
+			classroomId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.classroomAssessment;
+	}
 }
