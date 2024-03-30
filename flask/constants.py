@@ -8,6 +8,7 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
@@ -34,3 +35,5 @@ console = Console()
 
 db = Prisma()
 db.connect()
+
+genai.configure(api_key=GOOGLE_API_KEY)

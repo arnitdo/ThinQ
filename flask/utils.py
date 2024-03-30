@@ -31,3 +31,4 @@ import io
 from rich.console import Console
 import shutil
 from prisma import Prisma
+import google.generativeai as genai
