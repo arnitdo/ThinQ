@@ -15,7 +15,7 @@ type ChatMessage = {
 const Page = () => {
     const { user } = useAuthStore()
     const [loading, setLoading] = useState(false)
-    const [fileUpload, setFileUpload] = useState<boolean>(true)
+    const [fileUpload, setFileUpload] = useState<boolean>(false)
     const [uuid, setUuid] = useState<string>("4af3f89c-0d21-47f5-9448-02c3eedeb101")
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([{ message: "How can I help you ?", user: "bot" }])
     const [msg, setMsg] = useState<string>("")

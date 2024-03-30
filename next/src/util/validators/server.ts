@@ -392,7 +392,6 @@ export const QuizAttemptParamServerValidator: ServerValidator<QuizAttemptParams>
 	attemptId: quizAttemptExists
 }
 
-
 export const AssessmentAttemptParamServerValidator: ServerValidator<CreateAssessmentResponseParams> = {
 	orgId: orgExists,
 	classroomId: classroomExists,

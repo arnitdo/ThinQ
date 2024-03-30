@@ -1,5 +1,5 @@
 import {withMiddlewares} from "@/util/middleware";
-import {CreateQuizResponseBody, QuizAttemptParams, QuizResponseQueryParams} from "@/util/api/api_requests";
+import {ClassQuizAttemptParams, CreateQuizResponseBody, QuizAttemptParams, QuizResponseQueryParams} from "@/util/api/api_requests";
 import {
 	authParser,
 	requireAuthenticatedUser,
@@ -12,6 +12,7 @@ import {
 	validateURLParams
 } from "@/util/middleware/helpers";
 import {
+	ClassQuizAttemptParamServerValidator,
 	CreateQuizResponseBodyServerValidator,
 	matchUserOrgWithParamsOrg,
 	QuizAttemptParamServerValidator,
@@ -21,19 +22,19 @@ import {
 import db from "@/util/db";
 import {GetQuizResponsesResponse} from "@/util/api/api_responses";
 
-export const POST = withMiddlewares<QuizAttemptParams, CreateQuizResponseBody, QuizResponseQueryParams>(
+export const POST = withMiddlewares<ClassQuizAttemptParams, CreateQuizResponseBody, QuizResponseQueryParams>(
 	authParser(),
 	requireAuthenticatedUser(),
 	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher", "Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),
-	requireURLParams(["orgId", "classroomId", "lectureId", "quizId", "attemptId"]),
-	validateURLParams(QuizAttemptParamServerValidator),
+	requireURLParams(["orgId", "classroomId", "quizId", "attemptId"]),
+	validateURLParams(ClassQuizAttemptParamServerValidator),
 	requireBodyParams(["responseAccuracy"]),
 	validateBodyParams(CreateQuizResponseBodyServerValidator),
 	requireQueryParams(["questionId"]),
 	validateQueryParams(QuizResponseQueryServerValidator),
 	async (req, res) => {
 		const { responseAccuracy, responseContent } = req.body
-		const { orgId, classroomId, lectureId, quizId, attemptId } = req.params
+		const { orgId, classroomId, quizId, attemptId } = req.params
 
 		const oldResponse = await db.quizResponse.findFirst({
 			where: {
@@ -62,11 +63,11 @@ export const POST = withMiddlewares<QuizAttemptParams, CreateQuizResponseBody, Q
 	}
 )
 
-export const GET = withMiddlewares<QuizAttemptParams>(
-	requireURLParams(["orgId", "classroomId", "lectureId", "quizId", "attemptId"]),
-	validateURLParams(QuizParamServerValidator),
+export const GET = withMiddlewares<ClassQuizAttemptParams>(
+	requireURLParams(["orgId", "classroomId", "quizId", "attemptId"]),
+	validateURLParams(ClassQuizAttemptParamServerValidator),
 	async (req, res) => {
-		const { orgId, classroomId, lectureId, quizId, attemptId } = req.params
+		const { orgId, classroomId, quizId, attemptId } = req.params
 		const quizResponses = await db.quizResponse.findMany({
 			where: {
 				attemptId: attemptId
