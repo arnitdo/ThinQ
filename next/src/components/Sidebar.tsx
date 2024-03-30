@@ -5,6 +5,7 @@ import useAuthStore from "@/lib/zustand";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { roleRoute } from "./AuthChecker";
+import Joyride from "react-joyride";
 const Sidebar = ({
   item1,
   item2,
@@ -29,12 +30,52 @@ const Sidebar = ({
       signout();
     }
   }
+  const [steps, setSteps] = useState([
+    {
+      target: '.my-first-step',
+      content: 'This Sidebar contains all of the features that are specially catered to you!',
+    },
+    {
+      target: '.my-second-step',
+      content: 'The Dashboard is where you can see all of your upcoming classes and assessments!',
+    },
+    {
+      target: '.my-third-step',
+      content: 'A very Ui pleasing calendar that helps you navigate to your lectures!',
+    },
+    // Add more steps as needed
+  ]);
 
   return user ? (
     <>
+    
       <div className="leftWrapper | h-full">
+      <Joyride
+        continuous={true}
+        steps={steps}
+
+        styles={{
+          options: {
+            primaryColor: '#F23133', // Primary color of tooltips and overlay
+            textColor: '#333', // Text color of tooltips
+            width: 400, // Width of the tooltip
+            zIndex: 1000, // Z-index of the tooltip
+            arrowColor: '#2B98F0', // Color of the arrow of the tooltip
+            beaconSize: 36, // Size of the beacon
+            overlayColor: 'rgba(0, 0, 0, 0.5)', // Color and opacity of the overlay
+          },
+          tooltip: {
+            fontSize: 16, // Font size of the tooltip
+            fontFamily: 'Arial, sans-serif', // Font family of the tooltip
+            textAlign: 'left', // Text alignment of the tooltip
+            borderRadius: 8, // Border radius of the tooltip
+            padding: 6, // Padding of the tooltip
+          },
+          
+        }}
+      />
         <nav className="sideBar | max-sm:p-1  p-[1.125rem] border border-[#8C8C8C] rounded-[0.5rem] h-[96vh] flex flex-col justify-between sticky top-4 md:w-[248px] has-[:checked]:w-auto">
-          <div>
+          <div className="my-first-step">
             <div className="mb-5 flex justify-between items-center | has-[:checked]:flex-col has-[:checked]:items-center has-[:checked]:gap-3">
               <Link href="/" className="md:hidden">
                 <img
@@ -106,7 +147,7 @@ const Sidebar = ({
             ) : (
               <Link
                 href={`${user ? roleRoute[user.userType] + "/calendar" : "/"}`}
-                className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
+                className="p-[0.625rem] rounded-[0.3125rem]  my-second-step hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
               >
                 <img
                   src="/sidebarCalendar.svg"
@@ -131,7 +172,7 @@ const Sidebar = ({
             )}
             <Link
                 href={`${user ? roleRoute[user.userType] + "/trainyourbot" : "/"}`}
-                className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
+                className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc]  my-third-step mb-3 flex gap-3 items-center cursor-pointer"
               >
                 <img
                   src="/dashboard.svg"
