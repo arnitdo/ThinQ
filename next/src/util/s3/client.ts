@@ -63,6 +63,7 @@ export async function manageMedia(args: ManageMediaArgs): Promise<ManageMediaRet
 					objectUrl,
 					{
 						method: requestMethod,
+						body: mediaFile,
 						headers: {
 							"Content-Type": mediaFile.type
 						}

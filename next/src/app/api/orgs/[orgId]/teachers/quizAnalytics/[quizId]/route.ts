@@ -16,7 +16,7 @@ import {GetQuizAnalyticsResponse, GetUsersResponse} from "@/util/api/api_respons
 export const GET = withMiddlewares<QuizIdBaseParams>(
 	authParser(),
 	requireAuthenticatedUser(),
-	requireAuthorizedUser({ matchUserTypes: ["Teacher"], matchUserOrganization: matchUserOrgWithParamsOrg}),
+	requireAuthorizedUser({ matchUserTypes: ["Teacher","Student"], matchUserOrganization: matchUserOrgWithParamsOrg}),
 	requireURLParams(["orgId","quizId"]),
 	validateURLParams(BaseQuizIdParamServerValidator),
 	async (req, res) => {

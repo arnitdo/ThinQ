@@ -2,8 +2,11 @@
 
 import '@livekit/components-styles';
 import {
+	Chat,
 	ControlBar,
 	GridLayout,
+	LayoutContext,
+	LayoutContextProvider,
 	LiveKitRoom,
 	ParticipantTile,
 	RoomAudioRenderer,
@@ -103,8 +106,13 @@ export default function Page({params}: {params: PageParams}) {
 			style={{ minHeight: '100dvh' }}
 		>
 			<div className=' flex w-full px-6 py-8 rounded-lg h-fit'>
-				<div className={` h-[70vh] rounded-xl w-full flex`}>
+				<div className={` h-[70vh] rounded-xl w-full flex flex-row gap-4`}>
 					<Draw room={lectureId} name={user?.userDisplayName || "Guest User"} />
+					<div className=' w-[30vw] rounded-xl overflow-clip h-full bg-red-500'>
+						<LayoutContextProvider>
+						<Chat style={{height:"100%", width:"100%"}}/>
+						</LayoutContextProvider>
+					</div>
 				</div>
 			</div>
 			{/* Your custom component with basic video conferencing functionality. */}
