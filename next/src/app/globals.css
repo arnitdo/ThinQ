@@ -238,21 +238,21 @@ body {
   --gradientColorStopPercent: 100%;
 }
 
-/* @keyframes chatbotShrink {
+@keyframes chatbotShrink {
   to {
-    scale: 0.3;
+    font-size: 2.4rem;
   }
 }
 @keyframes chatbotUp {
   to {
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
   }
 }
-.chatbotGradientText {
+.chatbotTextAnimation {
+  transform-origin: bottom;
   --shrinkTime: 0.75s;
-  --shrinkDelay: 2s;
+  --shrinkDelay: 0.1s;
   --upTime: 0.75s;
   animation: chatbotShrink var(--shrinkTime) ease-out var(--shrinkDelay) forwards,
              chatbotUp var(--upTime) ease-out calc(var(--shrinkDelay) + var(--shrinkTime) + 0.2s) forwards;
-  transform-origin: bottom;
-} */
+}

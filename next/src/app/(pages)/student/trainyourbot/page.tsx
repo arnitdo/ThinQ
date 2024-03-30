@@ -15,9 +15,9 @@ type ChatMessage = {
 const Page = () => {
     const { user } = useAuthStore()
     const [loading, setLoading] = useState(false)
-    const [fileUpload, setFileUpload] = useState<boolean>(false)
+    const [fileUpload, setFileUpload] = useState<boolean>(true)
     const [uuid, setUuid] = useState<string>("4af3f89c-0d21-47f5-9448-02c3eedeb101")
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([{ message: "hello from chatbot", user: "bot" },{ message: "hello from chatbot", user: "user" },{ message: "hello from chatbot", user: "bot" },{ message: "hello from chatbot", user: "user" },{ message: "hello from chatbot", user: "bot" },{ message: "hello from chatbot", user: "user" },{ message: "hello from chatbot", user: "bot" },{ message: "hello from chatbot", user: "user" },{ message: "hello from chatbot", user: "bot" },{ message: "hello from chatbot", user: "user" },{ message: "hello from chatbot", user: "bot" },{ message: "hello from chatbot", user: "user" },{ message: "hello from chatbot", user: "bot" }])
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([{ message: "How can I help you ?", user: "bot" }])
     const [msg, setMsg] = useState<string>("")
     const flaskUrl = process.env.NEXT_PUBLIC_FLASK_API_URL;
     const chatRef = useRef<HTMLDivElement>(null)
@@ -104,7 +104,7 @@ const Page = () => {
     
 
     return (
-        <div className={`${fileUpload ? "" : "justify-between"} | h-[85vh]  justify-end flex flex-col relative`}>
+        <div className={`${fileUpload ? "" : "justify-between"} | h-[85vh]  justify-end flex flex-col relative isolate`}>
             {/* remove justify-between after file input */}
             {/* remove hidden after file input */}
             <div ref={chatRef} className={`${fileUpload ? "" : "hidden"} | h-[75vh] overflow-y-scroll justify-end  py-4 px-2`}>
@@ -115,7 +115,7 @@ const Page = () => {
                             <p className='text-xl font-medium p-6 border border-[#999999] rounded-[0.5rem] max-w-[50ch]'>{chatMessage.message === "loading" ? <SmallLoader></SmallLoader> : chatMessage.message}</p>
                         </div>
                     ) : (
-                        <div key={`chatmsg-${idx}`} className="chatUser | w-max ml-auto ms-[0.5rem] flex gap-3 items-start text-black my-1">
+                        <div key={`chatmsg-${idx}`} className="chatUser | w-max ml-auto me-[0.5rem] flex gap-3 items-start text-black my-1">
                             <p className='text-xl font-medium p-6 border border-[#999999] rounded-[0.5rem] max-w-[50ch]'>{chatMessage.message}</p>
                             <div className='text-[1.4375rem] font-medium bg-[#D9D9D9] p-3 rounded-[50%] w-14 h-14 grid place-items-center'>{user?.userDisplayName.slice(0, 2).toUpperCase()}</div>
                         </div>
@@ -126,10 +126,16 @@ const Page = () => {
             </div>
 
             {/* hidden after file input */}
-            {!fileUpload && <h1 className='blur-[2px] | translate-y-16 font-bold text-9xl max-md:text-6xl max-sm:text-5xl text-transparent text-center bg-gradient-to-r from-secondary from-[12%] to-primary to-65% bg-clip-text'>Chatbot</h1>}
-
+            {/* {(!fileUpload) &&  */}
+            {(!fileUpload) ? (
+                <h1 className='blur-[2px] | translate-y-16 font-bold text-9xl max-md:text-6xl max-sm:text-5xl text-transparent text-center bg-gradient-to-r from-secondary from-[12%] to-primary to-65% bg-clip-text  w-fit mx-auto z-10 | after:content-[""] after:absolute after:inset-[0_0_-2.4rem_0] after:z-0 after:bg-gradient-to-b after:from-transparent after:from-[100%] after:via-black after:via-[105%)] after:to-transparent'>Chatbot</h1>
+            )
+            :
+            (
+                <h1 className='blur-[0px] | chatbotTextAnimation | absolute top-0 left-1/2 -translate-x-1/2 translate-y-16 font-bold text-9xl max-md:text-6xl max-sm:text-5xl text-transparent text-center bg-gradient-to-r from-secondary from-[12%] to-primary to-65% bg-clip-text z-10 | after:content-[""] after:absolute after:inset-[0_0_-2.4rem_0] after:z-0 after:bg-gradient-to-b after:from-transparent after:from-[100%] after:via-black after:via-[105%)] after:to-transparent'>Chatbot</h1>
+            )}
             {/* blur 0 after file input */}
-            <div className={`${fileUpload ? "hidden" : ""} | absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[max(200px,40%)] aspect-[2/1] flex flex-col justify-center items-center bg-[hsl(0,0%,100%,8%)] backdrop-blur-[10px] rounded-[0.5625rem] shadow-[0_4px_30px_hsl(0,0%,0%,6%)]`}>
+            <div className={`${fileUpload ? "hidden" : ""} | absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[max(200px,40%)] aspect-[2/1] flex flex-col justify-center items-center bg-[hsl(0,0%,100%,8%)] backdrop-blur-[10px] rounded-[0.5625rem] shadow-[0_4px_30px_hsl(0,0%,0%,6%)]`}>
                 {loading ?
                     <Loader />
                     :
