@@ -185,14 +185,16 @@ export default function Page() {
                         </span>
                       </h3>
                     </div>
-                    {user&&<Link
+                    {user && (
+                      <Link
                       href={`/rooms/${user.userOrgId}/classroom/${item.lectureClassroom.classroomId}/lecture/${item.lectureId}`}
-                      className="calendarJoinButton | px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] text-sm font-medium text-[#6F6F6F] hover:text-white hover:border-none"
-                    >
-                      <button className="">
-                        Join <span className="">{">"}</span>
-                      </button>
-                    </Link>}
+                       className="calendarJoinButton | px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] text-sm font-medium text-[#6F6F6F] hover:text-white hover:border-none"
+                     >
+                       <button className="">
+                         Join <span className="">{">"}</span>
+                       </button>
+                     </Link>
+                    )}
                   </div>
                 </div>
               </div>
