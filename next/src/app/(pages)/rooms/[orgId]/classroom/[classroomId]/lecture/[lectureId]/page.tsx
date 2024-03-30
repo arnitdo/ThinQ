@@ -2,8 +2,10 @@
 
 import '@livekit/components-styles';
 import {
+	Chat,
 	ControlBar,
 	GridLayout,
+	LayoutContextProvider,
 	LiveKitRoom,
 	ParticipantTile,
 	RoomAudioRenderer,
@@ -16,10 +18,16 @@ import {GetMeetingTokenParams} from "@/util/api/api_requests";
 import {useAPIRequest} from "@/util/client/hooks/useApi";
 import Draw from "@/components/Draw";
 import useAuthStore from "@/lib/zustand";
-import { UserType } from '@prisma/client';
+import FaceLandmarkManager from "@/class/FaceLandmarkManager";
 import Dictaphone from '@/components/Dictaphone';
-import { createTranscript, getLectures } from '@/util/client/helpers';
-import { toast } from 'sonner';
+import {createTranscript} from '@/util/client/helpers';
+import {toast} from 'sonner';
+import {useRouter} from 'next/navigation';
+import {roleRoute} from '@/components/AuthChecker';
+
+type LKVideoElement = HTMLVideoElement & {
+	dataset: DOMStringMap
+}
 
 type PageParams = {
 	orgId: string,
@@ -46,6 +54,8 @@ export default function Page({params}: {params: PageParams}) {
 		bodyParams: {}
 	})
 
+	const router = useRouter()
+
 	useEffect(() => {
 		if (!isLoading){
 			if (hasResponse){
@@ -56,35 +66,18 @@ export default function Page({params}: {params: PageParams}) {
 			}
 		}
 	}, [isLoading]);
-
 	if (isLoading || accessToken === null){
 		return <div>Loading the ThinQ Web Platform</div>
-	}
 
-	return (
-		<div>
-		<LiveKitRoom
-			video={true}
-			audio={true}
-			token={accessToken}
-			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-			onDisconnected={async() => {
-				const response = await createTranscript(params.orgId, params.classroomId, params.lectureId, liveTranscript)
-				if(!response)return
-				toast("Transcript saved successfully")
-				console.log(flaskUrl)
-				// const blankRequest1 = fetch(`${flaskUrl}/rag_embed_lectures`,{
-				// 	method:"POST",
-				// 	headers: {
-				// 		"Content-Type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		organization_id: orgId,
-				// 		class_id: classroomId,
-				// 		lecture_id: lectureId
-				// 	})
-				// })
-				const blankRequest2 = fetch(`${flaskUrl}/generate_mcq_notes_transcript`,{
+	}
+	const handleTranscript=async()=>{
+		if(!user) return
+		if(user.userType==="Student") return
+		const response = await createTranscript(params.orgId, params.classroomId, params.lectureId, liveTranscript)
+		if(!response)return
+		toast("Transcript saved successfully")
+		console.log(flaskUrl)
+		const blankRequest2 = fetch(`${flaskUrl}/generate_mcq_notes_transcript`,{
 					method:"POST",
 					headers: {
 						"Content-Type": "application/json"
@@ -95,26 +88,34 @@ export default function Page({params}: {params: PageParams}) {
 						lecture_id: lectureId
 					})
 				})
-				// const blankRequest3 = fetch(`${flaskUrl}/get_notes_lectures`,{
-				// 	method:"POST",
-				// 	headers: {
-				// 		"Content-Type": "application/json"
-				// 	},
-				// 	body: JSON.stringify({
-				// 		organization_id: orgId,
-				// 		class_id: classroomId,
-				// 		lecture_id: lectureId
-				// 	})
-				// })
+
+	}
+
+	return (
+		<div>
+		<LiveKitRoom
+			video={true}
+			audio={true}
+			token={accessToken}
+			serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+			onDisconnected={async() => {
+				handleTranscript()
+				if(!user)return
+				router.push(`${roleRoute[user.userType]}/classrooms`)
 			}}
-			
+
 			// Use the default LiveKit theme for nice styles.
 			data-lk-theme="default"
 			style={{ minHeight: '100dvh' }}
 		>
 			<div className=' flex w-full px-6 py-8 rounded-lg h-fit'>
-				<div className={` h-[70vh] rounded-xl w-full flex`}>
+				<div className={` h-[70vh] rounded-xl w-full flex flex-row gap-4`}>
 					<Draw room={lectureId} name={user?.userDisplayName || "Guest User"} />
+					<div className=' w-[30vw] rounded-xl overflow-clip h-full bg-red-500'>
+						<LayoutContextProvider>
+						<Chat style={{height:"100%", width:"100%"}}/>
+						</LayoutContextProvider>
+					</div>
 				</div>
 			</div>
 			{/* Your custom component with basic video conferencing functionality. */}
@@ -128,7 +129,7 @@ export default function Page({params}: {params: PageParams}) {
       share tracks and to leave the room. */}
 			<div className=' flex flex-row gap-2 justify-center w-full items-center'>
 				<ControlBar controls={{camera: false}} />
-				<Dictaphone setDesc={setLiveTranscript} setLang={()=>{}}/>
+				{user?.userType==="Teacher"&&<Dictaphone desc={liveTranscript} setDesc={setLiveTranscript} setLang={()=>{}}/>}
 			</div>
 		</LiveKitRoom>
 		</div>
@@ -146,12 +147,125 @@ function MyVideoConference() {
 		{ onlySubscribed: false },
 	);
 
-	const vidRef = useRef<HTMLVideoElement | null>(null)
+	const videoRef = useRef<HTMLVideoElement | null>(null)
 
+	const lastVideoTimeRef = useRef(-1);
+	const requestRef = useRef<number>(0);
+	const [isDistracted, setIsDistracted] = useState(false);
+
+	const animate = () => {
+		if (
+			videoRef.current &&
+			videoRef.current.currentTime !== lastVideoTimeRef.current
+		) {
+			lastVideoTimeRef.current = videoRef.current.currentTime;
+			try {
+				const faceLandmarkManager = FaceLandmarkManager.getInstance();
+				const landmarks = faceLandmarkManager.detectLandmarks(
+					videoRef.current,
+					Date.now()
+				);
+				if (
+					landmarks &&
+					landmarks.faceBlendshapes &&
+					landmarks.faceBlendshapes.length > 0
+				) {
+					const eyeLookUpLeft =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookUpLeft"
+						)?.score ?? 0;
+					const eyeLookUpRight =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookUpRight"
+						)?.score ?? 0;
+					const eyeLookDownLeft =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookDownLeft"
+						)?.score ?? 0;
+					const eyeLookDownRight =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookDownRight"
+						)?.score ?? 0;
+					const eyeLookInLeft =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookInLeft"
+						)?.score ?? 0;
+					const eyeLookInRight =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookInRight"
+						)?.score ?? 0;
+					const eyeLookOutLeft =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookOutLeft"
+						)?.score ?? 0;
+					const eyeLookOutRight =
+						landmarks.faceBlendshapes[0].categories.find(
+							(shape) => shape.categoryName === "eyeLookOutRight"
+						)?.score ?? 0;
+					const weights = {
+						upLeft: 1,
+						upRight: 1,
+						downLeft: 1,
+						downRight: 1,
+						inLeft: 0.5,
+						inRight: 0.5,
+						outLeft: 0.5,
+						outRight: 0.5,
+					};
+					const gazeScore =
+						weights.upLeft * eyeLookUpLeft +
+						weights.upRight * eyeLookUpRight +
+						weights.downLeft * eyeLookDownLeft +
+						weights.downRight * eyeLookDownRight +
+						weights.inLeft * eyeLookInLeft +
+						weights.inRight * eyeLookInRight +
+						weights.outLeft * eyeLookOutLeft +
+						weights.outRight * eyeLookOutRight;
+					const EAR =
+						(eyeLookUpLeft +
+							eyeLookUpRight +
+							eyeLookDownLeft +
+							eyeLookDownRight) /
+						(2 * (eyeLookInLeft + eyeLookInRight + eyeLookOutLeft + eyeLookOutRight));
+
+					const gazeThreshold = 1.4;
+					const EARThreshold = 0.4;
+
+					if (EAR < EARThreshold || gazeScore > gazeThreshold) {
+						setIsDistracted(true);
+					} else {
+						setIsDistracted(false);
+					}
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		}
+		requestRef.current = requestAnimationFrame(animate);
+	};
 
 	useEffect(() => {
-		const videoElements = Array.from(document.querySelectorAll("video"))
-			
+		console.log(isDistracted)
+	}, [isDistracted]);
+
+	useEffect(() => {
+		if (videoRef.current) {
+			requestRef.current = requestAnimationFrame(animate);
+		}
+
+		return () => cancelAnimationFrame(requestRef.current);
+	}, [videoRef.current]);
+
+	useEffect(() => {
+		const videoElements = Array.from(document.querySelectorAll("video")) as LKVideoElement[]
+		const localElements = videoElements.filter((elem) => {
+			return !!(elem.dataset["lkLocalParticipant"])
+		})
+
+		if (localElements.length && !videoRef.current){
+			const firstElement = localElements[0]
+			videoRef.current = firstElement
+		}
 	}, [tracks]);
 
 	return (

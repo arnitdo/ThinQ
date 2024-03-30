@@ -1,6 +1,6 @@
 // Write your API Request Types Here
 
-import type {S3Object, User, UserType} from "@prisma/client";
+import type {ClassroomResource, S3Object, User, UserType} from "@prisma/client";
 import {S3ObjectMethod} from "@/util/s3/types";
 
 // Use this in place of {}
@@ -9,6 +9,12 @@ export type NoParams = {}
 export type OrgIdBaseParams = {
 	orgId: string
 }
+
+export type QuizIdBaseParams = {
+	orgId: string,
+	quizId: string
+}
+
 
 export type UserIdBaseParams = {
 	userId: string
@@ -149,7 +155,13 @@ export type QuizAttemptParams = {
 	attemptId: string
 }
 
-
+export type QuizAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	quizId: string,
+	attemptId: string
+}
 export type ClassQuizAttemptParams = {
 	orgId: string,
 	classroomId: string,
@@ -157,11 +169,37 @@ export type ClassQuizAttemptParams = {
 	attemptId: string
 }
 
+
+export type ClassAssesmentParams = {
+	orgId: string,
+	classroomId: string,
+	assesmentId: string,
+}
+
+export type ClassAssesmentAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	assesmentId: string,
+	attemptId: string
+}
+
+
+export type ClassAssesmentAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	assesmentId: string,
+	attemptId: string
+}
+
 export type CreateQuizResponseBody = {
 	responseContent: string | null
 	responseAccuracy: number
 }
-
+  
+export type CreateAssessmentResponseBody = {
+	responseText: string
+	responseObtainedMarks: number
+}
 export type QuizResponseQueryParams = {
 	questionId: string
 }
@@ -212,3 +250,57 @@ export type GetTeacherByNameParams = {
 }
 
 export type GetMeetingTokenParams = LectureParams
+
+export type CreateClassroomResourcesParams = ClassroomParams
+
+export type CreateClassroomResourcesBody = Omit<ClassroomResource, "resourceId" | "classroomId">
+
+export type GetClassroomResourcesParams = ClassroomParams
+
+export type DeleteClassroomResourcesParams = ClassroomParams & {
+	resourceId: string
+}
+
+export type CreateAssessmentParams = ClassroomParams
+
+export type CreateAssessmentBody = {
+	assessmentTitle: string,
+	assessmentQuestions: {
+		questionText: string,
+		questionMarks: number
+	}[]
+}
+
+export type CreateAssessmentResponseParams = {
+	classroomId: string,
+	assessmentId: string
+	orgId: string
+}
+
+export type CreateAssessmentResponseBody = {
+	responseText: string;
+    responseObtainedMarks: number;
+    responseQuestionId: string;
+}
+
+export type AssessmentParams = ClassroomParams & {
+	assessmentId: string
+}
+
+export type GetClassAssessmentParams = ClassroomParams
+
+export type GetAssessmentParams = AssessmentParams
+
+export type CreateAssessmentQuestionResponse = AssessmentParams
+
+export type CreateAssignmentParams = ClassroomParams
+
+export type CreateAssignmentBody = {
+	assignmentName: string
+}
+
+export type SubmitAssignmentParams = ClassroomParams & {
+	assignmentId
+}
+
+export type GetAssignmentParams = ClassroomParams

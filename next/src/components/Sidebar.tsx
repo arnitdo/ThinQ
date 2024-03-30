@@ -129,6 +129,17 @@ const Sidebar = ({
                 {sidebarActive && <p className="hidden | md:block">{item3}</p>}
               </Link>
             )}
+            <Link
+                href={`${user ? roleRoute[user.userType] + "/trainyourbot" : "/"}`}
+                className="p-[0.625rem] rounded-[0.3125rem] hover:bg-[#ECECEc] mb-3 flex gap-3 items-center cursor-pointer"
+              >
+                <img
+                  src="/dashboard.svg"
+                  alt=""
+                  className="w-[min(100%,26px)]"
+                />
+                {sidebarActive && <p className="hidden | md:block">Train Your Bot</p>}
+              </Link>
           </div>
 
           <button

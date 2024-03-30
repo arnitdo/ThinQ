@@ -69,15 +69,10 @@ export default function QuizCard({
 
   const HandleOption = async (option: string) => {
     if (!user) return
-    const response = await createQuizResponse(user.userOrgId, classId, quizId, attemptId, randomQuiz[currentQuestion].questionId, checker(randomQuiz[currentQuestion].questionAnswerIndex, option) ? 1 : 0, "")
-    if (!response) return
     if (checker(randomQuiz[currentQuestion].questionAnswerIndex, option)) {
       setCorrect([...correct, option]);
       toast.success(
-        `Correct Answer +${randomQuiz[currentQuestion].questionOptions[
-        randomQuiz[currentQuestion].questionAnswerIndex
-        ]
-        } 🪙`
+        `Correct Answer +x 🪙`
       );
       // setcoin(coin+randomQuiz[currentQuestion].coins);
     } else {
@@ -88,6 +83,8 @@ export default function QuizCard({
       return toast.success("You have completed the quiz 🎉");
     }
     setCurrentQuestion(currentQuestion + 1);
+    const response = await createQuizResponse(user.userOrgId, classId, quizId, attemptId, randomQuiz[currentQuestion].questionId, checker(randomQuiz[currentQuestion].questionAnswerIndex, option) ? 1 : 0, "")
+    if (!response) return
   };
 
   const [paused, setPaused] = useState(false);

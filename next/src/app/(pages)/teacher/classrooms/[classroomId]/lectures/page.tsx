@@ -2,15 +2,13 @@
 import Loader from '@/components/Loader'
 import SmallLoader from '@/components/SmallLoader'
 import useAuthStore from '@/lib/zustand'
-import { deleteLecture, getLectures} from '@/util/client/helpers'
+import {deleteLecture, getLectures} from '@/util/client/helpers'
 import {AuthUser} from '@/util/middleware/auth'
-import { ClassroomEnrollment, Lecture} from '@prisma/client'
-import Link from 'next/link'
+import {ClassroomEnrollment, Lecture} from '@prisma/client'
 import {useEffect, useState} from 'react'
 import Form from './(components)/Form'
-import { toast } from 'sonner'
-import NestedNav, { NavLink } from '@/components/NestedNav'
-import { motion } from 'framer-motion'
+import {toast} from 'sonner'
+import NestedNav, {NavLink} from '@/components/NestedNav'
 
 type ClassCardProps = {
 	item: Lecture
@@ -129,6 +127,14 @@ const Page = ({params: {classroomId}}: {params: {classroomId: string}}) => {
 		{
 			href: `/teacher/classrooms/${classroomId}/notes`,
 			title: "Notes"
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/assessments`,
+			title: "Assessments"
+		},
+		{
+			href: `/teacher/classrooms/${classroomId}/resources`,
+			title: "Resources"
 		}
 	]
 

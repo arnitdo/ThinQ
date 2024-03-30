@@ -56,7 +56,7 @@ export default function Home() {
            initial={{ opacity: 0, x: -100 }}
            animate={{ opacity: 1, x: 0}}
            transition={{ duration: 1 }}
-           className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vrNigga.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
+           className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vr.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
             <div className="justify-between flex items-center">
               <div>
                 <Link href="/">
@@ -236,12 +236,12 @@ export default function Home() {
             <p className="hidden | @[404px]:block @[508px]:row-start-1 @[508px]:col-span-full text-3xl font-[500] col-start-2 row-start-1 col-span-2 text-center">Meet the Team</p>
           </motion.div>
           {/* <div className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#565656] to-[#313131] lg:col-span-2"></div> */}
-          <div className="ignoreThisDiv gapOverlap hidden | lg:block absolute col-start-4 row-start-2 col-span-1 row-span-1 -inset-[1.75rem] bg-white z-10"></div>
+          <div className="ignoreThisDiv gapOverlap hidden | lg:block rounded-3xl absolute col-start-4 row-start-2 col-span-1 row-span-1 -inset-[1.75rem] bg-white z-10"></div>
           <motion.div
            initial={{ opacity: 0, y: -100 }}
            animate={{ opacity: 1, y:0}}
            transition={{ duration: 1, delay: 0.5 }} className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-4 col-span-1 bg-[radial-gradient(circle_at_0_0,#F722B7_1.75rem,white_calc(1.75rem+1px))]"> </motion.div>
-           <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-3 col-span-1 bg-[radial-gradient(circle_at_0_0,white_1.75rem,#f964cc_calc(1.75rem+1px))] -right-7 -bottom-7 z-10 rotate-180"> </div>
+           {/* <div className="ignoreThisDiv invertedBorderRadius hidden | lg:block absolute w-[1.75rem] aspect-square self-end justify-self-end row-start-1 row-span-1 col-start-3 col-span-1 bg-[radial-gradient(circle_at_0_0,white_1.75rem,#f964cc_calc(1.75rem+1px))] -right-7 -bottom-7 z-10 rotate-180"> </div> */}
            <motion.div
            initial={{ opacity: 0, y: -100 }}
            animate={{ opacity: 1, y:0}}

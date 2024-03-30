@@ -4,8 +4,8 @@ import React, {useEffect, useState} from "react";
 import QuizCard from "./(components)/QuizCard";
 import Loader from "@/components/Loader";
 import useAuthStore from "@/lib/zustand";
-import { Lecture, Quiz, QuizAttempt, QuizQuestion } from "@prisma/client";
 import { createQuizAttempt, getAllQuizzes, getLectures, getQuizData } from "@/util/client/helpers";
+import { QuizAnalytics } from "@/util/api/api_responses";
 
 export default function QuizPage({
   params,
@@ -13,18 +13,12 @@ export default function QuizPage({
   params: { classroomId: string, quizId: string };
 }) {
   const {user} = useAuthStore()
-	const [data, setData] = useState<{
-		quizId: string,
-		quizName: string,
-		quizQuestions: QuizQuestion[],
-		quizAttempts: QuizAttempt[],
-		quizLecture: Lecture
-	}| null>(null);
+	const [data, setData] = useState<QuizAnalytics| null>(null);
 
 	useEffect(() => {
 		const getData = async () => {
 			if (!user) return;
-			const quizzes = await getQuizData(user.userOrgId, params.classroomId, params.quizId)
+			const quizzes = await getQuizData(user.userOrgId, params.quizId)
 			if (quizzes) setData(quizzes)
 		}
 		getData()

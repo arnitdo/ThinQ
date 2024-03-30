@@ -6,14 +6,15 @@ import {
 	ClassQuizAttemptParams,
 	ClassQuizIdParams,
 	ClassroomParams,
-	ClassroomQuizParams,
 	CreateQuizAttemptBody,
 	CreateQuizResponseBody,
 	CreateTranscriptBody,
+	GetClassroomResourcesParams,
 	GetUserParams,
 	LectureParams,
 	NoParams,
 	OrgIdBaseParams,
+	QuizIdBaseParams,
 	QuizResponseQueryParams
 } from "../api/api_requests";
 import {
@@ -22,13 +23,14 @@ import {
 	GetAllNotesResponse,
 	GetAllQuizzesResponse,
 	GetCalenderResponse,
+	GetClassroomAssessmentsResponse,
 	GetClassroomDataResponse,
+	GetClassroomResourcesResponse,
 	GetClassroomResponse,
-	GetClassroomsResponse,
 	GetEnrollmentsResponse,
 	GetLecturesResponse,
 	GetNotesResponse,
-	GetQuizDataResponse,
+	GetQuizAnalyticsResponse,
 	GetUserByIdResponse,
 	GetUsersResponse
 } from "../api/api_responses";
@@ -540,12 +542,11 @@ export async function getAllQuizzes(orgId:string, classroomId:string) {
 	}
 }
 
-export async function getQuizData(orgId:string, classroomId:string, quizId:string) {
-	const response = await makeAPIRequest<GetQuizDataResponse, ClassroomQuizParams, NoParams, NoParams>({
-		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/quiz/:quizId",
+export async function getQuizData(orgId:string, quizId:string) {
+	const response = await makeAPIRequest<GetQuizAnalyticsResponse, QuizIdBaseParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/teachers/quizAnalytics/:quizId",
 		urlParams: {
 			orgId,
-			classroomId,
 			quizId
 		},
 		bodyParams: {},
@@ -558,7 +559,7 @@ export async function getQuizData(orgId:string, classroomId:string, quizId:strin
 	}
 	if(response.responseData.responseStatus==="SUCCESS"){
 		// toast.success("Signed out successfully!")
-		return response.responseData.quizData;
+		return response.responseData.quizAnalytics;
 	}
 }
 
@@ -597,7 +598,7 @@ export async function createQuizResponse(orgId:string, classroomId:string, quizI
 		},
 		bodyParams: {
 			responseAccuracy,
-			responseContent:responseContent?responseContent:""
+			responseContent:responseContent ? responseContent : ""
 		},
 		queryParams: {
 			questionId
@@ -611,5 +612,51 @@ export async function createQuizResponse(orgId:string, classroomId:string, quizI
 	if(response.responseData.responseStatus==="SUCCESS"){
 		// toast.success("Signed out successfully!")
 		return response.responseData.responseStatus;
+	}
+}
+
+export async function getAllResources(orgId: string, classId: string){
+	const response = await makeAPIRequest<GetClassroomResourcesResponse, GetClassroomResourcesParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/resource",
+		requestMethod: "GET",
+		urlParams: {
+			orgId: orgId,
+			classroomId: classId
+		},
+		bodyParams: {},
+		queryParams: {}
+	})
+
+	if (response.hasError){
+		toast.error("Error fetching data!")
+		return null
+	}
+
+	if (response.responseData.responseStatus === "SUCCESS"){
+		return response.responseData.classroomResources
+	}
+
+	toast.error("An error occurred!")
+	return null
+}
+
+export async function getAssessments(orgId:string, classroomId:string) {
+	const response = await makeAPIRequest<GetClassroomAssessmentsResponse, ClassroomParams, NoParams, NoParams>({
+		requestUrl: "/api/orgs/:orgId/classroom/:classroomId/assessment",
+		urlParams: {
+			orgId,
+			classroomId
+		},
+		bodyParams: {},
+		queryParams: {},
+		requestMethod: "GET"
+	})
+	if(response.hasError){
+		toast.error("Error fetching data!")
+		return null;
+	}
+	if(response.responseData.responseStatus==="SUCCESS"){
+		// toast.success("Signed out successfully!")
+		return response.responseData.classroomAssessment;
 	}
 }

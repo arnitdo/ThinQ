@@ -1,7 +1,13 @@
 // Write your API Responses here
 import type {
+	Assessment,
+	AssessmentAttempt,
+	AssessmentQuestion,
+	AssessmentResponse,
+	Assignment,
 	Classroom,
 	ClassroomEnrollment,
+	ClassroomResource,
 	Lecture,
 	LectureAttendance,
 	LectureTranscript,
@@ -14,7 +20,7 @@ import type {
 	ReportTarget,
 	User
 } from "@prisma/client";
-import {AuthUser} from "@/util/middleware/auth";
+import { AuthUser } from "@/util/middleware/auth";
 
 export type GetOrgsResponse = {
 	allOrgs: Organization[]
@@ -35,9 +41,9 @@ export type ClassroomData = {
 	_count: {
 		classroomEnrollments: number
 	},
-	User:{
-			userId: string,
-			userDisplayName: string,
+	User: {
+		userId: string,
+		userDisplayName: string,
 	}
 }
 export type GetClassroomsResponse = {
@@ -58,6 +64,34 @@ export type GetUserByIdResponse = {
 
 export type GetUsersResponse = {
 	users: AuthUser[]
+}
+
+export type QuizAnalytics = {
+	lectureId: string;
+	quizId: string;
+	quizName: string;
+	quizLecture: {
+		_count: {
+			lectureAttendance: number;
+		};
+	};
+	quizAttempts: {
+		attemptTimestamp: Date;
+		attemptUser: {
+			userDisplayName: string;
+			userId: string;
+		};
+		attemptResponses: QuizResponse[];
+	}[];
+	quizQuestions: QuizQuestion[];
+	_count: {
+		quizAttempts: number;
+	};
+
+}
+
+export type GetQuizAnalyticsResponse = {
+	quizAnalytics: QuizAnalytics
 }
 
 export type DeletedClassroomResponse = {
@@ -144,8 +178,26 @@ export type GetQuizAttemptResponse = {
 	quizAttempt: QuizAttempt
 }
 
+export type GetAssessmentAttemptResponse = {
+	assessmentAttempt: AssessmentAttempt
+}
+
+export type CreateAssessmentAttemptResponse = {
+	createdAssessmentAttemptId: string
+}
+
+
+export type GetAssessmentAttemptsResponse = {
+	assessmentAttempts: AssessmentAttempt[]
+}
+
+
 export type GetQuizResponsesResponse = {
 	quizResponses: QuizResponse[]
+}
+
+export type GetAssessmentResponsesResponse = {
+	assessmentResponses: AssessmentResponse[]
 }
 
 export type GetQuizResponseResponse = {
@@ -209,7 +261,7 @@ export type GetQuizDataResponse = {
 export type GetCalenderResponse = {
 	lectures: {
 		lectureId: string,
-		title:	string,
+		title: string,
 		lectureStartTimestamp: Date,
 		lectureEndTimestamp: Date,
 		lectureClassroom: {
@@ -225,4 +277,49 @@ export type GetCalenderResponse = {
 
 		}
 	}[]
+}
+
+export type CreateClassroomResourceResponse = {
+	resourceId: string
+}
+
+export type GetClassroomResourcesResponse = {
+	classroomResources: (Omit<ClassroomResource, "resourceObjectKey"> & {
+		resourceUrl: string
+	})[]
+}
+
+export type CreateClassroomAssessmentResponse = {
+	assessmentId: string
+}
+
+export type CreateAssignmentResponse = {
+	assignmentId: string
+}
+
+export type GetClassroomAssignmentResponse = {
+	classroomAssignments: Assignment[]
+}
+
+export type GetClassroomAssessmentResponse = {
+	classroomAssessment: Assessment
+}
+
+export type ClassroomAssessmentWithQuestions = {
+	assessmentId: string;
+	assessmentTitle: string;
+	classroomId: string;
+	assessmentQuestions: AssessmentQuestion[]
+}
+
+export type GetClassroomAssessmentsResponse = {
+	classroomAssessment: ClassroomAssessmentWithQuestions[]
+}
+
+export type GetAssessmentAttemptResponse = {
+	assessmentAttempt: AssessmentAttempt
+}
+
+export type GetAssessmentAttemptResponse = {
+	sssessmentAttempt: AssessmentAttempt[]
 }
