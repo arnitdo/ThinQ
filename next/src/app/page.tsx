@@ -56,7 +56,7 @@ export default function Home() {
            initial={{ opacity: 0, x: -100 }}
            animate={{ opacity: 1, x: 0}}
            transition={{ duration: 1 }}
-           className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vrNigga.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
+           className="text-white p-[24px] rounded-3xl bg-gradient-to-b from-[#42A9FD] to-[#286597] to-[76%] lg:col-span-2 lg:row-span-4 lg:bg-[url(/vr.png),linear-gradient(-25deg,#CBCBCB_15.5%,transparent_16%),linear-gradient(#42A9FD,#286597_76%)] lg:bg-no-repeat lg:bg-[90%_100%]">
             <div className="justify-between flex items-center">
               <div>
                 <Link href="/">

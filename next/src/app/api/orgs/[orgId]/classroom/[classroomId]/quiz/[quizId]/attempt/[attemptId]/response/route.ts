@@ -1,5 +1,5 @@
 import {withMiddlewares} from "@/util/middleware";
-import {ClassQuizAttemptParams, CreateQuizResponseBody, QuizAttemptParams, QuizResponseQueryParams} from "@/util/api/api_requests";
+import {CreateQuizResponseBody, QuizAttemptParams, QuizResponseQueryParams} from "@/util/api/api_requests";
 import {
 	authParser,
 	requireAuthenticatedUser,
@@ -12,7 +12,6 @@ import {
 	validateURLParams
 } from "@/util/middleware/helpers";
 import {
-	ClassQuizAttemptParamServerValidator,
 	CreateQuizResponseBodyServerValidator,
 	matchUserOrgWithParamsOrg,
 	QuizAttemptParamServerValidator,
@@ -22,19 +21,19 @@ import {
 import db from "@/util/db";
 import {GetQuizResponsesResponse} from "@/util/api/api_responses";
 
-export const POST = withMiddlewares<ClassQuizAttemptParams, CreateQuizResponseBody, QuizResponseQueryParams>(
+export const POST = withMiddlewares<QuizAttemptParams, CreateQuizResponseBody, QuizResponseQueryParams>(
 	authParser(),
 	requireAuthenticatedUser(),
 	requireAuthorizedUser({ matchUserTypes: ["Administrator", "Teacher", "Student"], matchUserOrganization: matchUserOrgWithParamsOrg }),
-	requireURLParams(["orgId", "classroomId", "quizId", "attemptId"]),
-	validateURLParams(ClassQuizAttemptParamServerValidator),
+	requireURLParams(["orgId", "classroomId", "lectureId", "quizId", "attemptId"]),
+	validateURLParams(QuizAttemptParamServerValidator),
 	requireBodyParams(["responseAccuracy"]),
 	validateBodyParams(CreateQuizResponseBodyServerValidator),
 	requireQueryParams(["questionId"]),
 	validateQueryParams(QuizResponseQueryServerValidator),
 	async (req, res) => {
 		const { responseAccuracy, responseContent } = req.body
-		const { orgId, classroomId, quizId, attemptId } = req.params
+		const { orgId, classroomId, lectureId, quizId, attemptId } = req.params
 
 		const oldResponse = await db.quizResponse.findFirst({
 			where: {
@@ -44,7 +43,7 @@ export const POST = withMiddlewares<ClassQuizAttemptParams, CreateQuizResponseBo
 		})
 
 		if (oldResponse) {
-			return res.status(200).json({ responseStatus: "SUCCESS" })
+			return res.status(400).json({ responseStatus: "ERR_UNAUTHORIZED" })
 		}
 
 		const createdQuizResponse = await db.quizResponse.create({

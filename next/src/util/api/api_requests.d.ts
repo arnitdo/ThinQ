@@ -1,6 +1,6 @@
 // Write your API Request Types Here
 
-import type {ClassroomResource, S3Object, User, UserType} from "@prisma/client";
+import type {AssessmentResponse, ClassroomResource, S3Object, User, UserType} from "@prisma/client";
 import {S3ObjectMethod} from "@/util/s3/types";
 
 // Use this in place of {}
@@ -155,7 +155,13 @@ export type QuizAttemptParams = {
 	attemptId: string
 }
 
-
+export type QuizAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	lectureId: string,
+	quizId: string,
+	attemptId: string
+}
 export type ClassQuizAttemptParams = {
 	orgId: string,
 	classroomId: string,
@@ -163,11 +169,37 @@ export type ClassQuizAttemptParams = {
 	attemptId: string
 }
 
+
+export type ClassAssesmentParams = {
+	orgId: string,
+	classroomId: string,
+	assesmentId: string,
+}
+
+export type ClassAssesmentAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	assesmentId: string,
+	attemptId: string
+}
+
+
+export type ClassAssesmentAttemptParams = {
+	orgId: string,
+	classroomId: string,
+	assesmentId: string,
+	attemptId: string
+}
+
 export type CreateQuizResponseBody = {
 	responseContent: string | null
 	responseAccuracy: number
 }
-
+  
+export type CreateAssessmentResponseBody = {
+	responseText: string
+	responseObtainedMarks: number
+}
 export type QuizResponseQueryParams = {
 	questionId: string
 }
@@ -237,6 +269,18 @@ export type CreateAssessmentBody = {
 		questionText: string,
 		questionMarks: number
 	}[]
+}
+
+export type CreateAssessmentResponseParams = {
+	classroomId: string,
+	assessmentId: string
+	orgId: string
+}
+
+export type CreateAssessmentResponseBody = {
+	responseText: string;
+    responseObtainedMarks: number;
+    responseQuestionId: string;
 }
 
 export type AssessmentParams = ClassroomParams & {

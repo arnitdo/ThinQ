@@ -177,6 +177,7 @@ model Assessment {
   classroomId         String
   assessmentClassroom Classroom            @relation(fields: [classroomId], references: [classroomId], onDelete: Cascade)
   assessmentQuestions AssessmentQuestion[]
+  assessmentAttempts  AssessmentAttempt[]
 }
 
 model AssessmentQuestion {
@@ -190,6 +191,8 @@ model AssessmentQuestion {
 
 model AssessmentAttempt {
   attemptId           String               @id @default(uuid())
+  assessment          Assessment             @relation(fields: [assessmentId], references: [assessmentId], onDelete: Cascade)
+  assessmentId        String
   userId              String
   attemptUser         User                 @relation(fields: [userId], references: [userId], onDelete: Cascade)
   assessmentResponses AssessmentResponse[]

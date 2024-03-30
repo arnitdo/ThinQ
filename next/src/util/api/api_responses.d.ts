@@ -1,6 +1,8 @@
 // Write your API Responses here
 import type {
 	Assessment,
+	AssessmentAttempt,
+	AssessmentResponse,
 	Assignment,
 	Classroom,
 	ClassroomEnrollment,
@@ -175,8 +177,26 @@ export type GetQuizAttemptResponse = {
 	quizAttempt: QuizAttempt
 }
 
+export type GetAssessmentAttemptResponse = {
+	assessmentAttempt: AssessmentAttempt
+}
+
+export type CreateAssessmentAttemptResponse = {
+	createdAssessmentAttemptId: string
+}
+
+
+export type GetAssessmentAttemptsResponse = {
+	assessmentAttempts: AssessmentAttempt[]
+}
+
+
 export type GetQuizResponsesResponse = {
 	quizResponses: QuizResponse[]
+}
+
+export type GetAssessmentResponsesResponse = {
+	assessmentResponses: AssessmentResponse[]
 }
 
 export type GetQuizResponseResponse = {
@@ -272,14 +292,26 @@ export type CreateClassroomAssessmentResponse = {
 	assessmentId: string
 }
 
-export type GetClassroomAssessmentsResponse = {
-	classroomAssessments: Assessment[]
-}
-
 export type CreateAssignmentResponse = {
 	assignmentId: string
 }
 
 export type GetClassroomAssignmentResponse = {
 	classroomAssignments: Assignment[]
+}
+
+export type GetClassroomAssessmentResponse = {
+	classroomAssessment: Assessment
+}
+
+export type GetClassroomAssessmentsResponse = {
+	classroomAssessment: Assessment[]
+}
+
+export type GetAssessmentAttemptResponse = {
+	assessmentAttempt: AssessmentAttempt
+}
+
+export type GetAssessmentAttemptResponse = {
+	sssessmentAttempt: AssessmentAttempt[]
 }
