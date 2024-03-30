@@ -256,7 +256,7 @@ const Page = ({
                     </div>
                     {user && (
                       <Link
-                        href={`/taecher/classrooms/${classroomId}/assessments/`}
+                        href={`/teacher/classrooms/${classroomId}/assessments/anythingn`}
                         className="calendarJoinButton | px-[1.375rem] py-[0.375rem] rounded-full border border-[#9F9F9F] text-sm font-medium text-[#6F6F6F] hover:text-white hover:border-none"
                       >
                         <h1>Maximum Marks: {item.maxmarks}</h1>
