@@ -110,7 +110,7 @@ const Page = () => {
                 </label>
                 <input
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
-                  placeholder="Pune Institute of Computer Technology ID"
+                  placeholder="Your Institute ID"
                   name={"collegeID"}
                   {...loginForm.formControls.orgId}
                 />
@@ -123,7 +123,7 @@ const Page = () => {
 
                 <input
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
-                  placeholder="Choose a username you won't regret later!"
+                  placeholder="Your Username"
                   {...loginForm.formControls.userName}
                 />
                 <label
@@ -134,7 +134,7 @@ const Page = () => {
                 </label>
                 <input
                   className="border border-gray-300 rounded-md py-3 p-2 mb-4"
-                  placeholder="Choose a Strong Password"
+                  placeholder="Your Password"
                   {...loginForm.formControls.userPassword}
                 />
                 <button type={"submit"} className="bg-gradient-to-b from-blue-400 hover:scale-105 transition-all font-bold text-lg to-blue-500 hover:shadow-2xl ease-in-out text-white rounded-md px-2 py-4 mt-4">
